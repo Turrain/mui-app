@@ -33,6 +33,7 @@ import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import Grid from '@mui/joy/Grid';
 import ListItem from '@mui/joy/ListItem';
 import List from '@mui/joy/List';
@@ -44,191 +45,36 @@ import ListItemContent from '@mui/joy/ListItemContent';
 import AccordionSummary, { accordionSummaryClasses } from '@mui/joy/AccordionSummary';
 import Accordion from '@mui/joy/Accordion';
 import AccordionGroup from '@mui/joy/AccordionGroup';
-import { FormHelperText } from '@mui/joy';
+import { FormHelperText, ListItemButton, ListSubheader } from '@mui/joy';
+import EditCompanyModal from './modals/EditCompanyModal';
+import DeleteCompanyModal from './modals/DeleteCompanyModal';
 
+type Reaction = {
+  [key: string]: string;
+};
 
-const rows = [
-  {
-    id: 'INV-1234',
-    date: 'Feb 3, 2023',
-    status: 'В процессе',
-    customer: {
-      initial: 'O',
-      name: 'Olivia Ryhe',
-      email: 'olivia@email.com',
-    },
-  },
-  {
-    id: 'INV-1233',
-    date: 'Feb 3, 2023',
-    status: 'Выполнено',
-    customer: {
-      initial: 'S',
-      name: 'Steve Hampton',
-      email: 'steve.hamp@email.com',
-    },
-  },
-  {
-    id: 'INV-1232',
-    date: 'Feb 3, 2023',
-    status: 'В процессе',
-    customer: {
-      initial: 'C',
-      name: 'Ciaran Murray',
-      email: 'ciaran.murray@email.com',
-    },
-  },
-  {
-    id: 'INV-1231',
-    date: 'Feb 3, 2023',
-    status: 'В процессе',
-    customer: {
-      initial: 'M',
-      name: 'Maria Macdonald',
-      email: 'maria.mc@email.com',
-    },
-  },
-  {
-    id: 'INV-1230',
-    date: 'Feb 3, 2023',
-    status: 'Остановлено',
-    customer: {
-      initial: 'C',
-      name: 'Charles Fulton',
-      email: 'fulton@email.com',
-    },
-  },
-  {
-    id: 'INV-1229',
-    date: 'Feb 3, 2023',
-    status: 'Остановлено',
-    customer: {
-      initial: 'J',
-      name: 'Jay Hooper',
-      email: 'hooper@email.com',
-    },
-  },
-  {
-    id: 'INV-1228',
-    date: 'Feb 3, 2023',
-    status: 'В процессе',
-    customer: {
-      initial: 'K',
-      name: 'Krystal Stevens',
-      email: 'k.stevens@email.com',
-    },
-  },
-  {
-    id: 'INV-1227',
-    date: 'Feb 3, 2023',
-    status: 'Выполнено',
-    customer: {
-      initial: 'S',
-      name: 'Sachin Flynn',
-      email: 's.flyn@email.com',
-    },
-  },
-  {
-    id: 'INV-1226',
-    date: 'Feb 3, 2023',
-    status: 'Остановлено',
-    customer: {
-      initial: 'B',
-      name: 'Bradley Rosales',
-      email: 'brad123@email.com',
-    },
-  },
-  {
-    id: 'INV-1225',
-    date: 'Feb 3, 2023',
-    status: 'Выполнено',
-    customer: {
-      initial: 'O',
-      name: 'Olivia Ryhe',
-      email: 'olivia@email.com',
-    },
-  },
-  {
-    id: 'INV-1224',
-    date: 'Feb 3, 2023',
-    status: 'Остановлено',
-    customer: {
-      initial: 'S',
-      name: 'Steve Hampton',
-      email: 'steve.hamp@email.com',
-    },
-  },
-  {
-    id: 'INV-1223',
-    date: 'Feb 3, 2023',
-    status: 'Выполнено',
-    customer: {
-      initial: 'C',
-      name: 'Ciaran Murray',
-      email: 'ciaran.murray@email.com',
-    },
-  },
-  {
-    id: 'INV-1221',
-    date: 'Feb 3, 2023',
-    status: 'В процессе',
-    customer: {
-      initial: 'M',
-      name: 'Maria Macdonald',
-      email: 'maria.mc@email.com',
-    },
-  },
-  {
-    id: 'INV-1220',
-    date: 'Feb 3, 2023',
-    status: 'Выполнено',
-    customer: {
-      initial: 'C',
-      name: 'Charles Fulton',
-      email: 'fulton@email.com',
-    },
-  },
-  {
-    id: 'INV-1219',
-    date: 'Feb 3, 2023',
-    status: 'Остановлено',
-    customer: {
-      initial: 'J',
-      name: 'Jay Hooper',
-      email: 'hooper@email.com',
-    },
-  },
-  {
-    id: 'INV-1218',
-    date: 'Feb 3, 2023',
-    status: 'Остановлено',
-    customer: {
-      initial: 'K',
-      name: 'Krystal Stevens',
-      email: 'k.stevens@email.com',
-    },
-  },
-  {
-    id: 'INV-1217',
-    date: 'Feb 3, 2023',
-    status: 'Выполнено',
-    customer: {
-      initial: 'S',
-      name: 'Sachin Flynn',
-      email: 's.flyn@email.com',
-    },
-  },
-  {
-    id: 'INV-1216',
-    date: 'Feb 3, 2023',
-    status: 'Остановлено',
-    customer: {
-      initial: 'B',
-      name: 'Bradley Rosales',
-      email: 'brad123@email.com',
-    },
-  },
-];
+type DataOrder = {
+  name: string;
+  com_limit: number;
+  day_limit: number;
+  sound_file_id: number;
+  status: number;
+  start_time: string;
+  end_time: string;
+  reaction: Reaction;
+  phones_id: number;
+  id: string;
+};
+
+interface HeadCell {
+  disablePadding: boolean;
+  id: keyof DataOrder;
+  label: string;
+  numeric: boolean;
+}
+
+type DataOrders = DataOrder[];
+
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -272,11 +118,152 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
 
 export default function OrderTable() {
   const [order, setOrder] = React.useState<Order>('desc');
+  const [orderBy, setOrderBy] = React.useState<keyof DataOrder>('id');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [open, setOpen] = React.useState(false);
   const [reaction, setReaction] = React.useState(false);
-
   const [value, setValue] = React.useState<string[]>([]);
+  const [editModal, setEditModal] = React.useState(false);
+  const [deleteModal, setDeleteModal] = React.useState(false);
+  const [orders, setOrders] = React.useState<DataOrders>([]);
+  const [selectedId, setSelectedId] = React.useState(0);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  React.useEffect(() => {
+    fetch('http://127.0.0.1:8000/company?skip=0')
+      .then((res) => res.json())
+      .then((data: DataOrders) => setOrders(data))
+      .catch((error) => console.error('Ошибка при получении данных:', error));
+  }, [])
+
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof DataOrder,
+  ) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const newSelected = orders.map((n) => n.id);
+      setSelected(newSelected);
+      return;
+    }
+    setSelected([]);
+  };
+
+  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
+    const selectedIndex = selected.indexOf(name);
+    let newSelected: readonly string[] = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, name);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1),
+      );
+    }
+
+    setSelected(newSelected);
+  };
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: any, newValue: number | null) => {
+    setRowsPerPage(parseInt(newValue!.toString(), 10));
+    setPage(0);
+  };
+
+  const getLabelDisplayedRowsTo = () => {
+    if (orders.length === -1) {
+      return (page + 1) * rowsPerPage;
+    }
+    return rowsPerPage === -1
+      ? orders.length
+      : Math.min(orders.length, (page + 1) * rowsPerPage);
+  };
+
+  const isSelected = (name: string) => selected.indexOf(name) !== -1;
+
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - orders.length) : 0;
+
+  const headCells: readonly HeadCell[] = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: false,
+      label: 'ID',
+    },
+    {
+      id: 'name',
+      numeric: false,
+      disablePadding: true,
+      label: 'Название',
+    },
+    {
+      id: 'com_limit',
+      numeric: true,
+      disablePadding: false,
+      label: 'Об. лм',
+    },
+    {
+      id: 'day_limit',
+      numeric: true,
+      disablePadding: false,
+      label: 'Дн. лм',
+    },
+    {
+      id: 'sound_file_id',
+      numeric: true,
+      disablePadding: false,
+      label: 'Аудиофайл',
+    },
+    {
+      id: 'status',
+      numeric: false,
+      disablePadding: false,
+      label: 'Статус',
+    },
+    {
+      id: 'phones_id',
+      numeric: true,
+      disablePadding: false,
+      label: 'Список номеров',
+    },
+    // {
+    //   id: 'start_time',
+    //   numeric: false,
+    //   disablePadding: false,
+    //   label: '',
+    // },
+  ];
+
+  const createSortHandler = (property: keyof DataOrder) => (event: React.MouseEvent<unknown>) => {
+    handleRequestSort(event, property);
+  };
+
+  function labelDisplayedRows({
+    from,
+    to,
+    count,
+  }: {
+    from: number;
+    to: number;
+    count: number;
+  }) {
+    return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
+  }
+
   const renderFilters = () => (
     <React.Fragment>
       <FormControl size="sm">
@@ -346,269 +333,9 @@ export default function OrderTable() {
             </Sheet>
           </ModalDialog>
         </Modal>
+        <EditCompanyModal id={selectedId} open={editModal} onClose={()=>setEditModal(false)}/>
+        <DeleteCompanyModal id={selectedId} open={deleteModal} onClose={()=>setDeleteModal(false)}/>
 
-        <Modal open={reaction} onClose={() => { setReaction(false) }} >
-          <ModalDialog size='sm' maxWidth='460px'>
-            <ModalClose />
-            <AccordionGroup
-              variant="plain"
-              transition="0.2s"
-              sx={{
-                maxWidth: 400,
-                borderRadius: 'md',
-                [`& .${accordionDetailsClasses.content}.${accordionDetailsClasses.expanded}`]:
-                {
-                  paddingBlock: '1rem',
-                },
-                [`& .${accordionSummaryClasses.button}`]: {
-                  paddingBlock: '1rem',
-                },
-              }}
-            >
-              <Accordion>
-                <AccordionSummary>
-                  <Avatar color="primary">
-                    <TapAndPlay />
-                  </Avatar>
-                  <ListItemContent>
-                    <Typography level="title-md">База номеров</Typography>
-                    <Typography level="body-sm">
-                      Выберите номера для вашей компании
-                    </Typography>
-                  </ListItemContent>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Stack spacing={1.5}>
-                    <FormControl orientation="horizontal" sx={{ gap: 1 }}>
-                      <AirplanemodeActive sx={{ mx: 1 }} />
-                      <FormLabel>Airplane Mode</FormLabel>
-                      <Switch size="sm" />
-                    </FormControl>
-
-                    <FormControl orientation="horizontal" sx={{ gap: 1 }}>
-                      <AirplanemodeActive sx={{ mx: 1 }} />
-                      <FormLabel>Wi-Fi</FormLabel>
-                      <Switch size="sm" />
-                    </FormControl>
-
-                    <FormControl orientation="horizontal" sx={{ gap: 1 }}>
-                      <AirplanemodeActive sx={{ mx: 1 }} />
-                      <FormLabel>Bluetooth</FormLabel>
-                      <Switch size="sm" />
-                    </FormControl>
-                  </Stack>
-                </AccordionDetails>
-              </Accordion>
-
-              <Accordion>
-                <AccordionSummary>
-                  <Avatar color="primary">
-                    <EditNote />
-                  </Avatar>
-                  <ListItemContent>
-                    <Typography level="title-md">Лимиты</Typography>
-                    <Typography level="body-sm">
-                      Установите лимит баланса для вашей компании
-                    </Typography>
-                  </ListItemContent>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Stack spacing={1.5}>
-                    <FormControl orientation="vertical" sx={{ gap: 1 }}>
-
-                      <FormLabel>Лимит (общий)</FormLabel>
-                      <Input
-                        type="number"
-                        defaultValue={2.5}
-                        slotProps={{
-                          input: {
-
-                            min: 1,
-                            max: 5,
-                            step: 0.1,
-                          },
-                        }}
-                      />
-                    </FormControl>
-
-                    <FormControl orientation="vertical" sx={{ gap: 1 }}>
-
-                      <FormLabel>Лимит на день</FormLabel>
-                      <Input
-                        type="number"
-                        defaultValue={2.5}
-                        slotProps={{
-                          input: {
-                            min: 1,
-                            max: 5,
-                            step: 0.1,
-                          },
-                        }}
-                      />
-                    </FormControl>
-
-                  
-                  </Stack>
-                </AccordionDetails>
-              </Accordion>
-
-              <Accordion>
-                <AccordionSummary>
-                  <Avatar color="primary">
-                    <MusicNote />
-                  </Avatar>
-                  <ListItemContent>
-                    <Typography level="title-md">Аудизоапись</Typography>
-                    <Typography level="body-sm">
-                      Выберите запись для вашей компании
-                    </Typography>
-                  </ListItemContent>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Select defaultValue="dog" startDecorator={<MusicNote />} endDecorator={<Button>Загрузить файл</Button>} indicator=''>
-                    <Option value="dog">Dog</Option>
-                    <Option value="cat">Cat</Option>
-                    <Option value="fish">Fish</Option>
-                    <Option value="bird">Bird</Option>
-                  </Select>
-
-
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary>
-                  <Avatar color="primary">
-                    <Timer />
-                  </Avatar>
-                  <ListItemContent>
-                    <Typography level="title-md">Время</Typography>
-                    <Typography level="body-sm">
-                      Выберите дни недели и время для обзвона
-                    </Typography>
-                  </ListItemContent>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Box >
-                    <Typography level="body-sm" sx={{ mb: 2 }}>
-                      Выбор дней недели
-                    </Typography>
-                    <List
-                      variant="outlined"
-                      aria-label="Screens"
-                      role="group"
-                      orientation="horizontal"
-                      sx={{
-                        flexGrow: 0,
-                        '--List-gap': '8px',
-                        '--List-padding': '8px',
-                        '--List-radius': '8px',
-                        gap: 2,
-                        px: 2
-                      }}
-                    >
-                      {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((item) => (
-                        <ListItem key={item}>
-
-                          <Checkbox
-                            disableIcon
-                            overlay
-                            label={item}
-                            checked={value.includes(item)}
-                            color="neutral"
-                            variant={value.includes(item) ? 'outlined' : 'plain'}
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                              if (event.target.checked) {
-                                setValue((val) => [...val, item]);
-                              } else {
-                                setValue((val) => val.filter((text) => text !== item));
-                              }
-                            }}
-                            slotProps={{
-                              action: ({ checked }) => ({
-                                sx: {
-                                  bgcolor: checked ? 'background.level1' : 'transparent',
-                                  boxShadow: checked ? 'sm' : 'none',
-                                },
-                              }),
-                            }}
-                          />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </Box>
-                  <Stack
-                    direction="row"
-                    sx={{ mt: 4 }}
-                    alignItems="center"
-                    spacing={3}
-                  >
-                    <FormControl>
-                      <Input
-                        type="time"
-                        slotProps={{
-                          input: {
-                            min: '09:00',
-                            max: '18:00',
-                          },
-                        }}
-                      />
-                      <FormHelperText>C</FormHelperText>
-                    </FormControl>
-                    <FormControl>
-                      <Input
-                        type="time"
-                        slotProps={{
-                          input: {
-                            min: '09:00',
-                            max: '18:00',
-                          },
-                        }}
-                      />
-                      <FormHelperText>До </FormHelperText>
-                    </FormControl>
-                  </Stack>
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary>
-                  <Avatar color="primary">
-                    <CallToAction />
-                  </Avatar>
-                  <ListItemContent>
-                    <Typography level="title-md">Реакция</Typography>
-                    <Typography level="body-sm">
-                      Выберите ответную реакцию
-                    </Typography>
-                  </ListItemContent>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Box sx={{ my: 4 }}>
-                    <Grid
-                      justifyContent="space-around"
-                      container
-                      spacing={{ xs: 2, md: 3 }}
-                      columns={{ xs: 4, sm: 8, md: 12 }}
-                      sx={{ flexGrow: 1 }}
-                    >
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((i) => (
-                        <Grid xs={2} sm={4} md={4} justifyItems="center" key={i}>
-                          <Box sx={{ display: 'flex', justifyContent: 'center', justifyItems: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                            <Button sx={{ maxWidth: '140px' }} variant="outlined" disabled>{i}</Button>
-                            <Select size='sm' indicator='' placeholder='Не указан' variant="plain">
-                              <Option value="var1">Добавить в список</Option>
-                              <Option value="var2">Исключить</Option>
-                              <Option value="var3">Бездействовать</Option>
-                            </Select>
-                          </Box>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
-            </AccordionGroup>
-          </ModalDialog>
-        </Modal>
       </Sheet>
       <Box
         className="SearchAndFilters-tabletUp"
@@ -627,7 +354,7 @@ export default function OrderTable() {
           <FormLabel>Поиск по названию</FormLabel>
           <Input size="sm" placeholder="Поиск" startDecorator={<SearchIcon />} />
         </FormControl>
-        {renderFilters()}
+        {/* {renderFilters()} */}
       </Box>
       <Sheet
         className="OrderTableContainer"
@@ -647,184 +374,251 @@ export default function OrderTable() {
           hoverRow
           sx={{
             '--TableCell-headBackground': 'var(--joy-palette-background-level1)',
-            '--Table-headerUnderlineThickness': '1px',
-            '--TableRow-hoverBackground': 'var(--joy-palette-background-level1)',
-            '--TableCell-paddingY': '4px',
-            '--TableCell-paddingX': '8px',
+            '--TableCell-selectedBackground': (theme) =>
+              theme.vars.palette.success.softBg,
+            '& thead th:nth-child(1)': {
+              width: '40px',
+            },
+            '& thead th:nth-child(2)': {
+              width: '5%',
+            },
           }}
         >
           <thead>
             <tr>
-              <th style={{ width: 48, textAlign: 'center', padding: '12px 6px' }}>
+              <th>
                 <Checkbox
-                  size="sm"
-                  indeterminate={
-                    selected.length > 0 && selected.length !== rows.length
-                  }
-                  checked={selected.length === rows.length}
-                  onChange={(event) => {
-                    setSelected(
-                      event.target.checked ? rows.map((row) => row.id) : [],
-                    );
-                  }}
-                  color={
-                    selected.length > 0 || selected.length === rows.length
-                      ? 'primary'
-                      : undefined
-                  }
-                  sx={{ verticalAlign: 'text-bottom' }}
+                  indeterminate={selected.length > 0 && selected.length < orders.length}
+                  checked={orders.length > 0 && selected.length === orders.length}
+                  onChange={handleSelectAllClick}
+                  sx={{ verticalAlign: 'sub' }}
                 />
               </th>
-              <th style={{ width: 120, padding: '12px 6px' }}>
-                <Link
-                  underline="none"
-                  color="primary"
-                  component="button"
-                  onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}
-                  fontWeight="lg"
-                  endDecorator={<ArrowDropDownIcon />}
-                  sx={{
-                    '& svg': {
-                      transition: '0.2s',
-                      transform:
-                        order === 'desc' ? 'rotate(0deg)' : 'rotate(180deg)',
-                    },
-                  }}
-                >
-                  ID
-                </Link>
-              </th>
-              <th style={{ width: 140, padding: '12px 6px' }}>Дата</th>
-              <th style={{ width: 140, padding: '12px 6px' }}>Статус</th>
-              <th style={{ width: 240, padding: '12px 6px' }}>Номера</th>
-              <th style={{ width: 140, padding: '12px 6px' }}> </th>
+              {headCells.map((headCell) => {
+                const active = orderBy === headCell.id;
+                return (
+                  <th
+                    key={headCell.id}
+                    aria-sort={
+                      active
+                        ? ({ asc: 'ascending', desc: 'descending' } as const)[order]
+                        : undefined
+                    }
+                  >
+                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                    <Link
+                      underline="none"
+                      color="neutral"
+                      textColor={active ? 'primary.plainColor' : undefined}
+                      component="button"
+                      onClick={createSortHandler(headCell.id)}
+                      fontWeight="lg"
+                      startDecorator={
+                        headCell.numeric ? (
+                          <ArrowDownwardIcon sx={{ opacity: active ? 1 : 0 }} />
+                        ) : null
+                      }
+                      endDecorator={
+                        !headCell.numeric ? (
+                          <ArrowDownwardIcon sx={{ opacity: active ? 1 : 0 }} />
+                        ) : null
+                      }
+                      sx={{
+                        '& svg': {
+                          transition: '0.2s',
+                          transform:
+                            active && order === 'desc' ? 'rotate(0deg)' : 'rotate(180deg)',
+                        },
+                        '&:hover': { '& svg': { opacity: 1 } },
+                      }}
+                    >
+                      {headCell.label}
+                    </Link>
+                  </th>
+                );
+              })}
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            {stableSort(rows, getComparator(order, 'id')).map((row) => (
-              <tr key={row.id}>
-                <td style={{ textAlign: 'center', width: 120 }}>
-                  <Checkbox
-                    size="sm"
-                    checked={selected.includes(row.id)}
-                    color={selected.includes(row.id) ? 'primary' : undefined}
-                    onChange={(event) => {
-                      setSelected((ids) =>
-                        event.target.checked
-                          ? ids.concat(row.id)
-                          : ids.filter((itemId) => itemId !== row.id),
-                      );
-                    }}
-                    slotProps={{ checkbox: { sx: { textAlign: 'left' } } }}
-                    sx={{ verticalAlign: 'text-bottom' }}
-                  />
-                </td>
-                <td>
-                  <Typography level="body-xs">{row.id}</Typography>
-                </td>
-                <td>
-                  <Typography level="body-xs">{row.date}</Typography>
-                </td>
-                <td>
-                  <Chip
-                    variant="soft"
-                    size="sm"
-                    startDecorator={
-                      {
-                        'Выполнено': <CheckRoundedIcon />,
-                        'В процессе': <AutorenewRoundedIcon />,
-                        'Остановлено': <BlockIcon />,
-                      }[row.status]
-                    }
-                    color={
-                      {
-                        'Выполнено': 'success',
-                        'В процессе': 'neutral',
-                        'Остановлено': 'danger',
-                      }[row.status] as ColorPaletteProp
+            {stableSort(orders, getComparator(order, orderBy))
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => {
+                const isItemSelected = isSelected(row.id);
+                const labelId = `enhanced-table-checkbox-${index}`;
+
+                return (
+                  <tr
+                    onClick={(event) => handleClick(event, row.id)}
+                    role='checkbox'
+                    aria-checked={isItemSelected}
+                    tabIndex={-1}
+                    key={row.id}
+                    style={
+                      isItemSelected
+                      ? ({
+                        '--TableCell-dataBackground':
+                            'var(--TableCell-selectedBackground)',
+                          '--TableCell-headBackground':
+                            'var(--TableCell-selectedBackground)',
+                      } as React.CSSProperties)
+                      : {}
                     }
                   >
-                    {row.status}
-                  </Chip>
-                </td>
-                <td>
-                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-
-                    <div>
-                      <Typography level="body-xs">Список номеров</Typography>
-                      <Typography level="body-xs">Случ. число</Typography>
-                    </div>
-                  </Box>
-                </td>
-                <td>
-                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                    <Link level="body-xs" component="button">
-                      Запустить/Остановить
-                    </Link>
-                    <Dropdown>
-                      <MenuButton
-                        slots={{ root: IconButton }}
-                        slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
+                    <td>
+                      <Checkbox
+                        checked={isItemSelected}
+                        slotProps={{
+                          input: {
+                            'aria-labelledby': labelId,
+                          },
+                        }}
+                        sx={{ verticalAlign: 'top' }}
+                      ></Checkbox>
+                    </td>
+                    <td>
+                      {row.id}
+                    </td>
+                    <td id={labelId}>
+                      {row.name}
+                    </td>
+                    <td>
+                      <Typography level="body-xs">{row.com_limit}</Typography>
+                    </td>
+                    <td>
+                      <Typography level="body-xs">{row.day_limit}</Typography>
+                    </td>
+                    <td>
+                      <Link level="body-xs" component="button">
+                          Прослушать {row.sound_file_id}
+                      </Link>
+                    </td>
+                    <td>
+                      <Chip
+                        variant="soft"
+                        size="sm"
+                        startDecorator={
+                          {
+                            '1': <AutorenewRoundedIcon />,
+                            '0': <BlockIcon />,
+                          }[row.status]
+                        }
+                        color={
+                          {
+                            '1': 'success',
+                            '0': 'danger',
+                          }[row.status] as ColorPaletteProp
+                        }
                       >
-                        <MoreHorizRoundedIcon />
-                      </MenuButton>
-                      <Menu size="sm" sx={{ minWidth: 140 }}>
-                        <MenuItem onClick={() => { setReaction(true) }}>Редактировать</MenuItem>
+                        {{
+                          '1': 'В процессе',
+                          '0': 'Остановлен',
+                        }[row.status]}
+                      </Chip>
+                    </td>
+                    <td>
+                      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                        <div>
+                          <Typography level="body-xs">Список номеров</Typography>
+                          <Typography level="body-xs">Случ. число</Typography>
+                        </div>
+                      </Box>
+                    </td>
+                    <td>
+                      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                        <Link level="body-xs" component="button">
+                          Запустить/Остановить
+                        </Link>
+                        <Dropdown>
+                          <MenuButton
+                            slots={{ root: IconButton }}
+                            slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
+                          >
+                            <MoreHorizRoundedIcon />
+                          </MenuButton>
+                          <Menu size="sm" sx={{ minWidth: 140 }}>
+                            <MenuItem onClick={() => { setSelectedId(row.id); console.log(row.id); setEditModal(true);  }}>Редактировать</MenuItem>
 
-                        <Divider />
-                        <MenuItem color="danger">Удалить</MenuItem>
-                      </Menu>
-                    </Dropdown>
-                  </Box>
-                </td>
+                            <Divider />
+                            <MenuItem  onClick={() => { setSelectedId(row.id); setDeleteModal(true);  }} color="danger">Удалить</MenuItem>
+                          </Menu>
+                        </Dropdown>
+                      </Box>
+                    </td>
+                  </tr>
+                );
+              })}
+          {emptyRows > 0 && (
+              <tr
+                style={
+                  {
+                    height: `calc(${emptyRows} * 40px)`,
+                    '--TableRow-hoverBackground': 'transparent',
+                  } as React.CSSProperties
+                }
+              >
+                <td colSpan={6} aria-hidden />
               </tr>
-            ))}
+            )}
           </tbody>
+          <tfoot>
+            <tr>
+              <td colSpan={9}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    justifyContent: 'flex-end',
+                  }}
+                >
+                  <FormControl orientation="horizontal" size="sm">
+                    <FormLabel>Rows per page:</FormLabel>
+                    <Select onChange={handleChangeRowsPerPage} value={rowsPerPage}>
+                      <Option value={5}>5</Option>
+                      <Option value={10}>10</Option>
+                      <Option value={25}>25</Option>
+                    </Select>
+                  </FormControl>
+                  <Typography textAlign="center" sx={{ minWidth: 80 }}>
+                    {labelDisplayedRows({
+                      from: orders.length === 0 ? 0 : page * rowsPerPage + 1,
+                      to: getLabelDisplayedRowsTo(),
+                      count: orders.length === -1 ? -1 : orders.length,
+                    })}
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <IconButton
+                      size="sm"
+                      color="neutral"
+                      variant="outlined"
+                      disabled={page === 0}
+                      onClick={() => handleChangePage(page - 1)}
+                      sx={{ bgcolor: 'background.surface' }}
+                    >
+                      <KeyboardArrowLeftIcon />
+                    </IconButton>
+                    <IconButton
+                      size="sm"
+                      color="neutral"
+                      variant="outlined"
+                      disabled={
+                        orders.length !== -1
+                          ? page >= Math.ceil(orders.length / rowsPerPage) - 1
+                          : false
+                      }
+                      onClick={() => handleChangePage(page + 1)}
+                      sx={{ bgcolor: 'background.surface' }}
+                    >
+                      <KeyboardArrowRightIcon />
+                    </IconButton>
+                  </Box>
+                </Box>
+              </td>
+            </tr>
+          </tfoot>
         </Table>
       </Sheet>
-      <Box
-        className="Pagination-laptopUp"
-        sx={{
-          pt: 2,
-          gap: 1,
-          [`& .${iconButtonClasses.root}`]: { borderRadius: '50%' },
-          display: {
-            xs: 'none',
-            md: 'flex',
-          },
-        }}
-      >
-        <Button
-          size="sm"
-          variant="outlined"
-          color="neutral"
-          startDecorator={<KeyboardArrowLeftIcon />}
-        >
-          Назад
-        </Button>
-
-        <Box sx={{ flex: 1 }} />
-        {['1', '2', '3', '…', '8', '9', '10'].map((page) => (
-          <IconButton
-            key={page}
-            size="sm"
-            variant={Number(page) ? 'outlined' : 'plain'}
-            color="neutral"
-          >
-            {page}
-          </IconButton>
-        ))}
-        <Box sx={{ flex: 1 }} />
-
-        <Button
-          size="sm"
-          variant="outlined"
-          color="neutral"
-          endDecorator={<KeyboardArrowRightIcon />}
-        >
-          Далее
-        </Button>
-      </Box>
     </React.Fragment>
   );
 }

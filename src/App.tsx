@@ -16,8 +16,11 @@ import OrderTable from './components/OrderTable';
 import OrderList from './components/OrderList';
 import Header from './components/Header';
 import { Add } from '@mui/icons-material';
+import CreateCompanyModal from './components/modals/CreateCompanyModal';
+import React from 'react';
 
 export default function JoyOrderDashboardTemplate() {
+  const [createModalOpen, setCreateModalOpen] = React.useState<boolean>(false);
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
@@ -43,7 +46,7 @@ export default function JoyOrderDashboardTemplate() {
             gap: 1,
           }}
         >
-         
+
           <Box
             sx={{
               display: 'flex',
@@ -62,9 +65,11 @@ export default function JoyOrderDashboardTemplate() {
               color="primary"
               startDecorator={<Add />}
               size="sm"
+              onClick={()=>setCreateModalOpen(true)}
             >
               Добавить компанию
             </Button>
+            <CreateCompanyModal open={createModalOpen} onClose={()=> {setCreateModalOpen(false)}} />
           </Box>
           <OrderTable />
           <OrderList />
