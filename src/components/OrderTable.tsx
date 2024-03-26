@@ -92,8 +92,8 @@ function getComparator<Key extends keyof any>(
   order: Order,
   orderBy: Key,
 ): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
+  a: { [key in Key]: number | string | Reaction },
+  b: { [key in Key]: number | string | Reaction },
 ) => number {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -129,6 +129,7 @@ export default function OrderTable() {
   const [selectedId, setSelectedId] = React.useState(0);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   React.useEffect(() => {
     fetch('http://127.0.0.1:8000/company?skip=0')
@@ -155,7 +156,7 @@ export default function OrderTable() {
     setSelected([]);
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
+  const handleClick = (event: React.MouseEvent<unknown>, name: any) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
 
@@ -193,7 +194,7 @@ export default function OrderTable() {
       : Math.min(orders.length, (page + 1) * rowsPerPage);
   };
 
-  const isSelected = (name: string) => selected.indexOf(name) !== -1;
+  const isSelected = (name: any) => selected.indexOf(name) !== -1;
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - orders.length) : 0;
 
@@ -239,13 +240,7 @@ export default function OrderTable() {
       numeric: true,
       disablePadding: false,
       label: 'Список номеров',
-    },
-    // {
-    //   id: 'start_time',
-    //   numeric: false,
-    //   disablePadding: false,
-    //   label: '',
-    // },
+    }
   ];
 
   const createSortHandler = (property: keyof DataOrder) => (event: React.MouseEvent<unknown>) => {
@@ -262,7 +257,16 @@ export default function OrderTable() {
     count: number;
   }) {
     return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
-  }
+  };
+
+  // Handle search input
+  const filteredOrders = orders.filter(orderr => {
+    return orderr.name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
 
   const renderFilters = () => (
     <React.Fragment>
@@ -352,7 +356,13 @@ export default function OrderTable() {
       >
         <FormControl sx={{ flex: 1 }} size="sm">
           <FormLabel>Поиск по названию</FormLabel>
-          <Input size="sm" placeholder="Поиск" startDecorator={<SearchIcon />} />
+          <Input 
+            size="sm" 
+            placeholder="Поиск" 
+            startDecorator={<SearchIcon />} 
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+            />
         </FormControl>
         {/* {renderFilters()} */}
       </Box>
@@ -441,7 +451,7 @@ export default function OrderTable() {
             </tr>
           </thead>
           <tbody>
-            {stableSort(orders, getComparator(order, orderBy))
+            {stableSort(filteredOrders, getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => {
                 const isItemSelected = isSelected(row.id);
@@ -537,10 +547,10 @@ export default function OrderTable() {
                             <MoreHorizRoundedIcon />
                           </MenuButton>
                           <Menu size="sm" sx={{ minWidth: 140 }}>
-                            <MenuItem onClick={() => { setSelectedId(row.id); console.log(row.id); setEditModal(true);  }}>Редактировать</MenuItem>
+                            <MenuItem onClick={() => { setSelectedId(+row.id); console.log(row.id); setEditModal(true);  }}>Редактировать</MenuItem>
 
                             <Divider />
-                            <MenuItem  onClick={() => { setSelectedId(row.id); setDeleteModal(true);  }} color="danger">Удалить</MenuItem>
+                            <MenuItem  onClick={() => { setSelectedId(+row.id); setDeleteModal(true);  }} color="danger">Удалить</MenuItem>
                           </Menu>
                         </Dropdown>
                       </Box>
