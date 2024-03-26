@@ -318,7 +318,7 @@ export function AudioRecorder({ recorderState, handlers }: RecorderControlsProps
                 </Box>
             </div>
        
-            {audio && <audio src={audio} />}
+            {recorderState.mediaStream && <AudioVisualizer mediaStream={recorderState.mediaStream} />}
 
         </div>
     );
