@@ -1,7 +1,10 @@
 
 import React, { useState } from 'react';
-import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip } from '@mui/joy';
+import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip } from '@mui/joy';
 import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
+import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
+import AudioVisualizer from '../AudioVisualizer';
+
 
 type Reaction = {
     [key: string]: string;
@@ -47,6 +50,8 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
     const [reaction, setReaction] = useState<Reaction>({});
     const [phoneList, setPhoneList] = React.useState<number>();
     const [days, setDays] = React.useState<number[]>([]);
+    const { recorderState, ...handlers }: UseRecorder = useRecorder();
+    const { audio } = recorderState;
 
     const [phonesLists, setPhonesLists] = React.useState<PhonesList[]>([])
     React.useEffect(() => {
@@ -69,9 +74,9 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
         console.log({
             name: companyName,
             com_limit: parseInt(companyLimit, 10),
-            day_limit: parseInt(dailyLimit, 10), 
-            sound_file_id: soundFile, 
-            status: 0, 
+            day_limit: parseInt(dailyLimit, 10),
+            sound_file_id: soundFile,
+            status: 0,
             days: days,
             start_time: "09:40:55.446Z", // TODO: parsing 
             end_time: "09:40:55.446Z",
@@ -86,9 +91,9 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
             body: JSON.stringify({
                 name: companyName,
                 com_limit: parseInt(companyLimit, 10),
-                day_limit: parseInt(dailyLimit, 10), 
-                sound_file_id: soundFile, 
-                status: 0, 
+                day_limit: parseInt(dailyLimit, 10),
+                sound_file_id: soundFile,
+                status: 0,
                 days: days,
                 start_time: "09:40:55.446Z", // TODO: parsing 
                 end_time: "09:40:55.446Z",
@@ -256,6 +261,15 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
                                     </Option>
                                 ))}
                             </Select>
+                            <Divider>
+                                <Chip sx={{ my: 2 }} variant="soft" color="neutral" size="sm">
+                                    Звукозапись
+                                </Chip>
+                            </Divider>
+                          
+                          
+                            <AudioRecorder recorderState={recorderState} handlers={handlers} />
+                            <RecordingsList audio={audio} />
                         </AccordionDetails>
                     </Accordion>
                     <Accordion>
@@ -381,13 +395,13 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
                                         <Grid xs={2} sm={4} md={4} justifyItems="center" key={i}>
                                             <Box sx={{ display: 'flex', justifyContent: 'center', justifyItems: 'center', alignItems: 'center', flexDirection: 'column' }}>
                                                 <Button sx={{ maxWidth: '140px' }} variant="outlined" disabled>{i}</Button>
-                                                <Select 
-                                                    size='sm' 
-                                                    indicator='' 
-                                                    placeholder='Не указан' 
+                                                <Select
+                                                    size='sm'
+                                                    indicator=''
+                                                    placeholder='Не указан'
                                                     variant="plain"
-                                                    onChange={(_, nv) => {setReaction({ ...reaction, [i]: nv }); console.log(reaction);}}
-                                                > 
+                                                    onChange={(_, nv) => { setReaction({ ...reaction, [i]: nv }); console.log(reaction); }}
+                                                >
                                                     <Option value="yes">Добавить в список</Option>
                                                     <Option value="maybe">Исключить</Option>
                                                     <Option value="no">Бездействовать</Option>

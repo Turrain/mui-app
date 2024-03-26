@@ -24,69 +24,25 @@ import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+type Reaction = {
+  [key: string]: string;
+};
 
-const listItems = [
-  {
-    id: 'INV-1234',
-    date: 'Feb 3, 2023',
-    status: 'Refunded',
-    customer: {
-      initial: 'O',
-      name: 'Olivia Ryhe',
-      email: 'olivia@email.com',
-    },
-  },
-  {
-    id: 'INV-1233',
-    date: 'Feb 3, 2023',
-    status: 'Paid',
-    customer: {
-      initial: 'S',
-      name: 'Steve Hampton',
-      email: 'steve.hamp@email.com',
-    },
-  },
-  {
-    id: 'INV-1232',
-    date: 'Feb 3, 2023',
-    status: 'Refunded',
-    customer: {
-      initial: 'C',
-      name: 'Ciaran Murray',
-      email: 'ciaran.murray@email.com',
-    },
-  },
-  {
-    id: 'INV-1231',
-    date: 'Feb 3, 2023',
-    status: 'Refunded',
-    customer: {
-      initial: 'M',
-      name: 'Maria Macdonald',
-      email: 'maria.mc@email.com',
-    },
-  },
-  {
-    id: 'INV-1230',
-    date: 'Feb 3, 2023',
-    status: 'Cancelled',
-    customer: {
-      initial: 'C',
-      name: 'Charles Fulton',
-      email: 'fulton@email.com',
-    },
-  },
-  {
-    id: 'INV-1229',
-    date: 'Feb 3, 2023',
-    status: 'Cancelled',
-    customer: {
-      initial: 'J',
-      name: 'Jay Hooper',
-      email: 'hooper@email.com',
-    },
-  },
-];
+type DataOrder = {
+  name: string;
+  com_limit: number;
+  day_limit: number;
+  sound_file_id: number;
+  status: number;
+  start_time: string;
+  end_time: string;
+  reaction: Reaction;
+  phones_id: number;
+  id: string;
+};
+
+
+type DataOrders = DataOrder[];
 
 function RowMenu() {
   return (
@@ -107,13 +63,22 @@ function RowMenu() {
 }
 
 export default function OrderList() {
+  const [orders, setOrders] = React.useState<DataOrders>([]);
+  React.useEffect(() => {
+    fetch('http://127.0.0.1:8000/company?skip=0')
+      .then((res) => res.json())
+      .then((data: DataOrders) => setOrders(data))
+      .catch((error) => console.error('Ошибка при получении данных:', error));
+  }, [])
+
   return (
     <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-      {listItems.map((listItem) => (
+      {orders.map((listItem) => (
         <List
           key={listItem.id}
           size="sm"
           sx={{
+            
             '--ListItem-paddingX': 0,
           }}
         >
@@ -125,15 +90,15 @@ export default function OrderList() {
             }}
           >
             <ListItemContent sx={{ display: 'flex', gap: 2, alignItems: 'start' }}>
-              <ListItemDecorator>
-                <Avatar size="sm">{listItem.customer.initial}</Avatar>
-              </ListItemDecorator>
+          
               <div>
                 <Typography fontWeight={600} gutterBottom>
-                  {listItem.customer.name}
+                  {listItem.name}
                 </Typography>
                 <Typography level="body-xs" gutterBottom>
-                  {listItem.customer.email}
+                  <Link>
+                    Прослушать запись
+                  </Link>
                 </Typography>
                 <Box
                   sx={{
@@ -144,9 +109,9 @@ export default function OrderList() {
                     mb: 1,
                   }}
                 >
-                  <Typography level="body-xs">{listItem.date}</Typography>
+                  <Typography level="body-xs">{listItem.start_time}</Typography>
                   <Typography level="body-xs">&bull;</Typography>
-                  <Typography level="body-xs">{listItem.id}</Typography>
+                  <Typography level="body-xs">{listItem.end_time}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                   <Link level="body-sm" component="button">
@@ -157,25 +122,26 @@ export default function OrderList() {
               </div>
             </ListItemContent>
             <Chip
-              variant="soft"
-              size="sm"
-              startDecorator={
-                {
-                  Paid: <CheckRoundedIcon />,
-                  Refunded: <AutorenewRoundedIcon />,
-                  Cancelled: <BlockIcon />,
-                }[listItem.status]
-              }
-              color={
-                {
-                  Paid: 'success',
-                  Refunded: 'neutral',
-                  Cancelled: 'danger',
-                }[listItem.status] as ColorPaletteProp
-              }
-            >
-              {listItem.status}
-            </Chip>
+                        variant="soft"
+                        size="sm"
+                        startDecorator={
+                          {
+                            '1': <AutorenewRoundedIcon />,
+                            '0': <BlockIcon />,
+                          }[listItem.status]
+                        }
+                        color={
+                          {
+                            '1': 'success',
+                            '0': 'danger',
+                          }[listItem.status] as ColorPaletteProp
+                        }
+                      >
+                        {{
+                          '1': 'В процессе',
+                          '0': 'Остановлен',
+                        }[listItem.status]}
+                      </Chip>
           </ListItem>
           <ListDivider />
         </List>

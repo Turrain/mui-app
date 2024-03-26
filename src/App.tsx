@@ -44,6 +44,7 @@ export default function JoyOrderDashboardTemplate() {
             minWidth: 0,
             height: '100dvh',
             gap: 1,
+            overflow: 'auto'
           }}
         >
 

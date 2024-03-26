@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip } from '@mui/joy';
+import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip } from '@mui/joy';
 import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
+import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
 
 type Reaction = {
     [key: string]: string;
@@ -49,7 +50,8 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
     const [reaction, setReaction] = useState<Reaction>({});
     const [phoneList, setPhoneList] = React.useState<number>();
     const [days, setDays] = React.useState<number[]>([]);
-
+    const { recorderState, ...handlers }: UseRecorder = useRecorder();
+    const { audio } = recorderState;
     const [phonesLists, setPhonesLists] = React.useState<PhonesList[]>([])
     React.useEffect(() => {
         fetch('http://127.0.0.1:8000/phone?skip=0')
@@ -276,6 +278,13 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
                                     </Option>
                                 ))}
                             </Select>
+                            <Divider>
+                                <Chip sx={{my:2}}variant="soft" color="neutral" size="sm">
+                                    Звукозапись
+                                </Chip>
+                            </Divider>
+                            <AudioRecorder recorderState={recorderState} handlers={handlers} />
+                            <RecordingsList audio={audio}/>
                         </AccordionDetails>
                     </Accordion>
                     <Accordion>
