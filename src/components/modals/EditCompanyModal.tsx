@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip } from '@mui/joy';
 import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
+import { useAuth } from '../../App';
 
 type Reaction = {
     [key: string]: string;
@@ -53,8 +54,13 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
     const { recorderState, ...handlers }: UseRecorder = useRecorder();
     const { audio } = recorderState;
     const [phonesLists, setPhonesLists] = React.useState<PhonesList[]>([])
+    const auth = useAuth();
     React.useEffect(() => {
-        fetch('http://127.0.0.1:8000/phone?skip=0')
+        fetch('http://127.0.0.1:8000/api/phone-lists', {
+            headers: {
+              'Authorization': `Bearer ${auth.user?.token}`,
+            },
+          })
             .then((res) => res.json())
             .then((data: PhonesList[]) => setPhonesLists(data))
             .catch((error) => console.error('Ошибка при получении данных:', error));
@@ -62,7 +68,11 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
 
     const [soundfiles, setSoundfiles] = React.useState<Soundfile[]>([])
     React.useEffect(() => {
-        fetch('http://127.0.0.1:8000/soundfiles?skip=0')
+        fetch('http://127.0.0.1:8000/api/sound-files', {
+            headers: {
+              'Authorization': `Bearer ${auth.user?.token}`,
+            },
+          })
             .then((res) => res.json())
             .then((data: Soundfile[]) => setSoundfiles(data))
             .catch((error) => console.error('Ошибка при получении данных:', error));
@@ -70,7 +80,11 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
 
     console.log("id",id)
     React.useEffect(() => {
-        fetch(`http://127.0.0.1:8000/company/${id}`)
+        fetch(`http://127.0.0.1:8000/api/companies/${id}`, {
+            headers: {
+              'Authorization': `Bearer ${auth.user?.token}`,
+            },
+          })
             .then((res) => res.json())
             .then((data: Company) => {
 
@@ -100,10 +114,11 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
             reaction: reaction,
             phones_id: phoneList
         });
-        fetch(`http://127.0.0.1:8000/company/${id}`, {
+        fetch(`http://127.0.0.1:8000/api/companies/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${auth.user?.token}`,
             },
             body: JSON.stringify({
                 name: companyName,

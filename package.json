@@ -15,11 +15,15 @@
     "@fontsource/inter": "^5.0.17",
     "@mui/icons-material": "^5.15.12",
     "@mui/joy": "^5.0.0-beta.30",
+    "js-cookie": "^3.0.5",
     "react": "^18.2.0",
+    "react-auth-verification-context": "^0.0.7",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.3",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
     "@types/uuid": "^9.0.8",

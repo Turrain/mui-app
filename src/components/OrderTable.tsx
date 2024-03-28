@@ -48,6 +48,7 @@ import AccordionGroup from '@mui/joy/AccordionGroup';
 import { FormHelperText, ListItemButton, ListSubheader } from '@mui/joy';
 import EditCompanyModal from './modals/EditCompanyModal';
 import DeleteCompanyModal from './modals/DeleteCompanyModal';
+import { useAuth } from '../App';
 
 type Reaction = {
   [key: string]: string;
@@ -129,9 +130,14 @@ export default function OrderTable() {
   const [selectedId, setSelectedId] = React.useState(0);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
+  const auth = useAuth();
   React.useEffect(() => {
-    fetch('http://127.0.0.1:8000/company?skip=0')
+    console.log(auth.user?.token)
+    fetch('http://127.0.0.1:8000/api/companies', {
+      headers: {
+        'Authorization': `Bearer ${auth.user?.token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data: DataOrders) => setOrders(data))
       .catch((error) => console.error('Ошибка при получении данных:', error));
@@ -444,7 +450,7 @@ export default function OrderTable() {
             {stableSort(orders, getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => {
-                const isItemSelected = isSelected(row.id);
+                const isItemSelected = isSelected(String(row.id));
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (

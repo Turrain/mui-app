@@ -4,6 +4,7 @@ import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, For
 import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
 import AudioVisualizer from '../AudioVisualizer';
+import { useAuth } from '../../App';
 
 
 type Reaction = {
@@ -54,8 +55,13 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
     const { audio } = recorderState;
 
     const [phonesLists, setPhonesLists] = React.useState<PhonesList[]>([])
+    const auth = useAuth();
     React.useEffect(() => {
-        fetch('http://127.0.0.1:8000/phone?skip=0')
+        fetch('http://127.0.0.1:8000/api/phone-lists', {
+            headers: {
+              'Authorization': `Bearer ${auth.user?.token}`,
+            },
+          } )
             .then((res) => res.json())
             .then((data: PhonesList[]) => setPhonesLists(data))
             .catch((error) => console.error('Ошибка при получении данных:', error));
@@ -63,7 +69,11 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
 
     const [soundfiles, setSoundfiles] = React.useState<Soundfile[]>([])
     React.useEffect(() => {
-        fetch('http://127.0.0.1:8000/soundfiles?skip=0')
+        fetch('http://127.0.0.1:8000/api/sound-files', {
+            headers: {
+              'Authorization': `Bearer ${auth.user?.token}`,
+            },
+          })
             .then((res) => res.json())
             .then((data: Soundfile[]) => setSoundfiles(data))
             .catch((error) => console.error('Ошибка при получении данных:', error));
@@ -83,10 +93,11 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
             reaction: reaction,
             phones_id: phoneList
         });
-        fetch('http://127.0.0.1:8000/company', {
+        fetch('http://127.0.0.1:8000/api/companies', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${auth.user?.token}`,
             },
             body: JSON.stringify({
                 name: companyName,
