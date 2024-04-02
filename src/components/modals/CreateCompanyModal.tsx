@@ -4,8 +4,7 @@ import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, For
 import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
 import AudioVisualizer from '../AudioVisualizer';
-import { useAuth } from '../../App';
-
+import http from "../../utils/api/http-client";
 
 type Reaction = {
     [key: string]: string;
@@ -55,33 +54,25 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
     const { audio } = recorderState;
 
     const [phonesLists, setPhonesLists] = React.useState<PhonesList[]>([])
-    const auth = useAuth();
+  
     React.useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/phone-lists', {
-            headers: {
-              'Authorization': `Bearer ${auth.user?.token}`,
-            },
-          } )
-            .then((res) => res.json())
-            .then((data: PhonesList[]) => setPhonesLists(data))
-            .catch((error) => console.error('Ошибка при получении данных:', error));
+        http.get('/api/phone-lists')
+        .then((res) => {console.log(res.data); setPhonesLists(res.data)})
+        .catch((error) => console.error('Ошибка при получении данных:', error));
+        
     }, [])
 
     const [soundfiles, setSoundfiles] = React.useState<Soundfile[]>([])
     React.useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/sound-files', {
-            headers: {
-              'Authorization': `Bearer ${auth.user?.token}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data: Soundfile[]) => setSoundfiles(data))
+        http.get('/api/sound-files')
+            .then((response) => setSoundfiles(response.data))
             .catch((error) => console.error('Ошибка при получении данных:', error));
     }, [])
 
 
     const handleSubmit = () => {
-        console.log({
+       
+        http.post('http://127.0.0.1:8000/api/companies', {
             name: companyName,
             com_limit: parseInt(companyLimit, 10),
             day_limit: parseInt(dailyLimit, 10),
@@ -92,29 +83,13 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
             end_time: "09:40:55.446Z",
             reaction: reaction,
             phones_id: phoneList
-        });
-        fetch('http://127.0.0.1:8000/api/companies', {
-            method: 'POST',
+        }, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${auth.user?.token}`,
-            },
-            body: JSON.stringify({
-                name: companyName,
-                com_limit: parseInt(companyLimit, 10),
-                day_limit: parseInt(dailyLimit, 10),
-                sound_file_id: soundFile,
-                status: 0,
-                days: days,
-                start_time: "09:40:55.446Z", // TODO: parsing 
-                end_time: "09:40:55.446Z",
-                reaction: reaction,
-                phones_id: phoneList
-            })
+            }
         })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Ошибка:', error));
+        .then(response => console.log(response.data))
+        .catch(error => console.error('Ошибка:', error));
         onClose(); // Закрыть модальное окно после отправки формы
     };
 

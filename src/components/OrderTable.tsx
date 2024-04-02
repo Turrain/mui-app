@@ -48,7 +48,8 @@ import AccordionGroup from '@mui/joy/AccordionGroup';
 import { FormHelperText, ListItemButton, ListSubheader } from '@mui/joy';
 import EditCompanyModal from './modals/EditCompanyModal';
 import DeleteCompanyModal from './modals/DeleteCompanyModal';
-import { useAuth } from '../App';
+import http from "../utils/api/http-client";
+
 
 type Reaction = {
   [key: string]: string;
@@ -131,20 +132,16 @@ export default function OrderTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const auth = useAuth();
+
 
   const [searchQuery, setSearchQuery] = React.useState('');
 
 
   React.useEffect(() => {
-    console.log(auth.user?.token)
-    fetch('http://127.0.0.1:8000/api/companies', {
-      headers: {
-        'Authorization': `Bearer ${auth.user?.token}`,
-      },
+
+    http.get('http://127.0.0.1:8000/api/companies', {
     })
-      .then((res) => res.json())
-      .then((data: DataOrders) => setOrders(data))
+      .then((response) => setOrders(response.data))
       .catch((error) => console.error('Ошибка при получении данных:', error));
   }, [])
 

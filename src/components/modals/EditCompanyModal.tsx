@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip } from '@mui/joy';
 import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
-import { useAuth } from '../../App';
+import http from "../../utils/api/http-client";
+import authService from '../../utils/api/auth.service';
+
 
 type Reaction = {
     [key: string]: string;
@@ -54,55 +56,49 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
     const { recorderState, ...handlers }: UseRecorder = useRecorder();
     const { audio } = recorderState;
     const [phonesLists, setPhonesLists] = React.useState<PhonesList[]>([])
-    const auth = useAuth();
+
     React.useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/phone-lists', {
-            headers: {
-              'Authorization': `Bearer ${auth.user?.token}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data: PhonesList[]) => setPhonesLists(data))
+        http.get('/api/phone-lists')
+            .then((response) => setPhonesLists(response.data))
             .catch((error) => console.error('Ошибка при получении данных:', error));
     }, [])
-
     const [soundfiles, setSoundfiles] = React.useState<Soundfile[]>([])
     React.useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/sound-files', {
+        http.get('http://127.0.0.1:8000/api/sound-files', {
             headers: {
-              'Authorization': `Bearer ${auth.user?.token}`,
+              'Authorization': `Bearer ${authService.getAuthUser()?.access_token}`,
             },
           })
-            .then((res) => res.json())
-            .then((data: Soundfile[]) => setSoundfiles(data))
+            .then((response) => setSoundfiles(response.data))
             .catch((error) => console.error('Ошибка при получении данных:', error));
     }, [])
 
     console.log("id",id)
     React.useEffect(() => {
-        fetch(`http://127.0.0.1:8000/api/companies/${id}`, {
+        http.get(`http://127.0.0.1:8000/api/companies/${id}`, {
             headers: {
-              'Authorization': `Bearer ${auth.user?.token}`,
+              'Authorization': `Bearer ${authService.getAuthUser()?.access_token}`,
             },
-          })
-            .then((res) => res.json())
-            .then((data: Company) => {
+        })
+        .then((response) => {
+            const data: Company = response.data;
 
-                setCompanyName(data.name);
-                setCompanyLimit(data.com_limit.toString());
-                setDailyLimit(data.day_limit.toString());
-                setSoundFile(data.sound_file_id);
-                // setStartTime(data.start_time);
-                // setEndTime(data.end_time);
-                setReaction(data.reaction);
-                setPhoneList(data.phones_id);
-                setDays(data.days)
-            })
-            .catch((error) => console.error('Ошибка при получении данных:', error));
+            setCompanyName(data.name);
+            setCompanyLimit(data.com_limit.toString());
+            setDailyLimit(data.day_limit.toString());
+            setSoundFile(data.sound_file_id);
+            // setStartTime(data.start_time);
+            // setEndTime(data.end_time);
+            setReaction(data.reaction);
+            setPhoneList(data.phones_id);
+            setDays(data.days);
+        })
+        .catch((error) => console.error('Ошибка при получении данных:', error));
     }, [id])
 
     const handleSubmit = () => {
-        console.log({
+     
+        http.put(`http://127.0.0.1:8000/api/companies/${id}`, {
             name: companyName,
             com_limit: parseInt(companyLimit, 10),
             day_limit: parseInt(dailyLimit, 10),
@@ -113,29 +109,13 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
             end_time: "09:40:55.446Z",
             reaction: reaction,
             phones_id: phoneList
-        });
-        fetch(`http://127.0.0.1:8000/api/companies/${id}`, {
-            method: 'PUT',
+        }, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${auth.user?.token}`,
-            },
-            body: JSON.stringify({
-                name: companyName,
-                com_limit: parseInt(companyLimit, 10),
-                day_limit: parseInt(dailyLimit, 10),
-                sound_file_id: soundFile,
-                status: 0,
-                days: days,
-                start_time: "09:40:55.446Z", // TODO: parsing
-                end_time: "09:40:55.446Z",
-                reaction: reaction,
-                phones_id: phoneList
-            })
+            }
         })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Ошибка:', error));
+        .then(response => console.log(response.data))
+        .catch(error => console.error('Ошибка:', error));
         onClose(); // Закрыть модальное окно после отправки формы
     };
 

@@ -29,10 +29,10 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import BrightnessAutoRoundedIcon from '@mui/icons-material/BrightnessAutoRounded';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-
+import authService from '../utils/api/auth.service';
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { closeSidebar } from '../utils';
-import { useAuth } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 function Toggler({
   defaultExpanded = false,
@@ -67,7 +67,8 @@ function Toggler({
 }
 
 export default function Sidebar() {
-  const auth = useAuth();
+
+  let navigate = useNavigate();
   return (
     <Sheet
       className="Sidebar"
@@ -195,11 +196,12 @@ export default function Sidebar() {
           src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286"
         />
         <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Typography level="title-sm">{auth.user?.email}</Typography>
-          <Typography level="body-xs">{auth.user?.email}</Typography>
+          <Typography level="title-sm">eee</Typography>
+          <Typography level="body-xs">eee</Typography>
         </Box>
         <IconButton size="sm" variant="plain" color="neutral" onClick={()=>{
-          auth.signout(()=>{})
+          authService.logout()
+      
         }}>
           <LogoutRoundedIcon />
         </IconButton>

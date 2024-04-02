@@ -24,7 +24,7 @@ import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import { useAuth } from '../App';
+import http from "../utils/api/http-client";
 type Reaction = {
   [key: string]: string;
 };
@@ -65,15 +65,12 @@ function RowMenu() {
 
 export default function OrderList() {
   const [orders, setOrders] = React.useState<DataOrders>([]);
-  const auth = useAuth();
+
   React.useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/companies', {
-      headers: {
-        'Authorization': `Bearer ${auth.user?.token}`,
-      },
+    http.get('http://127.0.0.1:8000/api/companies', {
+     
     })
-      .then((res) => res.json())
-      .then((data: DataOrders) => setOrders(data))
+      .then((response) => setOrders(response.data))
       .catch((error) => console.error('Ошибка при получении данных:', error));
   }, [])
 

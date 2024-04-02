@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {  useColorScheme } from '@mui/joy/styles';
+import { useColorScheme } from '@mui/joy/styles';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
 import Checkbox from '@mui/joy/Checkbox';
@@ -15,7 +15,7 @@ import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../App';
+import authService from '../../utils/api/auth.service';
 
 interface FormElements extends HTMLFormControlsCollection {
     username: HTMLInputElement;
@@ -51,9 +51,16 @@ function ColorSchemeToggle(props: IconButtonProps) {
 }
 
 export default function SignInPage() {
-    let location = useLocation();
-    let auth = useAuth();
-    let navigate = useNavigate();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const from = location.state?.from?.pathname || "/";
+
+    React.useEffect(() => {
+        if (authService.getAuthUser()) {
+            navigate(from, { replace: true });
+        }
+    }, [navigate, from]);
+  
     return (
         <Box>
             <Box
@@ -152,24 +159,21 @@ export default function SignInPage() {
                         </Divider>
                         <Stack gap={4} sx={{ mt: 2 }}>
                             <form
-                                onSubmit={(event: React.FormEvent<SignInFormElement>) => {
-                                    console.log("test")
+                                onSubmit={async (event: React.FormEvent<SignInFormElement>) => {
                                     event.preventDefault();
-                                    console.log("test")
                                     const formElements = event.currentTarget.elements;
                                     const data = {
                                         username: formElements.username.value,
                                         password: formElements.password.value,
                                     };
-                                    console.log(data)
-                                  
-                               
-                                    let from = location.state?.from?.pathname || "/";
+                                    try {
+                                        const result = await authService.login(data);
+                                        console.log(result)
+                                        navigate("/")
+                                    } catch (error) {
+                                        console.log('ereeer')
+                                    }
 
-                                    auth.signin(data, () => {
-                                        navigate("/", { replace: true });
-                                    });
-                                 
                                 }}
                             >
                                 <FormControl required>
