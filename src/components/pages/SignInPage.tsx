@@ -16,6 +16,7 @@ import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import { useLocation, useNavigate } from 'react-router-dom';
 import authService from '../../utils/api/auth.service';
+import { Tab, TabList, TabPanel, Tabs } from '@mui/joy';
 
 interface FormElements extends HTMLFormControlsCollection {
     username: HTMLInputElement;
@@ -54,13 +55,13 @@ export default function SignInPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const from = location.state?.from?.pathname || "/";
-
+    const [lorTab, setLorTab] = React.useState(true)
     React.useEffect(() => {
         if (authService.getAuthUser()) {
             navigate(from, { replace: true });
         }
     }, [navigate, from]);
-  
+
     return (
         <Box>
             <Box
@@ -127,82 +128,142 @@ export default function SignInPage() {
                             },
                         }}
                     >
-                        <Stack gap={4} sx={{ mb: 2 }}>
-                            <Stack gap={1}>
-                                <Typography component="h1" level="h3">
-                                    Sign in
-                                </Typography>
-                                <Typography level="body-sm">
-                                    New to company?{' '}
-                                    <Link href="#replace-with-a-link" level="title-sm">
-                                        Sign up!
-                                    </Link>
-                                </Typography>
-                            </Stack>
-                            <Button
-                                variant="soft"
-                                color="neutral"
-                                fullWidth
 
-                            >
-                                Continue with Google
-                            </Button>
-                        </Stack>
-                        <Divider
-                            sx={(theme) => ({
-                                [theme.getColorSchemeSelector('light')]: {
-                                    color: { xs: '#FFF', md: 'text.tertiary' },
-                                },
-                            })}
-                        >
-                            or
-                        </Divider>
-                        <Stack gap={4} sx={{ mt: 2 }}>
-                            <form
-                                onSubmit={async (event: React.FormEvent<SignInFormElement>) => {
-                                    event.preventDefault();
-                                    const formElements = event.currentTarget.elements;
-                                    const data = {
-                                        username: formElements.username.value,
-                                        password: formElements.password.value,
-                                    };
-                                    try {
-                                        const result = await authService.login(data);
-                                        console.log(result)
-                                        navigate("/")
-                                    } catch (error) {
-                                        console.log('ereeer')
-                                    }
+                        {
+                            lorTab ? (
+                                <>
+                                    <Stack gap={4} sx={{ mb: 2 }}>
+                                        <Stack gap={1}>
+                                            <Typography component="h1" level="h3">
+                                                Вход
+                                            </Typography>
+                                            <Typography level="body-sm">
+                                                Вы не имеете аккаунта?{' '}
+                                                <Button onClick={()=>setLorTab(false)}  variant='plain'>
+                                                    Зарегестрируйтесь
+                                                </Button>
+                                            </Typography>
+                                        </Stack>
+                                        <Button
+                                            variant="soft"
+                                            color="neutral"
+                                            fullWidth
+                                            disabled
 
-                                }}
-                            >
-                                <FormControl required>
-                                    <FormLabel>Username</FormLabel>
-                                    <Input type="text" name="username" />
-                                </FormControl>
-                                <FormControl required>
-                                    <FormLabel>Password</FormLabel>
-                                    <Input type="password" name="password" />
-                                </FormControl>
-                                <Stack gap={4} sx={{ mt: 2 }}>
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                        }}
+                                        >
+                                            Продолжить с Google
+                                        </Button>
+                                    </Stack><Divider
+                                        sx={(theme) => ({
+                                            [theme.getColorSchemeSelector('light')]: {
+                                                color: { xs: '#FFF', md: 'text.tertiary' },
+                                            },
+                                        })}
                                     >
-                                        <Checkbox size="sm" label="Remember me" name="persistent" />
-                                        <Link level="title-sm" href="#replace-with-a-link">
-                                            Forgot your password?
-                                        </Link>
-                                    </Box>
-                                    <Button type="submit" fullWidth>
-                                        Sign in
-                                    </Button>
-                                </Stack>
-                            </form>
-                        </Stack>
+                                        или
+                                    </Divider><Stack gap={4} sx={{ mt: 2 }}>
+                                        <form
+                                            onSubmit={async (event: React.FormEvent<SignInFormElement>) => {
+                                                event.preventDefault();
+                                                const formElements = event.currentTarget.elements;
+                                                const data = {
+                                                    username: formElements.username.value,
+                                                    password: formElements.password.value,
+                                                };
+                                                try {
+                                                    const result = await authService.login(data);
+                                                    console.log(result);
+                                                    navigate("/");
+                                                } catch (error) {
+                                                    console.log('ereeer');
+                                                }
+
+                                            }}
+                                        >
+                                            <FormControl required>
+                                                <FormLabel>Имя пользователя</FormLabel>
+                                                <Input type="text" name="username" />
+                                            </FormControl>
+                                            <FormControl required>
+                                                <FormLabel>Пароль</FormLabel>
+                                                <Input type="password" name="password" />
+                                            </FormControl>
+                                            <Stack gap={4} sx={{ mt: 2 }}>
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center',
+                                                    }}
+                                                >
+                                                    <Checkbox size="sm" label="Запомнить меня" disabled name="persistent" />
+                                                    <Link disabled level="title-sm" href="#replace-with-a-link">
+                                                        Забыли пароль ?
+                                                    </Link>
+                                                </Box>
+                                                <Button type="submit" fullWidth>
+                                                    Войти
+                                                </Button>
+                                            </Stack>
+                                        </form>
+                                    </Stack>
+                                </>
+                            ) : (
+                                <>
+                                 <Stack gap={4} sx={{ mb: 2 }}>
+                                        <Stack gap={1}>
+                                            <Typography component="h1" level="h3">
+                                                Регистрация
+                                            </Typography>
+                                            <Typography level="body-sm">
+                                                Вы имеете аккаунт?{' '}
+                                                <Button onClick={()=>setLorTab(true)}  variant='plain'>
+                                                    Войдите
+                                                </Button>
+                                            </Typography>
+                                        </Stack>
+                                      
+                                    </Stack><Stack gap={4} sx={{ mt: 2 }}>
+                                        <form
+                                            onSubmit={async (event: React.FormEvent<SignInFormElement>) => {
+                                                event.preventDefault();
+                                                const formElements = event.currentTarget.elements;
+                                                const data = {
+                                                    username: formElements.username.value,
+                                                    password: formElements.password.value,
+                                                };
+                                                try {
+                                                    const result = await authService.login(data);
+                                                    console.log(result);
+                                                    navigate("/");
+                                                } catch (error) {
+                                                    console.log('ereeer');
+                                                }
+
+                                            }}
+                                        >
+                                            <FormControl required>
+                                                <FormLabel>E-mail</FormLabel>
+                                                <Input type="email" name="email" />
+                                            </FormControl>
+                                            <FormControl required>
+                                                <FormLabel>Пароль</FormLabel>
+                                                <Input type="password" name="password" />
+                                            </FormControl>
+                                            <Stack gap={4} sx={{ mt: 2 }}>
+                                              
+                                                <Button type="submit" fullWidth>
+                                                    Зарегестрироваться
+                                                </Button>
+                                            </Stack>
+                                        </form>
+                                    </Stack>
+                                </>
+                            )
+                        }
+
+
+
                     </Box>
                     <Box component="footer" sx={{ py: 3 }}>
                         <Typography level="body-xs" textAlign="center">

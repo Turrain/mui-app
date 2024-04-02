@@ -1,46 +1,23 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip } from '@mui/joy';
 import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
 import AudioVisualizer from '../AudioVisualizer';
 import http from "../../utils/api/http-client";
+import { storesContext } from '../../utils/stores';
+import { observer } from 'mobx-react';
 
-type Reaction = {
-    [key: string]: string;
-};
 
-type Company = {
-    name: string;
-    com_limit: number;
-    day_limit: number;
-    sound_file_id: number;
-    status: number;
-    start_time: string;
-    end_time: string;
-    reaction: Reaction;
-    phones_id: number;
-    id: string;
-};
 
-type PhonesList = {
-    name: string;
-    id: number;
-    phones: Array<string>;
-}
 
-type Soundfile = {
-    name: string;
-    id: number;
-    file_path: string;
-}
 
 interface CreateCompanyModalProps {
     open: boolean;
     onClose: () => void;
 }
 
-const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }) => {
+const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, onClose }) => {
     const [companyName, setCompanyName] = useState<string>('');
     const [companyLimit, setCompanyLimit] = useState<string>('90');
     const [dailyLimit, setDailyLimit] = useState<string>('9');
@@ -53,43 +30,26 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
     const { recorderState, ...handlers }: UseRecorder = useRecorder();
     const { audio } = recorderState;
 
-    const [phonesLists, setPhonesLists] = React.useState<PhonesList[]>([])
+    
+
+    const { companyStore, soundfileStore, phoneListStore } = React.useContext(storesContext);
   
-    React.useEffect(() => {
-        http.get('/api/phone-lists')
-        .then((res) => {console.log(res.data); setPhonesLists(res.data)})
-        .catch((error) => console.error('Ошибка при получении данных:', error));
-        
-    }, [])
+   
 
-    const [soundfiles, setSoundfiles] = React.useState<Soundfile[]>([])
-    React.useEffect(() => {
-        http.get('/api/sound-files')
-            .then((response) => setSoundfiles(response.data))
-            .catch((error) => console.error('Ошибка при получении данных:', error));
-    }, [])
-
-
-    const handleSubmit = () => {
-       
-        http.post('http://127.0.0.1:8000/api/companies', {
-            name: companyName,
-            com_limit: parseInt(companyLimit, 10),
-            day_limit: parseInt(dailyLimit, 10),
-            sound_file_id: soundFile,
-            status: 0,
-            days: days,
-            start_time: "09:40:55.446Z", // TODO: parsing 
-            end_time: "09:40:55.446Z",
-            reaction: reaction,
-            phones_id: phoneList
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => console.log(response.data))
-        .catch(error => console.error('Ошибка:', error));
+    const handleSubmit = () => { 
+       companyStore.createOrder( {
+        name: companyName,
+        com_limit: parseInt(companyLimit, 10),
+        day_limit: parseInt(dailyLimit, 10),
+        sound_file_id: soundFile,
+        status: 0,
+        days: days,
+        start_time: "09:40:55.446Z", // TODO: parsing 
+        end_time: "09:40:55.446Z",
+        reaction: reaction,
+        phones_id: phoneList
+    })
+     
         onClose(); // Закрыть модальное окно после отправки формы
     };
 
@@ -146,7 +106,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
                                     <ListItem nested >
                                         <ListSubheader sticky><Button size="sm" sx={{ width: '100%' }}>Добавить базу номеров</Button></ListSubheader>
                                         <List>
-                                            {phonesLists.map((item, index) => (
+                                            {phoneListStore.orders.map((item, index) => (
                                                 <ListItem key={index}>
                                                     <Tooltip title={
                                                         <Box sx={{ p: 1 }}>
@@ -241,7 +201,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
                         </AccordionSummary>
                         <AccordionDetails>
                             <Select value={soundFile} onChange={(_, nv) => { if (nv !== null) setSoundFile(nv) }} startDecorator={<MusicNote />} endDecorator={<Button>Загрузить файл</Button>} indicator=''>
-                                {soundfiles.map((file) => (
+                                {soundfileStore.orders.map((file) => (
                                     <Option key={file.id} value={file.id}>
                                         {file.name}
                                     </Option>
@@ -404,6 +364,6 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
             </ModalDialog>
         </Modal>
     );
-};
+})
 
 export default CreateCompanyModal;

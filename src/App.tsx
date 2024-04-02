@@ -4,20 +4,26 @@ import SignInPage from "./components/pages/SignInPage";
 import MainLayout from "./components/layouts/MainLayout";
 import DashboardPage from "./components/pages/DashboardPage";
 import AuthGuard from "./utils/api/auth.guard";
-
+import { storesContext } from "./utils/stores";
+import { companyStore } from "./utils/stores/CompanyStore";
+import { soundfileStore } from "./utils/stores/SoundfileStore";
+import { phoneListStore } from "./utils/stores/PhoneListStore";
 export default function App() {
     return (
         <CssVarsProvider disableTransitionOnChange>
-            <CssBaseline />
-            <Routes>
-                <Route element={<MainLayout />}>
-                    <Route element={<AuthGuard />}>
-                        <Route path='/' element={<DashboardPage />} />
-                    </Route>
+            <storesContext.Provider value={{ companyStore, phoneListStore, soundfileStore }}>
 
-                    <Route path="/login" element={<SignInPage />} />
-                </Route>
-            </Routes>
+                <CssBaseline />
+                <Routes>
+                    <Route element={<MainLayout />}>
+                        <Route element={<AuthGuard />}>
+                            <Route path='/' element={<DashboardPage />} />
+                        </Route>
+
+                        <Route path="/login" element={<SignInPage />} />
+                    </Route>
+                </Routes>
+            </storesContext.Provider>
         </CssVarsProvider>
     );
 }
