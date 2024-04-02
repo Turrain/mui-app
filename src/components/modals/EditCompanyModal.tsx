@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip } from '@mui/joy';
 import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
-import { useAuth } from '../../App';
+import { useAuth } from '../../server/UseAuth';
+import api from '../../server/api';
 
 type Reaction = {
     [key: string]: string;
@@ -56,14 +57,22 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
     const [phonesLists, setPhonesLists] = React.useState<PhonesList[]>([])
     const auth = useAuth();
     React.useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/phone-lists', {
+        // fetch('http://127.0.0.1:8000/api/phone-lists', {
+        //     headers: {
+        //       'Authorization': `Bearer ${auth.user?.token}`,
+        //     },
+        //   })
+        //     .then((res) => res.json())
+        //     .then((data: PhonesList[]) => setPhonesLists(data))
+        //     .catch((error) => console.error('Ошибка при получении данных:', error));
+        api.get('/api/phone-lists', {
             headers: {
-              'Authorization': `Bearer ${auth.user?.token}`,
+                'Authorization': `Bearer ${auth.user?.token}`,
             },
-          })
-            .then((res) => res.json())
-            .then((data: PhonesList[]) => setPhonesLists(data))
-            .catch((error) => console.error('Ошибка при получении данных:', error));
+        })
+        .then((res) => res.data)
+        .then((data: PhonesList[]) => setPhonesLists(data))
+        .catch((error) => console.error('Ошибка при получении данных:', error));
     }, [])
 
     const [soundfiles, setSoundfiles] = React.useState<Soundfile[]>([])
@@ -80,25 +89,43 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
 
     console.log("id",id)
     React.useEffect(() => {
-        fetch(`http://127.0.0.1:8000/api/companies/${id}`, {
-            headers: {
-              'Authorization': `Bearer ${auth.user?.token}`,
-            },
-          })
-            .then((res) => res.json())
-            .then((data: Company) => {
+        // fetch(`http://127.0.0.1:8000/api/companies/${id}`, {
+        //     headers: {
+        //       'Authorization': `Bearer ${auth.user?.token}`,
+        //     },
+        //   })
+        //     .then((res) => res.json())
+        //     .then((data: Company) => {
 
-                setCompanyName(data.name);
-                setCompanyLimit(data.com_limit.toString());
-                setDailyLimit(data.day_limit.toString());
-                setSoundFile(data.sound_file_id);
-                // setStartTime(data.start_time);
-                // setEndTime(data.end_time);
-                setReaction(data.reaction);
-                setPhoneList(data.phones_id);
-                setDays(data.days)
-            })
-            .catch((error) => console.error('Ошибка при получении данных:', error));
+        //         setCompanyName(data.name);
+        //         setCompanyLimit(data.com_limit.toString());
+        //         setDailyLimit(data.day_limit.toString());
+        //         setSoundFile(data.sound_file_id);
+        //         // setStartTime(data.start_time);
+        //         // setEndTime(data.end_time);
+        //         setReaction(data.reaction);
+        //         setPhoneList(data.phones_id);
+        //         setDays(data.days)
+        //     })
+        //     .catch((error) => console.error('Ошибка при получении данных:', error));
+        api.get(`/api/companies/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${auth.user?.token}`,
+            },
+        })
+        .then((res) => res.data)
+        .then((data: Company) => {
+            setCompanyName(data.name);
+            setCompanyLimit(data.com_limit.toString());
+            setDailyLimit(data.day_limit.toString());
+            setSoundFile(data.sound_file_id);
+            // setStartTime(data.start_time);
+            // setEndTime(data.end_time);
+            setReaction(data.reaction);
+            setPhoneList(data.phones_id);
+            setDays(data.days)
+        })
+        .catch((error) => console.error('Ошибка при получении данных:', error));
     }, [id])
 
     const handleSubmit = () => {

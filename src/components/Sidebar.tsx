@@ -32,7 +32,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { closeSidebar } from '../utils';
-import { useAuth } from '../App';
+import { useAuth } from '../server/UseAuth';
+import { useNavigate } from 'react-router-dom';
 
 function Toggler({
   defaultExpanded = false,
@@ -68,6 +69,7 @@ function Toggler({
 
 export default function Sidebar() {
   const auth = useAuth();
+  const navigate = useNavigate();
   return (
     <Sheet
       className="Sidebar"
@@ -127,7 +129,7 @@ export default function Sidebar() {
         <Typography level="title-lg">Моя ко.</Typography>
         <ColorSchemeToggle sx={{ ml: 'auto' }} />
       </Box>
-    
+
       <Box
         sx={{
           minHeight: 0,
@@ -158,7 +160,7 @@ export default function Sidebar() {
           </ListItem>
 
 
-         
+
 
         </List>
 
@@ -185,7 +187,7 @@ export default function Sidebar() {
             </ListItemButton>
           </ListItem>
         </List>
-       
+
       </Box>
       <Divider />
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -198,8 +200,10 @@ export default function Sidebar() {
           <Typography level="title-sm">{auth.user?.email}</Typography>
           <Typography level="body-xs">{auth.user?.email}</Typography>
         </Box>
-        <IconButton size="sm" variant="plain" color="neutral" onClick={()=>{
-          auth.signout(()=>{})
+        <IconButton size="sm" variant="plain" color="neutral" onClick={() => {
+          auth.logout(() => {
+            navigate('/login', { replace: true });
+          })
         }}>
           <LogoutRoundedIcon />
         </IconButton>

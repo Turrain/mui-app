@@ -4,7 +4,7 @@ import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, For
 import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
 import AudioVisualizer from '../AudioVisualizer';
-import { useAuth } from '../../App';
+import { useAuth } from '../../server/UseAuth';
 
 
 type Reaction = {
@@ -135,6 +135,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({ open, onClose }
                     transition="0.2s"
                     sx={{
                         overflow: 'auto',
+                        scrollbarWidth: 'none',
                         maxWidth: 400,
                         borderRadius: 'md',
                         [`& .${accordionDetailsClasses.content}.${accordionDetailsClasses.expanded}`]:

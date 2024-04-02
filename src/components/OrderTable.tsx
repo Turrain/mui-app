@@ -48,7 +48,7 @@ import AccordionGroup from '@mui/joy/AccordionGroup';
 import { FormHelperText, ListItemButton, ListSubheader } from '@mui/joy';
 import EditCompanyModal from './modals/EditCompanyModal';
 import DeleteCompanyModal from './modals/DeleteCompanyModal';
-import { useAuth } from '../App';
+import { useAuth } from '../server/UseAuth';
 
 type Reaction = {
   [key: string]: string;
@@ -137,7 +137,6 @@ export default function OrderTable() {
 
 
   React.useEffect(() => {
-    console.log(auth.user?.token)
     fetch('http://127.0.0.1:8000/api/companies', {
       headers: {
         'Authorization': `Bearer ${auth.user?.token}`,

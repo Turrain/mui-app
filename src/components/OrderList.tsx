@@ -24,7 +24,9 @@ import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import { useAuth } from '../App';
+import { useAuth } from '../server/UseAuth';
+import api from '../server/api';
+
 type Reaction = {
   [key: string]: string;
 };
@@ -67,12 +69,14 @@ export default function OrderList() {
   const [orders, setOrders] = React.useState<DataOrders>([]);
   const auth = useAuth();
   React.useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/companies', {
+    console.log(auth);
+    
+    api.get('http://127.0.0.1:8000/api/companies', {
       headers: {
         'Authorization': `Bearer ${auth.user?.token}`,
       },
     })
-      .then((res) => res.json())
+      .then((res) => res.data)
       .then((data: DataOrders) => setOrders(data))
       .catch((error) => console.error('Ошибка при получении данных:', error));
   }, [])

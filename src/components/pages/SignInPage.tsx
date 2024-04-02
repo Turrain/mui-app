@@ -15,7 +15,7 @@ import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../App';
+import { useAuth } from '../../server/UseAuth';
 
 interface FormElements extends HTMLFormControlsCollection {
     username: HTMLInputElement;
@@ -52,7 +52,8 @@ function ColorSchemeToggle(props: IconButtonProps) {
 
 export default function SignInPage() {
     let location = useLocation();
-    let auth = useAuth();
+    // let auth = useAuth();
+    let auth = useAuth()
     let navigate = useNavigate();
     return (
         <Box>
@@ -166,9 +167,13 @@ export default function SignInPage() {
                                
                                     let from = location.state?.from?.pathname || "/";
 
-                                    auth.signin(data, () => {
-                                        navigate("/", { replace: true });
-                                    });
+                                    // auth.signin(data, () => {
+                                    //     navigate("/", { replace: true });
+                                    // });
+
+                                    auth.login(data, () => {
+                                        navigate('/', { replace: true });
+                                    })
                                  
                                 }}
                             >
