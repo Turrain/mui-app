@@ -20,12 +20,11 @@ class PhoneListStore {
     }
     
     createOrder(newData: any) {
-        http.post('/api/companies', {
+        http.post('/api/companies', newData, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(newData),
         })
             .then(response => response.data)
             .then(() => this.fetchOrders()) // Перезагрузка данных после добавления
@@ -33,12 +32,10 @@ class PhoneListStore {
     }
 
     updateOrder(id: number, updatedData: any) {
-        http.post(`/api/phone-lists/${id}`, {
-            method: 'PUT',
+        http.put(`/api/phone-lists/${id}`,updatedData, {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(updatedData),
         })
             .then(response => response.data)
             .then(() => this.fetchOrders()) // Перезагрузка данных после обновления
@@ -46,9 +43,7 @@ class PhoneListStore {
     }
 
     deleteOrder(id: number) {
-        http.post(`/api/phone-lists/${id}`, {
-            method: 'DELETE',
-        })
+        http.delete_(`/api/phone-lists/${id}`)
             .then(() => this.fetchOrders()) // Перезагрузка данных после удаления
             .catch(error => console.error('Ошибка при удалении:', error));
     }

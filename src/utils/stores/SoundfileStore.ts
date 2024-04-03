@@ -20,24 +20,22 @@ class SoundfileStore {
       .catch(error => console.error('Ошибка при получении данных:', error));
   }
   createOrder(newData: any) {
-    http.post('/api/companies', {
+    http.post('/api/companies',newData, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newData),
+ 
     })
       .then(response => response.data)
       .then(() => this.fetchOrders()) // Перезагрузка данных после добавления
       .catch(error => console.error('Ошибка при добавлении:', error));
   }
   updateOrder(id: number, updatedData: any) {
-    http.post(`/api/sound-files/${id}`, {
-      method: 'PUT',
+    http.put(`/api/sound-files/${id}`,updatedData, {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(updatedData),
     })
       .then(response => response.data)
       .then(() => this.fetchOrders()) // Перезагрузка данных после обновления
@@ -45,9 +43,7 @@ class SoundfileStore {
   }
 
   deleteOrder(id: number) {
-    http.post(`/api/sound-files/${id}`, {
-      method: 'DELETE',
-    })
+    http.delete_(`/api/sound-files/${id}`)
       .then(() => this.fetchOrders()) // Перезагрузка данных после удаления
       .catch(error => console.error('Ошибка при удалении:', error));
   }

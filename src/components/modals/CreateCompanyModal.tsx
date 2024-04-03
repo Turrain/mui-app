@@ -1,12 +1,14 @@
 
 import React, { useEffect, useState } from 'react';
-import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip } from '@mui/joy';
-import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
+import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip, ListDivider, IconButton } from '@mui/joy';
+import { CallToAction, Create, Delete, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
 import AudioVisualizer from '../AudioVisualizer';
 import http from "../../utils/api/http-client";
 import { storesContext } from '../../utils/stores';
 import { observer } from 'mobx-react';
+import CreatePhoneModal from './CreatePhoneModal';
+import EditPhoneModal from './EditPhoneModal';
 
 
 
@@ -34,7 +36,14 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
 
     const { companyStore, soundfileStore, phoneListStore } = React.useContext(storesContext);
   
-   
+    const [createPhoneModalOpen, setCreatePhoneModalOpen] = React.useState<boolean>(false);
+    const [editPhoneModalOpen, setEditPhoneModalOpen] = React.useState<boolean>(false);
+
+    const [editPhoneModalIndex, setEditPhoneModalIndex] = React.useState<number>(0);
+    const handleDeletePhoneList = (index: number) => {
+        phoneListStore.deleteOrder(phoneListStore.orders[index].id);
+    }
+  
 
     const handleSubmit = () => { 
        companyStore.createOrder( {
@@ -104,27 +113,64 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                             >
                                 <List>
                                     <ListItem nested >
-                                        <ListSubheader sticky><Button size="sm" sx={{ width: '100%' }}>Добавить базу номеров</Button></ListSubheader>
+                                        <ListSubheader sticky>
+                                        <Button size="sm" sx={{ width: '100%' }} onClick={() => setCreatePhoneModalOpen(true)}>
+                                                Добавить базу номеров
+                                            </Button>
+                                            </ListSubheader>
                                         <List>
-                                            {phoneListStore.orders.map((item, index) => (
-                                                <ListItem key={index}>
-                                                    <Tooltip title={
-                                                        <Box sx={{ p: 1 }}>
-                                                            {item.phones.slice(0, 5).map((phone, phoneIndex) => (
-                                                                <Box key={phoneIndex} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                                    <PhoneAndroid color="primary" />
-                                                                    <Typography fontWeight="lg" fontSize="sm" sx={{ color: 'text.secondary' }}>
-                                                                        {phone}
-                                                                    </Typography>
-                                                                </Box>
-                                                            ))}
-                                                        </Box>
-                                                    } placement="right" variant="outlined" arrow>
-                                                        <ListItemButton color={phoneList == item.id ? "success" : "neutral"} onClick={() => { setPhoneList(item.id) }}>{item.name}</ListItemButton>
-                                                    </Tooltip>
-
-                                                </ListItem>
-                                            ))}
+                                        {
+                                                phoneListStore.orders.length > 0 ? (
+                                                    phoneListStore.orders.map((item, index) => (
+                                                        <Stack key={index}>
+                                                            <ListItem endAction={
+                                                                <Stack direction={'row'}>
+                                                                    <IconButton
+                                                                        aria-label="Edit"
+                                                                        size="sm"
+                                                                        variant="plain"
+                                                                        color="success"
+                                                                        onClick={() => {setEditPhoneModalOpen(true); setEditPhoneModalIndex(index)}}
+                                                                    >
+                                                                        <Create />
+                                                                    </IconButton>
+                                                                    <IconButton
+                                                                        aria-label="Delete"
+                                                                        size="sm"
+                                                                        variant="plain"
+                                                                        color="danger"
+                                                                        onClick={() => {handleDeletePhoneList(index)}}
+                                                                    >
+                                                                        <Delete />
+                                                                    </IconButton>
+                                                                </Stack>
+                                                            }>
+                                                                <Tooltip title={
+                                                                    <Box sx={{ p: 1 }}>
+                                                                        {item.phones.slice(0, 5).map((phone, phoneIndex) => (
+                                                                            <Box key={phoneIndex} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                                <PhoneAndroid color="primary" />
+                                                                                <Typography fontWeight="lg" fontSize="sm" sx={{ color: 'text.secondary' }}>
+                                                                                    {phone}
+                                                                                </Typography>
+                                                                            </Box>
+                                                                        ))}
+                                                                    </Box>
+                                                                } placement="right" variant="outlined" arrow>
+                                                                    <ListItemContent>{item.name}</ListItemContent>
+                                                                </Tooltip>
+                                                            </ListItem>
+                                                            {phoneListStore.orders.length !== 1 && <ListDivider inset={'gutter'} />}
+                                                        </Stack>
+                                                    ))
+                                                ) : (
+                                                    <ListItem>
+                                                        <ListItemContent>
+                                                            <Typography level='title-sm' textAlign={'center'}>Пусто</Typography>
+                                                        </ListItemContent>
+                                                    </ListItem>
+                                                )
+                                            }
                                         </List>
                                     </ListItem>
                                 </List>
@@ -360,6 +406,8 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                         </AccordionDetails>
                     </Accordion>
                 </AccordionGroup>
+                <CreatePhoneModal open={createPhoneModalOpen} onClose={() => setCreatePhoneModalOpen(false)} />
+                <EditPhoneModal open={editPhoneModalOpen} onClose={() => setEditPhoneModalOpen(false)} index={editPhoneModalIndex} />
                 <Button onClick={handleSubmit}>Создать</Button>
             </ModalDialog>
         </Modal>

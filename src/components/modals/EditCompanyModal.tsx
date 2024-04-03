@@ -7,35 +7,6 @@ import http from "../../utils/api/http-client";
 import authService from '../../utils/api/auth.service';
 
 
-type Reaction = {
-    [key: string]: string;
-};
-
-type Company = {
-    name: string;
-    com_limit: number;
-    day_limit: number;
-    sound_file_id: number;
-    status: number;
-    start_time: string;
-    end_time: string;
-    reaction: Reaction;
-    phones_id: number;
-    days: number[];
-    id: string;
-};
-
-type PhonesList = {
-    name: string;
-    id: number;
-    phones: Array<string>;
-}
-
-type Soundfile = {
-    name: string;
-    id: number;
-    file_path: string;
-}
 
 interface CreateCompanyModalProps {
     id: number;

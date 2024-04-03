@@ -32,8 +32,10 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import authService from '../utils/api/auth.service';
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { closeSidebar } from '../utils';
+import { storesContext } from '../utils/stores';
 
 export default function Sidebar() {
+  const { userStore } = React.useContext(storesContext);
   return (
     <Sheet
       className="Sidebar"
@@ -156,8 +158,8 @@ export default function Sidebar() {
           src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286"
         />
         <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Typography level="title-sm">eee</Typography>
-          <Typography level="body-xs">eee</Typography>
+          <Typography level="title-sm">{userStore.user?.user_data?.email}</Typography>
+          <Typography level="body-xs">test</Typography>
         </Box>
         <IconButton size="sm" variant="plain" color="neutral" onClick={()=>{
           authService.logout()

@@ -4,29 +4,28 @@ import auth from "../api/auth.service";
 import { userStore } from "./UserStore";
 //TODO: Fix all stores
 class CompanyStore {
-    orders: Company[]  = [];
+    orders: Company[] = [];
     current_page = 0; //TODO: pagination
     constructor() {
         makeAutoObservable(this);
-        userStore.subscribeToUserChanges(()=>this.fetchOrders());
-        
+        userStore.subscribeToUserChanges(() => this.fetchOrders());
+
         this.fetchOrders();
     }
 
     fetchOrders() {
-        if(auth.getAuthUser() !== null)
-        http.get('/api/companies')
-            .then(response => {this.setOrders(response.data)})
-            .catch(error => console.error('Ошибка при получении данных:', error));
+        if (auth.getAuthUser() !== null)
+            http.get('/api/companies')
+                .then(response => { this.setOrders(response.data) })
+                .catch(error => console.error('Ошибка при получении данных:', error));
     }
 
     createOrder(newData: any) {
         console.log(newData)
-        http.post('/api/companies',newData,  {
+        http.post('/api/companies', newData, {
             headers: {
                 'Content-Type': 'application/json',
             },
-    
         })
             .then(response => response.data)
             .then(() => this.fetchOrders()) // Перезагрузка данных после добавления
@@ -34,8 +33,7 @@ class CompanyStore {
     }
 
     updateOrder(id: number, updatedData: any) {
-        http.post(`/api/companies/${id}`,updatedData, {
-            method: 'PUT',
+        http.put(`/api/companies/${id}`, updatedData, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -46,9 +44,7 @@ class CompanyStore {
     }
 
     deleteOrder(id: number) {
-        http.post(`/api/companies/${id}`, {
-            method: 'DELETE',
-        })
+        http.delete_(`/api/companies/${id}`)
             .then(() => this.fetchOrders()) // Перезагрузка данных после удаления
             .catch(error => console.error('Ошибка при удалении:', error));
     }

@@ -168,16 +168,12 @@ export default function SignInPage() {
                                             onSubmit={async (event: React.FormEvent<SignInFormElement>) => {
                                                 event.preventDefault();
                                                 const formElements = event.currentTarget.elements;
-                                                const data = {
-                                                    username: formElements.username.value,
-                                                    password: formElements.password.value,
-                                                };
                                                 try {
                                                     await userStore.login(formElements.username.value, formElements.password.value)
                                                     if(userStore.isLoggedIn)
                                                         navigate("/");
                                                 } catch (error) {
-                                                    console.log('ereeer', error);
+                                                    console.log('err', error);
                                                 }
 
                                             }}

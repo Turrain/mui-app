@@ -5,8 +5,9 @@ import { IMaskInput } from 'react-imask';
 import { observer } from 'mobx-react';
 import { storesContext } from '../../utils/stores';
 
-interface CreatePhoneModalProps {
+interface EditPhoneModalProps {
     open: boolean;
+    index: number;
     onClose: () => void;
 }
 
@@ -31,7 +32,7 @@ const TextMaskAdapter = React.forwardRef<HTMLElement, CustomProps>(
     }
 )
 
-const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onClose }) => {
+const EditPhoneModal: React.FC<EditPhoneModalProps> = observer(({ open, onClose, index }) => {
     const [phonesList, setPhonesList] = React.useState<string[]>([]);
     const [phoneNumber, setPhoneNumber] = React.useState<string>('');
     const [phoneBase, setPhoneBase] = React.useState<string>('');
@@ -41,10 +42,10 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
     const { phoneListStore } = React.useContext(storesContext);
 
     const handleSubmit = () => {
-        phoneListStore.createOrder({
-            phones: phonesList,
-            name: phoneBase,
-        });
+        // phoneListStore.createOrder({
+        //     phones: phonesList,
+        //     name: phoneBase,
+        // });
         onClose(); // Закрыть модальное окно после отправки формы
     };
 
@@ -198,10 +199,10 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
                             )}
                     </List>
                 </Sheet>
-                <Button onClick={handleSubmit}>Создать</Button>
+                <Button onClick={handleSubmit}>Изменить</Button>
             </ModalDialog>
         </Modal>
     );
 })
 
-export default CreatePhoneModal;
+export default EditPhoneModal;

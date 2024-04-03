@@ -28,8 +28,15 @@ const register = (data:UserCreate) => {
     return http.post('/auth/register', data);
 }
 
-const profile = () => {
-    return http.get('/users/me');
+const profile = async () => {
+    let res = (await http.get('/users/me')).data as UserCreate;
+    let i = localStorage.getItem('authUser')
+    if(i !== null){
+        const item: User = JSON.parse(i);
+        item.user_data = res
+        localStorage.setItem('authUser', JSON.stringify(item));
+    }
+    return res;
 }
 
 const logout = () => {

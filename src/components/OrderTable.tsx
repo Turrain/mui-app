@@ -132,11 +132,7 @@ const OrderTable = observer(() => {
   const [selectedId, setSelectedId] = React.useState(0);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-
-
   const [searchQuery, setSearchQuery] = React.useState('');
-
   const { companyStore } = React.useContext(storesContext);
   console.log("ccc store",companyStore)
   const handleRequestSort = (

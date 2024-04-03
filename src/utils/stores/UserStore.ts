@@ -14,9 +14,15 @@ class UserStore {
     this.subscribers.forEach(callback => callback());
   }
 
-  setUser(userData: User | null) {
+   async setUser(userData: User | null) {
+    
     this.user = userData;
-
+    console.log("user", this.user)
+    if(this.user !== null && this.user?.user_data == undefined)
+    {
+      this.user.user_data = await authService.profile()
+      console.log("user", this.user.user_data )
+    }
   }
 
   constructor() {
