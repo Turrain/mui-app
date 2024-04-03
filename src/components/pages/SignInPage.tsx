@@ -16,7 +16,6 @@ import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import { useLocation, useNavigate } from 'react-router-dom';
 import authService from '../../utils/api/auth.service';
-import { Tab, TabList, TabPanel, Tabs } from '@mui/joy';
 import { storesContext } from '../../utils/stores';
 
 interface FormElements extends HTMLFormControlsCollection {

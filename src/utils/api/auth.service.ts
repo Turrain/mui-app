@@ -29,8 +29,8 @@ const register = (data:UserCreate) => {
 }
 
 const profile = async () => {
-    let res = (await http.get('/users/me')).data as UserCreate;
-    let i = localStorage.getItem('authUser')
+    const res = (await http.get('/users/me')).data as UserCreate;
+    const i = localStorage.getItem('authUser')
     if(i !== null){
         const item: User = JSON.parse(i);
         item.user_data = res

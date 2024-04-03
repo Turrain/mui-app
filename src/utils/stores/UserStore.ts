@@ -3,14 +3,13 @@ import authService from "../api/auth.service";
 
 class UserStore {
   user: User | null = null;
-  subscribers: Function[] = [];
+  subscribers: (() => void)[]= [];
 
-  subscribeToUserChanges(callback: Function) {
+  subscribeToUserChanges(callback: ()=> void) {
     this.subscribers.push(callback);
   }
 
   notifySubscribers() {
-    console.log("dsdsadsdasdas")
     this.subscribers.forEach(callback => callback());
   }
 

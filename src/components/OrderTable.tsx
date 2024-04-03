@@ -383,10 +383,10 @@ const OrderTable = observer(() => {
             '--TableCell-headBackground': 'var(--joy-palette-background-level1)',
             '--TableCell-selectedBackground': (theme) =>
               theme.vars.palette.success.softBg,
-            '& thead th:nth-child(1)': {
+            '& thead th:nth-of-type(1)': {
               width: '40px',
             },
-            '& thead th:nth-child(2)': {
+            '& thead th:nth-of-type(2)': {
               width: '5%',
             },
           }}

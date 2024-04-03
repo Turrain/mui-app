@@ -31,7 +31,9 @@ class CompanyStore {
             .then(() => this.fetchOrders()) // Перезагрузка данных после добавления
             .catch(error => console.error('Ошибка при добавлении:', error));
     }
-
+    getOrderById(id: number): Company | undefined {
+        return this.orders.find(order => order.id === id);
+    }
     updateOrder(id: number, updatedData: any) {
         http.put(`/api/companies/${id}`, updatedData, {
             headers: {

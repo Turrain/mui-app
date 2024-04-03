@@ -5,6 +5,7 @@ import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } fr
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
 import http from "../../utils/api/http-client";
 import authService from '../../utils/api/auth.service';
+import { storesContext } from '../../utils/stores';
 
 
 
@@ -26,33 +27,13 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
     const [days, setDays] = React.useState<number[]>([]);
     const { recorderState, ...handlers }: UseRecorder = useRecorder();
     const { audio } = recorderState;
-    const [phonesLists, setPhonesLists] = React.useState<PhonesList[]>([])
+
+    const { companyStore, soundfileStore, phoneListStore } = React.useContext(storesContext);
+  
 
     React.useEffect(() => {
-        http.get('/api/phone-lists')
-            .then((response) => setPhonesLists(response.data))
-            .catch((error) => console.error('Ошибка при получении данных:', error));
-    }, [])
-    const [soundfiles, setSoundfiles] = React.useState<Soundfile[]>([])
-    React.useEffect(() => {
-        http.get('http://127.0.0.1:8000/api/sound-files', {
-            headers: {
-              'Authorization': `Bearer ${authService.getAuthUser()?.access_token}`,
-            },
-          })
-            .then((response) => setSoundfiles(response.data))
-            .catch((error) => console.error('Ошибка при получении данных:', error));
-    }, [])
-
-    console.log("id",id)
-    React.useEffect(() => {
-        http.get(`http://127.0.0.1:8000/api/companies/${id}`, {
-            headers: {
-              'Authorization': `Bearer ${authService.getAuthUser()?.access_token}`,
-            },
-        })
-        .then((response) => {
-            const data: Company = response.data;
+        const data = companyStore.getOrderById(id);
+        if(data){
 
             setCompanyName(data.name);
             setCompanyLimit(data.com_limit.toString());
@@ -63,30 +44,22 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
             setReaction(data.reaction);
             setPhoneList(data.phones_id);
             setDays(data.days);
-        })
-        .catch((error) => console.error('Ошибка при получении данных:', error));
+        }
     }, [id])
 
     const handleSubmit = () => {
-     
-        http.put(`http://127.0.0.1:8000/api/companies/${id}`, {
+        companyStore.updateOrder(id, {
             name: companyName,
             com_limit: parseInt(companyLimit, 10),
             day_limit: parseInt(dailyLimit, 10),
             sound_file_id: soundFile,
             status: 0,
             days: days,
-            start_time: "09:40:55.446Z", // TODO: parsing
+            start_time: "09:40:55.446Z", // TODO: parsing 
             end_time: "09:40:55.446Z",
             reaction: reaction,
             phones_id: phoneList
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-            }
         })
-        .then(response => console.log(response.data))
-        .catch(error => console.error('Ошибка:', error));
         onClose(); // Закрыть модальное окно после отправки формы
     };
 
@@ -143,7 +116,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
                                     <ListItem nested >
                                         <ListSubheader sticky><Button size="sm" sx={{ width: '100%' }}>Добавить базу номеров</Button></ListSubheader>
                                         <List>
-                                            {phonesLists.map((item, index) => (
+                                            {phoneListStore.orders.map((item, index) => (
                                                 <ListItem key={index}>
                                                     <Tooltip title={
                                                         <Box sx={{ p: 1 }}>
@@ -238,7 +211,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
                         </AccordionSummary>
                         <AccordionDetails>
                             <Select value={soundFile} onChange={(_, nv) => { if (nv !== null) setSoundFile(nv) }} startDecorator={<MusicNote />} endDecorator={<Button>Загрузить файл</Button>} indicator=''>
-                                {soundfiles.map((file) => (
+                                {soundfileStore.orders.map((file) => (
                                     <Option key={file.id} value={file.id}>
                                         {file.name}
                                     </Option>

@@ -1,6 +1,6 @@
 interface Reaction {
     [key: string]: string;
-};
+}
 
 interface Company {
     name: string;
@@ -12,8 +12,9 @@ interface Company {
     end_time: string;
     reaction: Reaction;
     phones_id: number;
-    id: string;
-};
+    id: number;
+    days: number[]
+}
 
 interface PhonesList {
     name: string;

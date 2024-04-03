@@ -29,9 +29,9 @@ instance.interceptors.response.use((response) => {
   }
 });
 
-const get = (url: string, params?:any, config = {}) => instance.get(url, { params, ...config });
-const post = (url: string, data?:any, config = {}) => instance.post(url, data, config);
-const put = (url: string, data?: any, config = {}) => instance.put(url, data, config);
+const get = (url: string, params?:unknown, config = {}) => instance.get(url, { params, ...config });
+const post = (url: string, data?:unknown, config = {}) => instance.post(url, data, config);
+const put = (url: string, data?: unknown, config = {}) => instance.put(url, data, config);
 const delete_ = (url: string, config = {}) => instance.delete(url, config);
 
 const methods = { get, post, put, delete_ };

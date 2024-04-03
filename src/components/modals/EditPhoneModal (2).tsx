@@ -41,11 +41,16 @@ const EditPhoneModal: React.FC<EditPhoneModalProps> = observer(({ open, onClose,
 
     const { phoneListStore } = React.useContext(storesContext);
 
+    React.useEffect(() => {
+        setPhoneBase(phoneListStore.orders[index].name);
+        setPhonesList(phoneListStore.orders[index].phones);
+    }, []);
+
     const handleSubmit = () => {
-        // phoneListStore.createOrder({
-        //     phones: phonesList,
-        //     name: phoneBase,
-        // });
+        phoneListStore.updateOrder(phoneListStore.orders[index].id, {
+            phones: phonesList,
+            name: phoneBase
+        });
         onClose(); // Закрыть модальное окно после отправки формы
     };
 
