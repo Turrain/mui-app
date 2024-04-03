@@ -1,16 +1,19 @@
 import { makeAutoObservable } from "mobx";
 import http from "../api/http-client"
-
-
+import auth from "../api/auth.service";
+import { userStore } from "./UserStore";
 class PhoneListStore {
     orders: PhonesList[] = [];
 
     constructor() {
         makeAutoObservable(this);
+        userStore.subscribeToUserChanges(()=>this.fetchOrders());
         this.fetchOrders();
+    
     }
 
     fetchOrders() {
+        if(auth.getAuthUser() !== null)
         http.get('/api/phone-lists')
             .then(response => {this.setOrders(response.data); console.log(this.orders)})
             .catch(error => console.error('Ошибка при получении данных:', error));

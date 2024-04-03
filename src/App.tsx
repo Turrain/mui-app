@@ -8,10 +8,11 @@ import { storesContext } from "./utils/stores";
 import { companyStore } from "./utils/stores/CompanyStore";
 import { soundfileStore } from "./utils/stores/SoundfileStore";
 import { phoneListStore } from "./utils/stores/PhoneListStore";
+import { userStore } from "./utils/stores/UserStore";
 export default function App() {
     return (
         <CssVarsProvider disableTransitionOnChange>
-            <storesContext.Provider value={{ companyStore, phoneListStore, soundfileStore }}>
+            <storesContext.Provider value={{ companyStore, phoneListStore, soundfileStore, userStore }}>
 
                 <CssBaseline />
                 <Routes>

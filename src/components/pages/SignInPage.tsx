@@ -17,6 +17,7 @@ import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import { useLocation, useNavigate } from 'react-router-dom';
 import authService from '../../utils/api/auth.service';
 import { Tab, TabList, TabPanel, Tabs } from '@mui/joy';
+import { storesContext } from '../../utils/stores';
 
 interface FormElements extends HTMLFormControlsCollection {
     username: HTMLInputElement;
@@ -54,6 +55,7 @@ function ColorSchemeToggle(props: IconButtonProps) {
 export default function SignInPage() {
     const location = useLocation();
     const navigate = useNavigate();
+    const { userStore } = React.useContext(storesContext);
     const from = location.state?.from?.pathname || "/";
     const [lorTab, setLorTab] = React.useState(true)
     React.useEffect(() => {
@@ -171,11 +173,11 @@ export default function SignInPage() {
                                                     password: formElements.password.value,
                                                 };
                                                 try {
-                                                    const result = await authService.login(data);
-                                                    console.log(result);
-                                                    navigate("/");
+                                                    await userStore.login(formElements.username.value, formElements.password.value)
+                                                    if(userStore.isLoggedIn)
+                                                        navigate("/");
                                                 } catch (error) {
-                                                    console.log('ereeer');
+                                                    console.log('ereeer', error);
                                                 }
 
                                             }}

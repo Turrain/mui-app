@@ -1,23 +1,6 @@
 import http from "./http-client";
 
-interface UserCreate {
-    id: number;
-    email: string;
-    is_active: boolean;
-    is_superuser: boolean;
-    is_verified: boolean;
-}
 
-interface User {
-    access_token: string;
-    token_type: string;
-    user_data?: UserCreate
-} 
-
-interface UserLogin { 
-    username: string;
-    password: string;
-}
 
 const login = async (data: UserLogin) => {
     try {
