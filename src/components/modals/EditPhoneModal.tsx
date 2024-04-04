@@ -6,8 +6,8 @@ import { observer } from 'mobx-react';
 import { storesContext } from '../../utils/stores';
 
 interface EditPhoneModalProps {
+    id: number;
     open: boolean;
-    index: number;
     onClose: () => void;
 }
 
@@ -32,7 +32,7 @@ const TextMaskAdapter = React.forwardRef<HTMLElement, CustomProps>(
     }
 )
 
-const EditPhoneModal: React.FC<EditPhoneModalProps> = observer(({ open, onClose, index }) => {
+const EditPhoneModal: React.FC<EditPhoneModalProps> = observer(({ id, open, onClose }) => {
     const [phonesList, setPhonesList] = React.useState<string[]>([]);
     const [phoneNumber, setPhoneNumber] = React.useState<string>('');
     const [phoneBase, setPhoneBase] = React.useState<string>('');
@@ -42,12 +42,15 @@ const EditPhoneModal: React.FC<EditPhoneModalProps> = observer(({ open, onClose,
     const { phoneListStore } = React.useContext(storesContext);
 
     React.useEffect(() => {
-        setPhoneBase(phoneListStore.orders[index].name);
-        setPhonesList(phoneListStore.orders[index].phones);
-    }, []);
+        const data = phoneListStore.getOrderById(id);
+        if(data) {
+            setPhoneBase(data.name);
+            setPhonesList(data.phones);
+        }
+    }, [id]);
 
     const handleSubmit = () => {
-        phoneListStore.updateOrder(phoneListStore.orders[index].id, {
+        phoneListStore.updateOrder(id, {
             phones: phonesList,
             name: phoneBase
         });

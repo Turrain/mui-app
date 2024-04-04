@@ -20,7 +20,7 @@ class PhoneListStore {
     }
     
     createOrder(newData: any) {
-        http.post('/api/companies', newData, {
+        http.post('/api/phone-lists', newData, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ class PhoneListStore {
     }
 
     updateOrder(id: number, updatedData: any) {
-        http.put(`/api/phone-lists/${id}`,updatedData, {
+        http.put(`/api/phone-lists/${id}`, updatedData, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -48,6 +48,9 @@ class PhoneListStore {
             .catch(error => console.error('Ошибка при удалении:', error));
     }
 
+    getOrderById(id: number): PhonesList | undefined {
+        return this.orders.find(order => order.id === id);
+    }
 
     setOrders(data: any) {
         this.orders = data;

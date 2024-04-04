@@ -20,7 +20,7 @@ class SoundfileStore {
       .catch(error => console.error('Ошибка при получении данных:', error));
   }
   createOrder(newData: any) {
-    http.post('/api/companies',newData, {
+    http.post('/api/sound-files', newData, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,6 +46,10 @@ class SoundfileStore {
     http.delete_(`/api/sound-files/${id}`)
       .then(() => this.fetchOrders()) // Перезагрузка данных после удаления
       .catch(error => console.error('Ошибка при удалении:', error));
+  }
+
+  getOrderById(id: number): Soundfile | undefined {
+    return this.orders.find(order => order.id === id);
   }
 
   setOrders(data: any) {

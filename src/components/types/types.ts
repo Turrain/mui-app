@@ -23,8 +23,8 @@ interface PhonesList {
 }
 
 interface Soundfile {
-    name: string;
     id: number;
+    name: string;
     file_path: string;
 }
 
@@ -46,3 +46,8 @@ interface UserLogin {
     username: string;
     password: string;
 }
+
+interface Audio {
+    key: string;
+    audio: string;
+};

@@ -1,4 +1,4 @@
-import { Circle, Delete, PlayArrow, RecordVoiceOver, Settings, Stop } from "@mui/icons-material";
+import { Circle, Delete, PlayArrow, RecordVoiceOver, Settings, Stop, Upload } from "@mui/icons-material";
 import { Box, Button, ButtonGroup, IconButton, LinearProgress, Sheet, Stack, Typography } from "@mui/joy";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
@@ -31,11 +31,6 @@ export type RecorderControlsProps = {
 
 export type RecordingsListProps = {
     audio: string | null;
-};
-
-export type Audio = {
-    key: string;
-    audio: string;
 };
 
 export type Interval = null | number | ReturnType<typeof setInterval>;
@@ -245,6 +240,12 @@ export default function RecordingsList({ audio }: RecordingsListProps) {
                                     <LinearProgress value={progress[record.key]} determinate sx={{ width: '100%' }} id={`progress-${record.key}`} />
                                 </Box>
                                 <IconButton
+                                    color="primary"
+                                    onClick={() => {}}
+                                >
+                                    <Upload />
+                                </IconButton>
+                                <IconButton
                                     color="danger"
                                     onClick={() => deleteAudio(record.key)}
                                 >
@@ -298,11 +299,11 @@ export function AudioRecorder({ recorderState, handlers }: RecorderControlsProps
 
                 </div>
                 <Box display="flex" sx={{ my: 1 }} justifyContent="center" alignItems="center" flexDirection="column">
-                        
-                        <IconButton 
+                    <IconButton 
                         sx={{width: 40}}
                         color={recordingSeconds === 0 ? "danger" : "danger"} 
-                        onClick={recordingSeconds === 0 ? startRecording : saveRecording}>
+                        onClick={recordingSeconds === 0 ? startRecording : saveRecording}
+                    >
                         {recordingSeconds === 0 ? <Circle /> : <Stop />}
                     </IconButton>
                 <Typography

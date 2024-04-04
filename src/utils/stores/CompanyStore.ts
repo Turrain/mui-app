@@ -2,6 +2,8 @@ import { makeAutoObservable } from "mobx";
 import http from "../api/http-client"
 import auth from "../api/auth.service";
 import { userStore } from "./UserStore";
+
+
 //TODO: Fix all stores
 class CompanyStore {
     orders: Company[] = [];
@@ -31,9 +33,11 @@ class CompanyStore {
             .then(() => this.fetchOrders()) // Перезагрузка данных после добавления
             .catch(error => console.error('Ошибка при добавлении:', error));
     }
+
     getOrderById(id: number): Company | undefined {
         return this.orders.find(order => order.id === id);
     }
+
     updateOrder(id: number, updatedData: any) {
         http.put(`/api/companies/${id}`, updatedData, {
             headers: {

@@ -51,6 +51,8 @@ import DeleteCompanyModal from './modals/DeleteCompanyModal';
 import http from "../utils/api/http-client";
 import { storesContext } from '../utils/stores';
 import { observer } from 'mobx-react';
+import { runInAction } from 'mobx';
+import { soundfileStore } from '../utils/stores/SoundfileStore';
 
 
 type Reaction = {
@@ -134,7 +136,7 @@ const OrderTable = observer(() => {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchQuery, setSearchQuery] = React.useState('');
   const { companyStore } = React.useContext(storesContext);
-  console.log("ccc store",companyStore)
+  // console.log("ccc store",companyStore)
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: keyof DataOrder,
@@ -146,14 +148,14 @@ const OrderTable = observer(() => {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = companyStore.orders.map((n) => n.id);
+      const newSelected = companyStore.orders.map((n) => n.id.toString());
       setSelected(newSelected);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, name: any) => {
+  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
 
@@ -256,6 +258,11 @@ const OrderTable = observer(() => {
     return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
   };
 
+  const handleStartStopStatus = (event: React.MouseEvent<unknown>, id: number) => {
+    event.stopPropagation();
+    companyStore.updateOrder(id, { ...companyStore.getOrderById(id), status: companyStore.getOrderById(id)?.status ? 0 : 1 });
+  }
+
   // Handle search input
   const filteredOrders = companyStore.orders.filter(orderr => {
     return orderr.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -264,6 +271,18 @@ const OrderTable = observer(() => {
   const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
+
+  // Handle play company sound
+
+  //сделай комонент который являтеся оберткой возле тэга аудио на основе кнопки где имеет события стоп и старт
+  //основа для этого файл аудио рекордер
+
+  const handlePlayAudio = (event: React.MouseEvent<unknown>) => {
+    event.stopPropagation();
+    const audioElement = document.getElementById(`singleo`) as HTMLAudioElement;
+    
+    if (audioElement) audioElement.play();
+  }
 
   const renderFilters = () => (
     <React.Fragment>
@@ -334,8 +353,8 @@ const OrderTable = observer(() => {
             </Sheet>
           </ModalDialog>
         </Modal>
-        <EditCompanyModal id={selectedId} open={editModal} onClose={()=>setEditModal(false)}/>
-        <DeleteCompanyModal id={selectedId} open={deleteModal} onClose={()=>setDeleteModal(false)}/>
+        <EditCompanyModal id={selectedId} open={editModal} onClose={() => setEditModal(false)} />
+        <DeleteCompanyModal id={selectedId} open={deleteModal} onClose={() => setDeleteModal(false)} />
 
       </Sheet>
       <Box
@@ -353,13 +372,13 @@ const OrderTable = observer(() => {
       >
         <FormControl sx={{ flex: 1 }} size="sm">
           <FormLabel>Поиск по названию</FormLabel>
-          <Input 
-            size="sm" 
-            placeholder="Поиск" 
-            startDecorator={<SearchIcon />} 
+          <Input
+            size="sm"
+            placeholder="Поиск"
+            startDecorator={<SearchIcon />}
             value={searchQuery}
             onChange={handleSearchInputChange}
-            />
+          />
         </FormControl>
         {/* {renderFilters()} */}
       </Box>
@@ -456,20 +475,20 @@ const OrderTable = observer(() => {
 
                 return (
                   <tr
-                    onClick={(event) => handleClick(event, row.id)}
+                    onClick={(event) => handleClick(event, row.id.toString())}
                     role='checkbox'
                     aria-checked={isItemSelected}
                     tabIndex={-1}
                     key={row.id}
                     style={
                       isItemSelected
-                      ? ({
-                        '--TableCell-dataBackground':
+                        ? ({
+                          '--TableCell-dataBackground':
                             'var(--TableCell-selectedBackground)',
                           '--TableCell-headBackground':
                             'var(--TableCell-selectedBackground)',
-                      } as React.CSSProperties)
-                      : {}
+                        } as React.CSSProperties)
+                        : {}
                     }
                   >
                     <td>
@@ -496,7 +515,15 @@ const OrderTable = observer(() => {
                       <Typography level="body-xs">{row.day_limit}</Typography>
                     </td>
                     <td>
-                      <Link level="body-xs" component="button">
+                      <Link 
+                        level="body-xs" 
+                        component="button" 
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          const audioElement = document.getElementById(`singleo`) as HTMLAudioElement;
+                          audioElement.src = soundfileStore.getOrderById(row.sound_file_id)?.file_path!;
+                          if (audioElement) audioElement.play();
+                        }}>
                           Прослушать {row.sound_file_id}
                       </Link>
                     </td>
@@ -533,21 +560,21 @@ const OrderTable = observer(() => {
                     </td>
                     <td>
                       <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                        <Link level="body-xs" component="button">
+                        <Link level="body-xs" component="button" onClick={(event) => handleStartStopStatus(event, row.id)}>
                           Запустить/Остановить
                         </Link>
                         <Dropdown>
                           <MenuButton
                             slots={{ root: IconButton }}
                             slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
+                            onClick={(event) => { event.stopPropagation() }}
                           >
                             <MoreHorizRoundedIcon />
                           </MenuButton>
                           <Menu size="sm" sx={{ minWidth: 140 }}>
-                            <MenuItem onClick={() => { setSelectedId(+row.id); console.log(row.id); setEditModal(true);  }}>Редактировать</MenuItem>
-
+                            <MenuItem onClick={() => { setSelectedId(+row.id); console.log(row.id); setEditModal(true); }}>Редактировать</MenuItem>
                             <Divider />
-                            <MenuItem  onClick={() => { setSelectedId(+row.id); setDeleteModal(true);  }} color="danger">Удалить</MenuItem>
+                            <MenuItem onClick={() => { setSelectedId(+row.id); setDeleteModal(true); }} color="danger">Удалить</MenuItem>
                           </Menu>
                         </Dropdown>
                       </Box>
@@ -555,7 +582,7 @@ const OrderTable = observer(() => {
                   </tr>
                 );
               })}
-          {emptyRows > 0 && (
+            {emptyRows > 0 && (
               <tr
                 style={
                   {
@@ -626,6 +653,11 @@ const OrderTable = observer(() => {
           </tfoot>
         </Table>
       </Sheet>
+      <audio
+        id={`singleo`}
+        src={''}
+        hidden
+      />
     </React.Fragment>
   );
 })

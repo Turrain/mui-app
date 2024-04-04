@@ -128,7 +128,10 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                                                                         size="sm"
                                                                         variant="plain"
                                                                         color="success"
-                                                                        onClick={() => {setEditPhoneModalOpen(true); setEditPhoneModalIndex(index)}}
+                                                                        onClick={() => {
+                                                                            setEditPhoneModalOpen(true); 
+                                                                            setEditPhoneModalIndex(item.id)
+                                                                        }}
                                                                     >
                                                                         <Create />
                                                                     </IconButton>
@@ -155,7 +158,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                                                                         ))}
                                                                     </Box>
                                                                 } placement="right" variant="outlined" arrow>
-                                                                    <ListItemContent>{item.name}</ListItemContent>
+                                                                    <ListItemButton color={phoneList == item.id ? "success" : "neutral"} onClick={() => { setPhoneList(item.id) }}>{item.name}</ListItemButton>
                                                                 </Tooltip>
                                                             </ListItem>
                                                             {phoneListStore.orders.length !== 1 && <ListDivider inset={'gutter'} />}
@@ -244,7 +247,19 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                             </ListItemContent>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Select value={soundFile} onChange={(_, nv) => { if (nv !== null) setSoundFile(nv) }} startDecorator={<MusicNote />} endDecorator={<Button>Загрузить файл</Button>} indicator=''>
+                            <Select 
+                                value={soundFile} 
+                                onChange={(_, nv) => { if (nv !== null) setSoundFile(nv) }} 
+                                startDecorator={<MusicNote />} 
+                                endDecorator={
+                                    <Button onClick={() => {
+                                        //Make windows file loading
+                                    }}>
+                                        Загрузить файл
+                                    </Button>
+                                } 
+                                indicator=''
+                            >
                                 {soundfileStore.orders.map((file) => (
                                     <Option key={file.id} value={file.id}>
                                         {file.name}
@@ -405,7 +420,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                     </Accordion>
                 </AccordionGroup>
                 <CreatePhoneModal open={createPhoneModalOpen} onClose={() => setCreatePhoneModalOpen(false)} />
-                <EditPhoneModal open={editPhoneModalOpen} onClose={() => setEditPhoneModalOpen(false)} index={editPhoneModalIndex} />
+                <EditPhoneModal open={editPhoneModalOpen} onClose={() => setEditPhoneModalOpen(false)} id={editPhoneModalIndex} />
                 <Button onClick={handleSubmit}>Создать</Button>
             </ModalDialog>
         </Modal>
