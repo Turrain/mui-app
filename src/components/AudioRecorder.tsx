@@ -3,6 +3,8 @@ import { Box, Button, ButtonGroup, IconButton, LinearProgress, Sheet, Stack, Typ
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import AudioVisualizer from "./AudioVisualizer";
+import { storesContext } from "../utils/stores";
+import React from "react";
 
 export type Recorder = {
     recordingMinutes: number;
@@ -70,7 +72,6 @@ export function formatMinutes(minutes: number) {
 export function formatSeconds(seconds: number) {
     return seconds < 10 ? `0${seconds}` : `${seconds}`;
 }
-
 
 const initialState: Recorder = {
     recordingMinutes: 0,
@@ -192,6 +193,9 @@ export default function RecordingsList({ audio }: RecordingsListProps) {
     const { recordings, deleteAudio } = useRecordingsList(audio);
     const [progress, setProgress] = useState<{ [key: string]: number }>({});
     const [durations, setDurations] = useState<{ [key: string]: number }>({});
+
+    const { soundfileStore } = React.useContext(storesContext);
+
     return (
         <div className="recordings-container">
             {recordings.length > 0 ? (
@@ -235,13 +239,13 @@ export default function RecordingsList({ audio }: RecordingsListProps) {
                                     <PlayArrow />
                                 </IconButton>
                                 <Box sx={{ width: '100%', mr: 1 }}>
-                                  
-
                                     <LinearProgress value={progress[record.key]} determinate sx={{ width: '100%' }} id={`progress-${record.key}`} />
                                 </Box>
                                 <IconButton
                                     color="primary"
-                                    onClick={() => {}}
+                                    onClick={() => {
+                                        soundfileStore.createOrderFromBlob(record.audio, record.key);
+                                    }}
                                 >
                                     <Upload />
                                 </IconButton>

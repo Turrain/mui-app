@@ -1,10 +1,8 @@
 import http from "./http-client";
 
-
-
 const login = async (data: UserLogin) => {
     try {
-        console.log('as')
+        // console.log('as')
         const formData = new URLSearchParams();
         formData.append('username', data.username);
         formData.append('password', data.password);
@@ -14,9 +12,9 @@ const login = async (data: UserLogin) => {
             },
         });
         const parsed = response.data;
-      
+
         localStorage.setItem('authUser', JSON.stringify(parsed));
-       
+
         return parsed;
     } catch (error) {
         console.error('Ошибка входа', error);
@@ -24,14 +22,14 @@ const login = async (data: UserLogin) => {
     }
 }
 
-const register = (data:UserCreate) => {
+const register = (data: UserCreate) => {
     return http.post('/auth/register', data);
 }
 
 const profile = async () => {
     const res = (await http.get('/users/me')).data as UserCreate;
     const i = localStorage.getItem('authUser')
-    if(i !== null){
+    if (i !== null) {
         const item: User = JSON.parse(i);
         item.user_data = res
         localStorage.setItem('authUser', JSON.stringify(item));
@@ -49,9 +47,9 @@ const getAuthUser = () => {
     const item = localStorage.getItem('authUser');
 
     return item ? JSON.parse(item) : null;
-}  
+}
 
-const methods = { 
+const methods = {
     login,
     register,
     profile,

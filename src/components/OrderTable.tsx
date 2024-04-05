@@ -521,7 +521,9 @@ const OrderTable = observer(() => {
                         onClick={(event) => {
                           event.stopPropagation();
                           const audioElement = document.getElementById(`singleo`) as HTMLAudioElement;
-                          audioElement.src = soundfileStore.getOrderById(row.sound_file_id)?.file_path!;
+                          audioElement.src = 'http://127.0.0.1:8000/' + soundfileStore.getOrderById(row.sound_file_id)?.file_path!;
+                          console.log(audioElement.src);
+                          // Checkup on real server
                           if (audioElement) audioElement.play();
                         }}>
                           Прослушать {row.sound_file_id}
@@ -572,9 +574,25 @@ const OrderTable = observer(() => {
                             <MoreHorizRoundedIcon />
                           </MenuButton>
                           <Menu size="sm" sx={{ minWidth: 140 }}>
-                            <MenuItem onClick={() => { setSelectedId(+row.id); console.log(row.id); setEditModal(true); }}>Редактировать</MenuItem>
+                            <MenuItem onClick={(event) => { 
+                              event.stopPropagation();
+                              setSelectedId(+row.id); 
+                              console.log(row.id); 
+                              setEditModal(true); 
+                              }}
+                            >
+                              Редактировать
+                            </MenuItem>
                             <Divider />
-                            <MenuItem onClick={() => { setSelectedId(+row.id); setDeleteModal(true); }} color="danger">Удалить</MenuItem>
+                            <MenuItem onClick={(event) => { 
+                              event.stopPropagation();
+                              setSelectedId(+row.id); 
+                              setDeleteModal(true); 
+                              }} 
+                              color="danger"
+                            >
+                              Удалить
+                            </MenuItem>
                           </Menu>
                         </Dropdown>
                       </Box>

@@ -8,10 +8,6 @@ import { observer } from 'mobx-react';
 import CreatePhoneModal from './CreatePhoneModal';
 import EditPhoneModal from './EditPhoneModal';
 
-
-
-
-
 interface CreateCompanyModalProps {
     open: boolean;
     onClose: () => void;
@@ -29,8 +25,6 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
     const [days, setDays] = React.useState<number[]>([]);
     const { recorderState, ...handlers }: UseRecorder = useRecorder();
     const { audio } = recorderState;
-
-    
 
     const { companyStore, soundfileStore, phoneListStore } = React.useContext(storesContext);
   
@@ -247,14 +241,28 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                             </ListItemContent>
                         </AccordionSummary>
                         <AccordionDetails>
+                            <input
+                                type="file"
+                                id="audioFileInput"
+                                style={{ display: 'none' }}
+                                accept="audio/*"
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        soundfileStore.createOrderFromFile(file);
+                                    }
+                                }}
+                            />
                             <Select 
                                 value={soundFile} 
                                 onChange={(_, nv) => { if (nv !== null) setSoundFile(nv) }} 
                                 startDecorator={<MusicNote />} 
                                 endDecorator={
-                                    <Button onClick={() => {
-                                        //Make windows file loading
-                                    }}>
+                                    <Button 
+                                        onClick={() => {
+                                            document.getElementById('audioFileInput')?.click();
+                                        }}
+                                    >
                                         Загрузить файл
                                     </Button>
                                 } 
@@ -262,7 +270,29 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                             >
                                 {soundfileStore.orders.map((file) => (
                                     <Option key={file.id} value={file.id}>
-                                        {file.name}
+                                        <Box 
+                                            sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, width: '100%' }}
+                                        >
+                                            <Typography
+                                                sx={{ 
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                    overflow: 'hidden',
+                                                    width: '75%'
+                                                }}
+                                            >
+                                                {file.name}
+                                            </Typography>
+                                            <IconButton
+                                                color='danger'
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    soundfileStore.deleteOrder(file.id);
+                                                }}
+                                            >
+                                                <Delete />
+                                            </IconButton>
+                                        </Box>
                                     </Option>
                                 ))}
                             </Select>

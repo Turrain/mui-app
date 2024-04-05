@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip } from '@mui/joy';
-import { CallToAction, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
+import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip, IconButton } from '@mui/joy';
+import { CallToAction, Delete, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
 import http from "../../utils/api/http-client";
 import authService from '../../utils/api/auth.service';
@@ -210,10 +210,58 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
                             </ListItemContent>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Select value={soundFile} onChange={(_, nv) => { if (nv !== null) setSoundFile(nv) }} startDecorator={<MusicNote />} endDecorator={<Button>Загрузить файл</Button>} indicator=''>
+                            <input
+                                type="file"
+                                id="audioFileInput"
+                                style={{ display: 'none' }}
+                                accept="audio/*"
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        soundfileStore.createOrderFromFile(file);
+                                    }
+                                }}
+                            />
+                            <Select 
+                                value={soundFile} 
+                                onChange={(_, nv) => { if (nv !== null) setSoundFile(nv) }} 
+                                startDecorator={<MusicNote />} 
+                                endDecorator={
+                                    <Button 
+                                        onClick={() => {
+                                            document.getElementById('audioFileInput')?.click()
+                                        }}
+                                    >
+                                        Загрузить файл
+                                    </Button>
+                                } 
+                                indicator=''
+                            >
                                 {soundfileStore.orders.map((file) => (
                                     <Option key={file.id} value={file.id}>
-                                        {file.name}
+                                        <Box 
+                                            sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, width: '100%' }}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                    overflow: 'hidden',
+                                                    width: '75%'
+                                                }}
+                                            >
+                                                {file.name}
+                                            </Typography>
+                                            <IconButton
+                                                color='danger'
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    soundfileStore.deleteOrder(file.id);
+                                                }}
+                                            >
+                                                <Delete />
+                                            </IconButton>
+                                        </Box>
                                     </Option>
                                 ))}
                             </Select>

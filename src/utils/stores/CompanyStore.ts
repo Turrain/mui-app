@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import http from "../api/http-client"
 import auth from "../api/auth.service";
 import { userStore } from "./UserStore";
-
+import { toastStore } from "./ToastStore";
 
 //TODO: Fix all stores
 class CompanyStore {
@@ -30,8 +30,14 @@ class CompanyStore {
             },
         })
             .then(response => response.data)
-            .then(() => this.fetchOrders()) // Перезагрузка данных после добавления
-            .catch(error => console.error('Ошибка при добавлении:', error));
+            .then(() => {
+                this.fetchOrders(); // Перезагрузка данных после добавления
+                toastStore.show('Запись добавлена', 'success');
+            })
+            .catch(error => {
+                console.error('Ошибка при добавлении:', error);
+                toastStore.show('Ошибка при добавлении', 'danger');
+            });
     }
 
     getOrderById(id: number): Company | undefined {
@@ -45,14 +51,26 @@ class CompanyStore {
             },
         })
             .then(response => response.data)
-            .then(() => this.fetchOrders()) // Перезагрузка данных после обновления
-            .catch(error => console.error('Ошибка при обновлении данных:', error));
+            .then(() => {
+                this.fetchOrders(); // Перезагрузка данных после обновления
+                toastStore.show('Запись обновлена', 'success');
+            })
+            .catch(error => {
+                console.error('Ошибка при обновлении данных:', error);
+                toastStore.show('Ошибка при обновлении данных', 'danger');
+            });
     }
 
     deleteOrder(id: number) {
         http.delete_(`/api/companies/${id}`)
-            .then(() => this.fetchOrders()) // Перезагрузка данных после удаления
-            .catch(error => console.error('Ошибка при удалении:', error));
+            .then(() => {
+                this.fetchOrders(); // Перезагрузка данных после удаления
+                toastStore.show('Запись удалена', 'success');
+            })
+            .catch(error => {
+                console.error('Ошибка при удалении:', error);
+                toastStore.show('Ошибка при удалении', 'danger');
+            });
     }
 
     setOrders(data: any) {

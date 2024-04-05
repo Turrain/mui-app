@@ -1,11 +1,12 @@
 import { makeAutoObservable } from "mobx";
 import authService from "../api/auth.service";
+import { toastStore } from "./ToastStore";
 
 class UserStore {
   user: User | null = null;
-  subscribers: (() => void)[]= [];
+  subscribers: (() => void)[] = [];
 
-  subscribeToUserChanges(callback: ()=> void) {
+  subscribeToUserChanges(callback: () => void) {
     this.subscribers.push(callback);
   }
 
@@ -13,14 +14,13 @@ class UserStore {
     this.subscribers.forEach(callback => callback());
   }
 
-   async setUser(userData: User | null) {
-    
+  async setUser(userData: User | null) {
+
     this.user = userData;
     console.log("user", this.user)
-    if(this.user !== null && this.user?.user_data == undefined)
-    {
+    if (this.user !== null && this.user?.user_data == undefined) {
       this.user.user_data = await authService.profile()
-      console.log("user", this.user.user_data )
+      console.log("user", this.user.user_data)
     }
   }
 
@@ -39,14 +39,15 @@ class UserStore {
   }
 
 
-  async login(username:string, password:string) {
+  async login(username: string, password: string) {
     try {
-      const user = await authService.login({username, password});
+      const user = await authService.login({ username, password });
       console.log(user)
       this.setUser(user);
-      this.notifySubscribers(); 
+      this.notifySubscribers();
     } catch (error) {
       console.error('Ошибка входа:', error);
+      toastStore.show('Неправильно введен логин или пароль', 'danger');
     }
   }
 

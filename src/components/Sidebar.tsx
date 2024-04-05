@@ -19,8 +19,9 @@ import authService from '../utils/api/auth.service';
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { closeSidebar } from '../utils';
 import { storesContext } from '../utils/stores';
+import { observer } from 'mobx-react';
 
-export default function Sidebar() {
+const Sidebar = observer(() => {
   const { userStore } = React.useContext(storesContext);
   return (
     <Sheet
@@ -156,4 +157,6 @@ export default function Sidebar() {
       </Box>
     </Sheet>
   );
-}
+});
+
+export default Sidebar;
