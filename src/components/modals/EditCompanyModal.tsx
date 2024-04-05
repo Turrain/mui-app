@@ -3,11 +3,8 @@ import React, { useState } from 'react';
 import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip, IconButton } from '@mui/joy';
 import { CallToAction, Delete, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
-import http from "../../utils/api/http-client";
-import authService from '../../utils/api/auth.service';
 import { storesContext } from '../../utils/stores';
-
-
+import { observer } from 'mobx-react';
 
 interface CreateCompanyModalProps {
     id: number;
@@ -15,7 +12,7 @@ interface CreateCompanyModalProps {
     onClose: () => void;
 }
 
-const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose }) => {
+const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open, onClose }) => {
     const [companyName, setCompanyName] = useState<string>('');
     const [companyLimit, setCompanyLimit] = useState<string>('90');
     const [dailyLimit, setDailyLimit] = useState<string>('9');
@@ -422,6 +419,6 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = ({ id, open, onClose
             </ModalDialog>
         </Modal>
     );
-};
+});
 
 export default EditCompanyModal;
