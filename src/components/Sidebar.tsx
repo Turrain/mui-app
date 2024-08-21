@@ -11,6 +11,7 @@ import ListItemContent from '@mui/joy/ListItemContent';
 import Typography from '@mui/joy/Typography';
 import Sheet from '@mui/joy/Sheet';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import PersonIcon from '@mui/icons-material/Person';
 import SupportRoundedIcon from '@mui/icons-material/SupportRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
@@ -19,9 +20,11 @@ import authService from '../utils/api/auth.service';
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { closeSidebar } from '../utils';
 import { storesContext } from '../utils/stores';
+import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react';
 
 const Sidebar = observer(() => {
+  const navigate = useNavigate();
   const { userStore } = React.useContext(storesContext);
   return (
     <Sheet
@@ -104,10 +107,19 @@ const Sidebar = observer(() => {
           }}
         >
           <ListItem>
-            <ListItemButton>
+            <ListItemButton onClick={() => navigate('/')}>
               <HomeRoundedIcon />
               <ListItemContent>
                 <Typography level="title-sm">Главная</Typography>
+              </ListItemContent>
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem>
+            <ListItemButton onClick={() => navigate('/virtual-managers')}>
+              <PersonIcon />
+              <ListItemContent>
+                <Typography level="title-sm">Виртуальные менеджеры</Typography>
               </ListItemContent>
             </ListItemButton>
           </ListItem>
