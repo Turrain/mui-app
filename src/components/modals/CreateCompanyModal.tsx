@@ -55,7 +55,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
 
     return (
         <Modal open={open} onClose={() => onClose()} >
-            <ModalDialog size='sm' maxWidth='460px'>
+            <ModalDialog size='sm'  maxWidth='460px'>
                 <ModalClose />
                 <FormControl>
                     <FormLabel>Название компании</FormLabel>
@@ -333,7 +333,8 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                                         '--List-gap': '8px',
                                         '--List-padding': '8px',
                                         '--List-radius': '8px',
-                                        gap: 2,
+                                        justifyContent:'space-evenly',
+                                        gap: 0.5,
                                         px: 2
                                     }}
                                 >
@@ -344,7 +345,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                                                 overlay
                                                 label={item}
                                                 checked={days.includes(index)}
-                                                color="neutral"
+                                                color="primary"
                                                 variant={days.includes(index) ? 'outlined' : 'plain'}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                                     if (event.target.checked) {
@@ -359,6 +360,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                                                         sx: {
                                                             bgcolor: checked ? 'background.level1' : 'transparent',
                                                             boxShadow: checked ? 'sm' : 'none',
+                                                            px: 2
                                                         },
                                                     }),
                                                 }}

@@ -262,7 +262,7 @@ export default function RecordingsList({ audio }: RecordingsListProps) {
                 </>
             ) : (
                 <div className="no-records">
-                    <Typography level="body-sm" fontWeight="xl" textColor="common.white" sx={{ mixBlendMode: 'difference' }}>
+                    <Typography level="body-sm" fontWeight="sm" textColor="common.white" sx={{ mixBlendMode: 'difference' }}>
                         У вас нет записей
                     </Typography>
                 </div>
