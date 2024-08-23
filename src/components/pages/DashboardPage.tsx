@@ -63,6 +63,7 @@ export default function DashboardPage() {
           </Box>
           <OrderTable />
           <OrderList />
+
         </Box>
       </Box>
   );

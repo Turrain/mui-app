@@ -11,18 +11,27 @@ import ListItemContent from '@mui/joy/ListItemContent';
 import Typography from '@mui/joy/Typography';
 import Sheet from '@mui/joy/Sheet';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import PhoneCallbackIcon from '@mui/icons-material/PhoneCallback';
 import SupportRoundedIcon from '@mui/icons-material/SupportRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
+import PersonIcon from '@mui/icons-material/Person';
 import BrightnessAutoRoundedIcon from '@mui/icons-material/BrightnessAutoRounded';
 import authService from '../utils/api/auth.service';
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { closeSidebar } from '../utils';
 import { storesContext } from '../utils/stores';
 import { observer } from 'mobx-react';
+import DateTimeDisplay from './DateTimeDisplay';
+import { useNavigate } from 'react-router-dom';
+
+import logo from '../assets/logo.png';
+import { Button, Card, Stack } from '@mui/joy';
 
 const Sidebar = observer(() => {
   const { userStore } = React.useContext(storesContext);
+  const navigate = useNavigate();
+
   return (
     <Sheet
       className="Sidebar"
@@ -49,9 +58,9 @@ const Sidebar = observer(() => {
       <GlobalStyles
         styles={(theme) => ({
           ':root': {
-            '--Sidebar-width': '220px',
+            '--Sidebar-width': '250px',
             [theme.breakpoints.up('lg')]: {
-              '--Sidebar-width': '240px',
+              '--Sidebar-width': '270px',
             },
           },
         })}
@@ -76,13 +85,14 @@ const Sidebar = observer(() => {
         onClick={() => closeSidebar()}
       />
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-        <IconButton variant="soft" color="primary" size="sm">
+        {/* <IconButton variant="soft" color="primary" size="sm">
           <BrightnessAutoRoundedIcon />
-        </IconButton>
-        <Typography level="title-lg">Моя ко.</Typography>
+        </IconButton> */}
+        <img src={logo} height={50} />
+        <Typography level="title-lg">Моя компания</Typography>
         <ColorSchemeToggle sx={{ ml: 'auto' }} />
       </Box>
-    
+
       <Box
         sx={{
           minHeight: 0,
@@ -104,10 +114,26 @@ const Sidebar = observer(() => {
           }}
         >
           <ListItem>
-            <ListItemButton>
+            <ListItemButton onClick={() => navigate('/')}>
               <HomeRoundedIcon />
               <ListItemContent>
                 <Typography level="title-sm">Главная</Typography>
+              </ListItemContent>
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton onClick={() => navigate('/')}>
+              <PhoneCallbackIcon />
+              <ListItemContent>
+                <Typography level="title-sm">Dobrozvon U</Typography>
+              </ListItemContent>
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton onClick={() => navigate('/virtual-managers')}>
+              <PersonIcon />
+              <ListItemContent>
+                <Typography level="title-sm">Voice Units</Typography>
               </ListItemContent>
             </ListItemButton>
           </ListItem>
@@ -123,6 +149,51 @@ const Sidebar = observer(() => {
           }}
         >
           <ListItem>
+            {/* <Sheet
+              color='warning'
+              variant='soft'
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                p: 1,
+                borderRadius: 8,
+                width: '100%',
+                justifyContent: 'left',
+                // alignItems: 'center'
+              }}
+            >
+              <Typography level="body-sm" fontWeight={700}>
+                
+              </Typography>
+            </Sheet> */}
+            <Card
+              invertedColors
+              // variant="soft"
+              // color="warning"
+              size="sm"
+              sx={{ boxShadow: 'none', width: '100%' }}
+            >
+              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography level="title-sm">Баланс</Typography>
+                <Typography level='title-sm'>XXX тнг.</Typography>
+              </Stack>
+              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <PhoneCallbackIcon />
+                <Typography level='title-sm'>XXX мин.</Typography>
+              </Stack>
+              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <PersonIcon />
+                <Typography level='title-sm'>XXX мин.</Typography>
+              </Stack>
+              <Button size="sm" variant="solid">
+                Пополнить баланс
+              </Button>
+            </Card>
+          </ListItem>
+          <ListItem>
+            <DateTimeDisplay />
+          </ListItem>
+          <ListItem>
             <ListItemButton>
               <SupportRoundedIcon />
               Поддержка
@@ -135,7 +206,7 @@ const Sidebar = observer(() => {
             </ListItemButton>
           </ListItem>
         </List>
-       
+
       </Box>
       <Divider />
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -148,9 +219,9 @@ const Sidebar = observer(() => {
           <Typography level="title-sm">{userStore.user?.user_data?.email}</Typography>
           <Typography level="body-xs">test</Typography>
         </Box>
-        <IconButton size="sm" variant="plain" color="neutral" onClick={()=>{
+        <IconButton size="sm" variant="plain" color="neutral" onClick={() => {
           authService.logout()
-      
+
         }}>
           <LogoutRoundedIcon />
         </IconButton>

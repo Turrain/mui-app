@@ -64,7 +64,7 @@ export default function OrderList() {
   const [orders, setOrders] = React.useState<DataOrders>([]);
 
   React.useEffect(() => {
-    http.get('http://127.0.0.1:8000/api/companies', {
+    http.get('/api/companies', {
      
     })
       .then((response) => setOrders(response.data))

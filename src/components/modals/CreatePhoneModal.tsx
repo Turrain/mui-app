@@ -57,10 +57,10 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
     };
 
     const handleAddPhone = (phone: string) => {
-        if(phoneNumber.length == 16) {
+        // if(phoneNumber.length == 16) {
             setPhonesList(prevList => [...prevList, phone]);
             setPhoneNumber('');
-        }
+        // }
     };
 
     const handleEditClick = (index: number) => {
@@ -101,10 +101,10 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
                     <FormLabel>Номер</FormLabel>
                     <Input
                         type='tel'
-                        slotProps={{ input: { component: TextMaskAdapter } }}
+                        // slotProps={{ input: { component: TextMaskAdapter } }}
                         value={phoneNumber}
                         onChange={(event) => setPhoneNumber(event.target.value)}
-                        placeholder="7 (777) 777 7777"
+                        // placeholder="7 (777) 777 7777"
                     />
                 </FormControl>
                 <FormControl>
@@ -176,9 +176,9 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
                                                     variant='plain'
                                                     value={editPhone}
                                                     onChange={handleEditInputChange}
-                                                    placeholder="7 (777) 777 7777"
-                                                    type='tel'
-                                                    slotProps={{ input: { component: TextMaskAdapter } }}
+                                                    // placeholder="7 (777) 777 7777"
+                                                    // type='tel'
+                                                    // slotProps={{ input: { component: TextMaskAdapter } }}
                                                 />
                                             ) : (
                                                 <Typography>

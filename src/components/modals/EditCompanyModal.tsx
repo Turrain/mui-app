@@ -1,10 +1,11 @@
-
 import React, { useState } from 'react';
-import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip, IconButton } from '@mui/joy';
-import { CallToAction, Delete, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
+import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip, IconButton, ListDivider } from '@mui/joy';
+import { CallToAction, Create, Delete, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
 import { storesContext } from '../../utils/stores';
 import { observer } from 'mobx-react';
+import CreatePhoneModal from './CreatePhoneModal';
+import EditPhoneModal from './EditPhoneModal';
 
 interface CreateCompanyModalProps {
     id: number;
@@ -26,11 +27,18 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
     const { audio } = recorderState;
 
     const { companyStore, soundfileStore, phoneListStore } = React.useContext(storesContext);
-  
+
+    const [createPhoneModalOpen, setCreatePhoneModalOpen] = React.useState<boolean>(false);
+    const [editPhoneModalOpen, setEditPhoneModalOpen] = React.useState<boolean>(false);
+    const [editPhoneModalIndex, setEditPhoneModalIndex] = React.useState<number>(0);
+    
+    const handleDeletePhoneList = (index: number) => {
+        phoneListStore.deleteOrder(phoneListStore.orders[index].id);
+    }
 
     React.useEffect(() => {
         const data = companyStore.getOrderById(id);
-        if(data){
+        if (data) {
 
             setCompanyName(data.name);
             setCompanyLimit(data.com_limit.toString());
@@ -111,27 +119,78 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
                             >
                                 <List>
                                     <ListItem nested >
-                                        <ListSubheader sticky><Button size="sm" sx={{ width: '100%' }}>Добавить базу номеров</Button></ListSubheader>
+                                        <ListSubheader sticky>
+                                            <Button size="sm" sx={{ width: '100%' }} onClick={() => setCreatePhoneModalOpen(true)}>
+                                                Добавить базу номеров
+                                            </Button>
+                                        </ListSubheader>
                                         <List>
-                                            {phoneListStore.orders.map((item, index) => (
-                                                <ListItem key={index}>
-                                                    <Tooltip title={
-                                                        <Box sx={{ p: 1 }}>
-                                                            {item.phones.slice(0, 5).map((phone, phoneIndex) => (
-                                                                <Box key={phoneIndex} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                                    <PhoneAndroid color="primary" />
-                                                                    <Typography fontWeight="lg" fontSize="sm" sx={{ color: 'text.secondary' }}>
-                                                                        {phone}
-                                                                    </Typography>
-                                                                </Box>
-                                                            ))}
-                                                        </Box>
-                                                    } placement="right" variant="outlined" arrow>
-                                                        <ListItemButton color={phoneList == item.id ? "success" : "neutral"} onClick={() => { setPhoneList(item.id) }}>{item.name}</ListItemButton>
-                                                    </Tooltip>
-
-                                                </ListItem>
-                                            ))}
+                                            {
+                                                phoneListStore.orders.length > 0 ? (
+                                                    phoneListStore.orders.map((item, index) => (
+                                                        <Stack key={index}>
+                                                            <ListItem endAction={
+                                                                <Stack direction={'row'}>
+                                                                    <IconButton
+                                                                        aria-label="Edit"
+                                                                        size="sm"
+                                                                        variant="plain"
+                                                                        color="success"
+                                                                        onClick={() => {
+                                                                            setEditPhoneModalOpen(true);
+                                                                            setEditPhoneModalIndex(item.id)
+                                                                        }}
+                                                                    >
+                                                                        <Create />
+                                                                    </IconButton>
+                                                                    <IconButton
+                                                                        aria-label="Delete"
+                                                                        size="sm"
+                                                                        variant="plain"
+                                                                        color="danger"
+                                                                        onClick={() => { handleDeletePhoneList(index) }}
+                                                                    >
+                                                                        <Delete />
+                                                                    </IconButton>
+                                                                </Stack>
+                                                            }>
+                                                                <Tooltip
+                                                                    title={
+                                                                        <Box sx={{ p: 1 }}>
+                                                                            {item.phones.slice(0, 5).map((phone, phoneIndex) => (
+                                                                                <Box key={phoneIndex} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                                    <PhoneAndroid color="primary" />
+                                                                                    <Typography fontWeight="lg" fontSize="sm" sx={{ color: 'text.secondary' }}>
+                                                                                        {phone}
+                                                                                    </Typography>
+                                                                                </Box>
+                                                                            ))}
+                                                                        </Box>
+                                                                    }
+                                                                    placement="right"
+                                                                    variant="outlined"
+                                                                    arrow
+                                                                >
+                                                                    <ListItemButton
+                                                                        color={phoneList == item.id ? "success" : "neutral"}
+                                                                        onClick={() => {
+                                                                            setPhoneList(item.id)
+                                                                        }}
+                                                                    >
+                                                                        {item.name}
+                                                                    </ListItemButton>
+                                                                </Tooltip>
+                                                            </ListItem>
+                                                            {phoneListStore.orders.length !== 1 && <ListDivider inset={'gutter'} />}
+                                                        </Stack>
+                                                    ))) : (
+                                                    <ListItem>
+                                                        <ListItemContent>
+                                                            <Typography level='title-sm' textAlign={'center'}>Пусто</Typography>
+                                                        </ListItemContent>
+                                                    </ListItem>
+                                                )
+                                            }
                                         </List>
                                     </ListItem>
                                 </List>
@@ -219,24 +278,24 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
                                     }
                                 }}
                             />
-                            <Select 
-                                value={soundFile} 
-                                onChange={(_, nv) => { if (nv !== null) setSoundFile(nv) }} 
-                                startDecorator={<MusicNote />} 
+                            <Select
+                                value={soundFile}
+                                onChange={(_, nv) => { if (nv !== null) setSoundFile(nv) }}
+                                startDecorator={<MusicNote />}
                                 endDecorator={
-                                    <Button 
+                                    <Button
                                         onClick={() => {
                                             document.getElementById('audioFileInput')?.click()
                                         }}
                                     >
                                         Загрузить файл
                                     </Button>
-                                } 
+                                }
                                 indicator=''
                             >
                                 {soundfileStore.orders.map((file) => (
                                     <Option key={file.id} value={file.id}>
-                                        <Box 
+                                        <Box
                                             sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, width: '100%' }}
                                         >
                                             <Typography
@@ -263,12 +322,12 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
                                 ))}
                             </Select>
                             <Divider>
-                                <Chip sx={{my:2}}variant="soft" color="neutral" size="sm">
+                                <Chip sx={{ my: 2 }} variant="soft" color="neutral" size="sm">
                                     Звукозапись
                                 </Chip>
                             </Divider>
                             <AudioRecorder recorderState={recorderState} handlers={handlers} />
-                            <RecordingsList audio={audio}/>
+                            <RecordingsList audio={audio} />
                         </AccordionDetails>
                     </Accordion>
                     <Accordion>
@@ -401,7 +460,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
                                                     placeholder='Не указан'
                                                     variant="plain"
                                                     value={reaction[i]}
-                                                    onChange={(_, nv) => {setReaction({ ...reaction, [i]: nv }); console.log(reaction);}}
+                                                    onChange={(_, nv) => { setReaction({ ...reaction, [i]: nv }); console.log(reaction); }}
                                                 >
                                                     <Option value="yes">Добавить в список</Option>
                                                     <Option value="maybe">Исключить</Option>
@@ -415,6 +474,8 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
                         </AccordionDetails>
                     </Accordion>
                 </AccordionGroup>
+                <CreatePhoneModal open={createPhoneModalOpen} onClose={() => setCreatePhoneModalOpen(false)} />
+                <EditPhoneModal open={editPhoneModalOpen} onClose={() => setEditPhoneModalOpen(false)} id={editPhoneModalIndex} />
                 <Button onClick={handleSubmit}>Изменить</Button>
             </ModalDialog>
         </Modal>

@@ -27,7 +27,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
     const { audio } = recorderState;
 
     const { companyStore, soundfileStore, phoneListStore } = React.useContext(storesContext);
-  
+
     const [createPhoneModalOpen, setCreatePhoneModalOpen] = React.useState<boolean>(false);
     const [editPhoneModalOpen, setEditPhoneModalOpen] = React.useState<boolean>(false);
 
@@ -35,22 +35,22 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
     const handleDeletePhoneList = (index: number) => {
         phoneListStore.deleteOrder(phoneListStore.orders[index].id);
     }
-  
 
-    const handleSubmit = () => { 
-       companyStore.createOrder( {
-        name: companyName,
-        com_limit: parseInt(companyLimit, 10),
-        day_limit: parseInt(dailyLimit, 10),
-        sound_file_id: soundFile,
-        status: 0,
-        days: days,
-        start_time: "09:40:55.446Z", // TODO: parsing 
-        end_time: "09:40:55.446Z",
-        reaction: reaction,
-        phones_id: phoneList
-    })
-     
+
+    const handleSubmit = () => {
+        companyStore.createOrder({
+            name: companyName,
+            com_limit: parseInt(companyLimit, 10),
+            day_limit: parseInt(dailyLimit, 10),
+            sound_file_id: soundFile,
+            status: 0,
+            days: days,
+            start_time: "09:40:55.446Z", // TODO: parsing 
+            end_time: "09:40:55.446Z",
+            reaction: reaction,
+            phones_id: phoneList
+        })
+
         onClose(); // Закрыть модальное окно после отправки формы
     };
 
@@ -106,12 +106,12 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                                 <List>
                                     <ListItem nested >
                                         <ListSubheader sticky>
-                                        <Button size="sm" sx={{ width: '100%' }} onClick={() => setCreatePhoneModalOpen(true)}>
+                                            <Button size="sm" sx={{ width: '100%' }} onClick={() => setCreatePhoneModalOpen(true)}>
                                                 Добавить базу номеров
                                             </Button>
-                                            </ListSubheader>
+                                        </ListSubheader>
                                         <List>
-                                        {
+                                            {
                                                 phoneListStore.orders.length > 0 ? (
                                                     phoneListStore.orders.map((item, index) => (
                                                         <Stack key={index}>
@@ -123,7 +123,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                                                                         variant="plain"
                                                                         color="success"
                                                                         onClick={() => {
-                                                                            setEditPhoneModalOpen(true); 
+                                                                            setEditPhoneModalOpen(true);
                                                                             setEditPhoneModalIndex(item.id)
                                                                         }}
                                                                     >
@@ -134,7 +134,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                                                                         size="sm"
                                                                         variant="plain"
                                                                         color="danger"
-                                                                        onClick={() => {handleDeletePhoneList(index)}}
+                                                                        onClick={() => { handleDeletePhoneList(index) }}
                                                                     >
                                                                         <Delete />
                                                                     </IconButton>
@@ -151,8 +151,19 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                                                                             </Box>
                                                                         ))}
                                                                     </Box>
-                                                                } placement="right" variant="outlined" arrow>
-                                                                    <ListItemButton color={phoneList == item.id ? "success" : "neutral"} onClick={() => { setPhoneList(item.id) }}>{item.name}</ListItemButton>
+                                                                }
+                                                                    placement="right"
+                                                                    variant="outlined"
+                                                                    arrow
+                                                                >
+                                                                    <ListItemButton
+                                                                        color={phoneList == item.id ? "success" : "neutral"}
+                                                                        onClick={() => {
+                                                                            setPhoneList(item.id)
+                                                                        }}
+                                                                    >
+                                                                        {item.name}
+                                                                    </ListItemButton>
                                                                 </Tooltip>
                                                             </ListItem>
                                                             {phoneListStore.orders.length !== 1 && <ListDivider inset={'gutter'} />}
@@ -253,28 +264,28 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                                     }
                                 }}
                             />
-                            <Select 
-                                value={soundFile} 
-                                onChange={(_, nv) => { if (nv !== null) setSoundFile(nv) }} 
-                                startDecorator={<MusicNote />} 
+                            <Select
+                                value={soundFile}
+                                onChange={(_, nv) => { if (nv !== null) setSoundFile(nv) }}
+                                startDecorator={<MusicNote />}
                                 endDecorator={
-                                    <Button 
+                                    <Button
                                         onClick={() => {
                                             document.getElementById('audioFileInput')?.click();
                                         }}
                                     >
                                         Загрузить файл
                                     </Button>
-                                } 
+                                }
                                 indicator=''
                             >
                                 {soundfileStore.orders.map((file) => (
                                     <Option key={file.id} value={file.id}>
-                                        <Box 
+                                        <Box
                                             sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, width: '100%' }}
                                         >
                                             <Typography
-                                                sx={{ 
+                                                sx={{
                                                     textOverflow: 'ellipsis',
                                                     whiteSpace: 'nowrap',
                                                     overflow: 'hidden',
@@ -301,8 +312,8 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
                                     Звукозапись
                                 </Chip>
                             </Divider>
-                          
-                          
+
+
                             <AudioRecorder recorderState={recorderState} handlers={handlers} />
                             <RecordingsList audio={audio} />
                         </AccordionDetails>

@@ -239,7 +239,7 @@ const OrderTable = observer(() => {
       numeric: true,
       disablePadding: false,
       label: 'Список номеров',
-    }
+    },
   ];
 
   const createSortHandler = (property: keyof DataOrder) => (event: React.MouseEvent<unknown>) => {
@@ -280,7 +280,7 @@ const OrderTable = observer(() => {
   const handlePlayAudio = (event: React.MouseEvent<unknown>) => {
     event.stopPropagation();
     const audioElement = document.getElementById(`singleo`) as HTMLAudioElement;
-    
+
     if (audioElement) audioElement.play();
   }
 
@@ -314,6 +314,24 @@ const OrderTable = observer(() => {
       </FormControl>
     </React.Fragment>
   );
+
+  const handlePhoneCall = async (event: React.MouseEvent<unknown>, companyId: number, sound_path: string) => {
+    event.stopPropagation();
+    try {
+      console.log(companyId);
+      const response = await http.post('/api/create-callfile', { companyId: companyId, filepath: sound_path }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.data;
+      console.log(data);
+    } catch (error) {
+      console.error('Ошибка создания callfile:', error);
+    }
+  };
+
   return (
     <React.Fragment>
       <Sheet
@@ -515,18 +533,27 @@ const OrderTable = observer(() => {
                       <Typography level="body-xs">{row.day_limit}</Typography>
                     </td>
                     <td>
-                      <Link 
-                        level="body-xs" 
-                        component="button" 
+                      <Link
+                        level="body-xs"
+                        component="button"
                         onClick={(event) => {
                           event.stopPropagation();
                           const audioElement = document.getElementById(`singleo`) as HTMLAudioElement;
-                          audioElement.src = 'http://127.0.0.1:8000/' + soundfileStore.getOrderById(row.sound_file_id)?.file_path!;
+                          audioElement.src = 'http://localhost:8001/' + soundfileStore.getOrderById(row.sound_file_id)?.file_path!;
                           console.log(audioElement.src);
                           // Checkup on real server
-                          if (audioElement) audioElement.play();
+                          if (audioElement) {
+                            audioElement.play()
+                              .then(() => {
+                                console.log("Playback started successfully");
+                              })
+                              .catch(error => {
+                                console.error("Playback failed:", error);
+                                // Additional action depending on error
+                              });
+                          }
                         }}>
-                          Прослушать {row.sound_file_id}
+                        Прослушать {row.sound_file_id}
                       </Link>
                     </td>
                     <td>
@@ -562,9 +589,20 @@ const OrderTable = observer(() => {
                     </td>
                     <td>
                       <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                        <Link
+                          level='body-xs'
+                          component="button"
+                          onClick={(event) => handlePhoneCall(
+                            event, row.id,
+                            soundfileStore.getOrderById(row.sound_file_id)?.file_path.replace(".wav", "")!)}
+                        >
+                          Автозвонок
+                        </Link>
+
                         <Link level="body-xs" component="button" onClick={(event) => handleStartStopStatus(event, row.id)}>
                           Запустить/Остановить
                         </Link>
+
                         <Dropdown>
                           <MenuButton
                             slots={{ root: IconButton }}
@@ -574,21 +612,21 @@ const OrderTable = observer(() => {
                             <MoreHorizRoundedIcon />
                           </MenuButton>
                           <Menu size="sm" sx={{ minWidth: 140 }}>
-                            <MenuItem onClick={(event) => { 
+                            <MenuItem onClick={(event) => {
                               event.stopPropagation();
-                              setSelectedId(+row.id); 
-                              console.log(row.id); 
-                              setEditModal(true); 
-                              }}
+                              setSelectedId(+row.id);
+                              console.log(row.id);
+                              setEditModal(true);
+                            }}
                             >
                               Редактировать
                             </MenuItem>
                             <Divider />
-                            <MenuItem onClick={(event) => { 
+                            <MenuItem onClick={(event) => {
                               event.stopPropagation();
-                              setSelectedId(+row.id); 
-                              setDeleteModal(true); 
-                              }} 
+                              setSelectedId(+row.id);
+                              setDeleteModal(true);
+                            }}
                               color="danger"
                             >
                               Удалить

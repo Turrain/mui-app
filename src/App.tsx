@@ -9,6 +9,7 @@ import { companyStore } from "./utils/stores/CompanyStore";
 import { soundfileStore } from "./utils/stores/SoundfileStore";
 import { phoneListStore } from "./utils/stores/PhoneListStore";
 import { userStore } from "./utils/stores/UserStore";
+import VirtualManagerPage from "./components/pages/VirtualManagerPage";
 export default function App() {
     return (
         <CssVarsProvider disableTransitionOnChange>
@@ -19,6 +20,7 @@ export default function App() {
                     <Route element={<MainLayout />}>
                         <Route element={<AuthGuard />}>
                             <Route path='/' element={<DashboardPage />} />
+                            <Route path="/virtual-managers" element={<VirtualManagerPage />} />
                         </Route>
 
                         <Route path="/login" element={<SignInPage />} />
