@@ -234,12 +234,12 @@ const OrderTable = observer(() => {
       disablePadding: false,
       label: 'Статус',
     },
-    {
-      id: 'phones_id',
-      numeric: true,
-      disablePadding: false,
-      label: 'Список номеров',
-    },
+    // {
+    //   id: 'phones_id',
+    //   numeric: true,
+    //   disablePadding: false,
+    //   label: 'Список номеров',
+    // },
   ];
 
   const createSortHandler = (property: keyof DataOrder) => (event: React.MouseEvent<unknown>) => {
@@ -482,6 +482,7 @@ const OrderTable = observer(() => {
                 );
               })}
               <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -580,15 +581,12 @@ const OrderTable = observer(() => {
                       </Chip>
                     </td>
                     <td>
-                      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                      {/* <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                         <div>
                           <Typography level="body-xs">Список номеров</Typography>
                           <Typography level="body-xs">Случ. число</Typography>
                         </div>
-                      </Box>
-                    </td>
-                    <td>
-                      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                      </Box> */}
                         <Link
                           level='body-xs'
                           component="button"
@@ -598,6 +596,9 @@ const OrderTable = observer(() => {
                         >
                           Автозвонок
                         </Link>
+                    </td>
+                    <td>
+                      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
 
                         <Link level="body-xs" component="button" onClick={(event) => handleStartStopStatus(event, row.id)}>
                           Запустить/Остановить

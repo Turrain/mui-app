@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip, ListDivider, IconButton } from '@mui/joy';
 import { CallToAction, Create, Delete, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
@@ -54,9 +54,48 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ open, 
         onClose(); // Закрыть модальное окно после отправки формы
     };
 
+    const useMediaQuery = (query: string): boolean => {
+        const [matches, setMatches] = useState<boolean>(false);
+
+        useEffect(() => {
+            const mediaQueryList = window.matchMedia(query);
+            const documentChangeHandler = () => setMatches(mediaQueryList.matches);
+
+            mediaQueryList.addEventListener('change', documentChangeHandler);
+
+            // Set the initial state
+            setMatches(mediaQueryList.matches);
+
+            return () => {
+                mediaQueryList.removeEventListener('change', documentChangeHandler);
+            };
+        }, [query]);
+
+        return matches;
+    };
+
+    const isMobile = useMediaQuery('(max-width:600px)');
+
     return (
         <Modal open={open} onClose={() => onClose()} >
-            <ModalDialog size='sm' maxWidth='460px'>
+            <ModalDialog
+                size='sm'
+                color="primary"
+                layout={isMobile ? "fullscreen" : "center"}
+                variant="outlined"
+                sx={{
+                    maxWidth: '460px',
+                    '@media (max-width: 600px)': {
+                        maxWidth: '100%',
+                        margin: '0 10px',
+                    },
+                    '@media (max-width: 450px)': {
+                        maxWidth: '100vw',
+                        margin: '0',
+                        borderRadius: 0,
+                    },
+                }}
+            >
                 <ModalClose />
                 <FormControl>
                     <FormLabel>Название компании</FormLabel>

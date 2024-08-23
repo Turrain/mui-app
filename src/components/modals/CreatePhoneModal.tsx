@@ -58,8 +58,8 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
 
     const handleAddPhone = (phone: string) => {
         // if(phoneNumber.length == 16) {
-            setPhonesList(prevList => [...prevList, phone]);
-            setPhoneNumber('');
+        setPhonesList(prevList => [...prevList, phone]);
+        setPhoneNumber('');
         // }
     };
 
@@ -87,7 +87,10 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
 
     return (
         <Modal open={open} onClose={() => onClose()} >
-            <ModalDialog size='md' maxWidth='460px'>
+            <ModalDialog
+                size='md'
+                maxWidth='460px'
+            >
                 <ModalClose />
                 <FormControl>
                     <FormLabel>Название списка номеров</FormLabel>
@@ -104,7 +107,7 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
                         // slotProps={{ input: { component: TextMaskAdapter } }}
                         value={phoneNumber}
                         onChange={(event) => setPhoneNumber(event.target.value)}
-                        // placeholder="7 (777) 777 7777"
+                    // placeholder="7 (777) 777 7777"
                     />
                 </FormControl>
                 <FormControl>
@@ -176,9 +179,9 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
                                                     variant='plain'
                                                     value={editPhone}
                                                     onChange={handleEditInputChange}
-                                                    // placeholder="7 (777) 777 7777"
-                                                    // type='tel'
-                                                    // slotProps={{ input: { component: TextMaskAdapter } }}
+                                                // placeholder="7 (777) 777 7777"
+                                                // type='tel'
+                                                // slotProps={{ input: { component: TextMaskAdapter } }}
                                                 />
                                             ) : (
                                                 <Typography>
