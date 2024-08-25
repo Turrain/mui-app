@@ -49,11 +49,9 @@ import { FormHelperText, ListItemButton, ListSubheader } from '@mui/joy';
 import EditCompanyModal from './modals/EditCompanyModal';
 import DeleteCompanyModal from './modals/DeleteCompanyModal';
 import http from "../utils/api/http-client";
-import { storesContext } from '../utils/stores';
-import { observer } from 'mobx-react';
-import { runInAction } from 'mobx';
-import { soundfileStore } from '../utils/stores/SoundfileStore';
-
+import { useCompanyStore } from '../utils/stores/CompanyStore';
+import { useSoundfileStore } from '../utils/stores/SoundfileStore';
+import { useEffect } from 'react';
 
 type Reaction = {
   [key: string]: string;
@@ -122,7 +120,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
   return stabilizedThis.map((el) => el[0]);
 }
 
-const OrderTable = observer(() => {
+const OrderTable = (() => {
   const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<keyof DataOrder>('id');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -135,7 +133,14 @@ const OrderTable = observer(() => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchQuery, setSearchQuery] = React.useState('');
-  const { companyStore } = React.useContext(storesContext);
+  const fetchCompanies = useCompanyStore((state) => state.fetchCompanies);
+  const companyStore = useCompanyStore();
+  const soundfileStore = useSoundfileStore();
+
+  useEffect(() => {
+    fetchCompanies();
+  }, [fetchCompanies]);
+
   // console.log("ccc store",companyStore)
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -148,7 +153,7 @@ const OrderTable = observer(() => {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = companyStore.orders.map((n) => n.id.toString());
+      const newSelected = companyStore.companies.map((n) => n.id.toString());
       setSelected(newSelected);
       return;
     }
@@ -185,17 +190,17 @@ const OrderTable = observer(() => {
   };
 
   const getLabelDisplayedRowsTo = () => {
-    if (companyStore.orders.length === -1) {
+    if (companyStore.companies.length === -1) {
       return (page + 1) * rowsPerPage;
     }
     return rowsPerPage === -1
-      ? companyStore.orders.length
-      : Math.min(companyStore.orders.length, (page + 1) * rowsPerPage);
+      ? companyStore.companies.length
+      : Math.min(companyStore.companies.length, (page + 1) * rowsPerPage);
   };
 
   const isSelected = (name: any) => selected.indexOf(name) !== -1;
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - companyStore.orders.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - companyStore.companies.length) : 0;
 
   const headCells: readonly HeadCell[] = [
     {
@@ -260,11 +265,11 @@ const OrderTable = observer(() => {
 
   const handleStartStopStatus = (event: React.MouseEvent<unknown>, id: number) => {
     event.stopPropagation();
-    companyStore.updateOrder(id, { ...companyStore.getOrderById(id), status: companyStore.getOrderById(id)?.status ? 0 : 1 });
+    companyStore.updateCompany(id, { ...companyStore.getCompanyById(id), status: companyStore.getCompanyById(id)?.status ? 0 : 1 });
   }
 
   // Handle search input
-  const filteredOrders = companyStore.orders.filter(orderr => {
+  const filteredOrders = companyStore.companies.filter(orderr => {
     return orderr.name.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -432,8 +437,8 @@ const OrderTable = observer(() => {
             <tr>
               <th>
                 <Checkbox
-                  indeterminate={selected.length > 0 && selected.length < companyStore.orders.length}
-                  checked={companyStore.orders.length > 0 && selected.length === companyStore.orders.length}
+                  indeterminate={selected.length > 0 && selected.length < companyStore.companies.length}
+                  checked={companyStore.companies.length > 0 && selected.length === companyStore.companies.length}
                   onChange={handleSelectAllClick}
                   sx={{ verticalAlign: 'sub' }}
                 />
@@ -540,7 +545,7 @@ const OrderTable = observer(() => {
                         onClick={(event) => {
                           event.stopPropagation();
                           const audioElement = document.getElementById(`singleo`) as HTMLAudioElement;
-                          audioElement.src = 'http://localhost:8001/' + soundfileStore.getOrderById(row.sound_file_id)?.file_path!;
+                          audioElement.src = 'http://localhost:8001/' + soundfileStore.getSoundfileById(row.sound_file_id)?.file_path!;
                           console.log(audioElement.src);
                           // Checkup on real server
                           if (audioElement) {
@@ -587,15 +592,15 @@ const OrderTable = observer(() => {
                           <Typography level="body-xs">Случ. число</Typography>
                         </div>
                       </Box> */}
-                        <Link
-                          level='body-xs'
-                          component="button"
-                          onClick={(event) => handlePhoneCall(
-                            event, row.id,
-                            soundfileStore.getOrderById(row.sound_file_id)?.file_path.replace(".wav", "")!)}
-                        >
-                          Автозвонок
-                        </Link>
+                      <Link
+                        level='body-xs'
+                        component="button"
+                        onClick={(event) => handlePhoneCall(
+                          event, row.id,
+                          soundfileStore.getSoundfileById(row.sound_file_id)?.file_path.replace(".wav", "")!)}
+                      >
+                        Автозвонок
+                      </Link>
                     </td>
                     <td>
                       <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -673,9 +678,9 @@ const OrderTable = observer(() => {
                   </FormControl>
                   <Typography textAlign="center" sx={{ minWidth: 80 }}>
                     {labelDisplayedRows({
-                      from: companyStore.orders.length === 0 ? 0 : page * rowsPerPage + 1,
+                      from: companyStore.companies.length === 0 ? 0 : page * rowsPerPage + 1,
                       to: getLabelDisplayedRowsTo(),
-                      count: companyStore.orders.length === -1 ? -1 : companyStore.orders.length,
+                      count: companyStore.companies.length === -1 ? -1 : companyStore.companies.length,
                     })}
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 1 }}>
@@ -694,8 +699,8 @@ const OrderTable = observer(() => {
                       color="neutral"
                       variant="outlined"
                       disabled={
-                        companyStore.orders.length !== -1
-                          ? page >= Math.ceil(companyStore.orders.length / rowsPerPage) - 1
+                        companyStore.companies.length !== -1
+                          ? page >= Math.ceil(companyStore.companies.length / rowsPerPage) - 1
                           : false
                       }
                       onClick={() => handleChangePage(page + 1)}
@@ -719,3 +724,7 @@ const OrderTable = observer(() => {
   );
 })
 export default OrderTable
+
+function fetchCompanies() {
+  throw new Error('Function not implemented.');
+}

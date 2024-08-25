@@ -3,8 +3,9 @@ import { Box, Button, ButtonGroup, IconButton, LinearProgress, Sheet, Stack, Typ
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import AudioVisualizer from "./AudioVisualizer";
-import { storesContext } from "../utils/stores";
+// import { storesContext } from "../utils/stores";
 import React from "react";
+import { useSoundfileStore } from "../utils/stores/SoundfileStore";
 
 export type Recorder = {
     recordingMinutes: number;
@@ -194,7 +195,7 @@ export default function RecordingsList({ audio }: RecordingsListProps) {
     const [progress, setProgress] = useState<{ [key: string]: number }>({});
     const [durations, setDurations] = useState<{ [key: string]: number }>({});
 
-    const { soundfileStore } = React.useContext(storesContext);
+    const soundfileStore = useSoundfileStore();
 
     return (
         <div className="recordings-container">
@@ -244,7 +245,7 @@ export default function RecordingsList({ audio }: RecordingsListProps) {
                                 <IconButton
                                     color="primary"
                                     onClick={() => {
-                                        soundfileStore.createOrderFromBlob(record.audio, record.key);
+                                        soundfileStore.createSoundfileFromBlob(record.audio, record.key);
                                     }}
                                 >
                                     <Upload />

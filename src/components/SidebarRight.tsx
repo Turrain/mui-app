@@ -71,9 +71,9 @@ const SidebarRight = observer(() => {
         />
         <ToggleButtonGroup
           value={filter}
-          onChange={(_, newFilter) => setFilter(newFilter)}
-          exclusive
-          fullWidth
+          onChange={(_, newFilter) => setFilter(newFilter || '')}
+          // exclusive={true}
+          // fullWidth={true}
         >
           <Button value="входящие">Входящие</Button>
           <Button value="исходящие">Исходящие</Button>

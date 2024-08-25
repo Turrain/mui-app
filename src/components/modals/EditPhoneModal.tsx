@@ -3,7 +3,7 @@ import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, FormLabel, 
 import { Create, Delete, Close, Done } from '@mui/icons-material';
 import { IMaskInput } from 'react-imask';
 import { observer } from 'mobx-react';
-import { storesContext } from '../../utils/stores';
+import { usePhoneListStore } from '../../utils/stores/PhoneListStore';
 
 interface EditPhoneModalProps {
     id: number;
@@ -39,10 +39,10 @@ const EditPhoneModal: React.FC<EditPhoneModalProps> = observer(({ id, open, onCl
     const [editIndex, setEditIndex] = React.useState<number | null>(null);
     const [editPhone, setEditPhone] = React.useState<string>('');
 
-    const { phoneListStore } = React.useContext(storesContext);
+    const phoneListStore = usePhoneListStore();
 
     React.useEffect(() => {
-        const data = phoneListStore.getOrderById(id);
+        const data = phoneListStore.getPhonesListById(id);
         if(data) {
             setPhoneBase(data.name);
             setPhonesList(data.phones);
@@ -50,7 +50,7 @@ const EditPhoneModal: React.FC<EditPhoneModalProps> = observer(({ id, open, onCl
     }, [id]);
 
     const handleSubmit = () => {
-        phoneListStore.updateOrder(id, {
+        phoneListStore.updatePhonesList(id, {
             phones: phonesList,
             name: phoneBase
         });

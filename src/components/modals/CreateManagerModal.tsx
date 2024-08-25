@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { storesContext } from '../../utils/stores';
 import { Modal, ModalDialog, ModalClose, Typography, Button, Input, Sheet, FormControl, ToggleButtonGroup, Box, Divider, Textarea, Avatar, ListItemContent, Select, IconButton, Option, Chip, Accordion, AccordionDetails, AccordionSummary, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses } from '@mui/joy';
 import { Delete, MusicNote, Person, LibraryBooks, PlayArrow } from '@mui/icons-material';
 import RecordingsList, { useRecorder, UseRecorder, AudioRecorder } from "../AudioRecorder";
+import { useSoundfileStore } from "../../utils/stores/SoundfileStore";
 
 interface CreateManagerModalProps {
     open: boolean;
     onClose: () => void;
-    onCreateManager: (name: string) => void;
+    onCreateManager: (name: string, type:  string) => void;
 }
 
 const CreateManagerModal: React.FC<CreateManagerModalProps> = ({ open, onClose, onCreateManager }) => {
@@ -19,9 +19,10 @@ const CreateManagerModal: React.FC<CreateManagerModalProps> = ({ open, onClose, 
     const [soundFile, setSoundFile] = useState<number>(0);
     const { recorderState, ...handlers }: UseRecorder = useRecorder();
     const { audio } = recorderState;
-    const { soundfileStore } = React.useContext(storesContext);
     const [selectedVoice, setSelectedVoice] = useState<string>('');
     const [recordedAudios, setRecordedAudios] = useState<{ id: string, name: string, audio: string }[]>([]);
+
+    const soundfileStore = useSoundfileStore();
 
     const mockVoices = [
         { id: 'voice1', name: 'Мужской голос 1', audio: 'path/to/male1.mp3' },
@@ -44,7 +45,7 @@ const CreateManagerModal: React.FC<CreateManagerModalProps> = ({ open, onClose, 
             const audioUrl = URL.createObjectURL(file);
             const newAudio = { id: file.name, name: file.name, audio: audioUrl };
             setRecordedAudios([...recordedAudios, newAudio]);
-            soundfileStore.createOrderFromFile(file);
+            soundfileStore.createSoundfileFromFile(file);
         }
     };
     const useMediaQuery = (query: string): boolean => {
@@ -258,7 +259,7 @@ const CreateManagerModal: React.FC<CreateManagerModalProps> = ({ open, onClose, 
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             setRecordedAudios(recordedAudios.filter(a => a.id !== file.id));
-                                                            soundfileStore.deleteOrder(Number(file.id)); // Convert id to number
+                                                            soundfileStore.deleteSoundfile(Number(file.id)); // Convert id to number
                                                         }}
                                                     >
                                                         <Delete />

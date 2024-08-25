@@ -4,16 +4,18 @@ import SignInPage from "./components/pages/SignInPage";
 import MainLayout from "./components/layouts/MainLayout";
 import DashboardPage from "./components/pages/DashboardPage";
 import AuthGuard from "./utils/api/auth.guard";
-import { storesContext } from "./utils/stores";
-import { companyStore } from "./utils/stores/CompanyStore";
-import { soundfileStore } from "./utils/stores/SoundfileStore";
-import { phoneListStore } from "./utils/stores/PhoneListStore";
-import { userStore } from "./utils/stores/UserStore";
+// import { storesContext } from "./utils/stores";
+// import { companyStore } from "./utils/stores/CompanyStore";
+// import { soundfileStore } from "./utils/stores/SoundfileStore";
+// import { phoneListStore } from "./utils/stores/PhoneListStore";
+// import { userStore } from "./utils/stores/UserStore";
 import VirtualManagerPage from "./components/pages/VirtualManagerPage";
+import CRMPage from "./components/pages/CRMPage";
+
 export default function App() {
     return (
         <CssVarsProvider disableTransitionOnChange>
-            <storesContext.Provider value={{ companyStore, phoneListStore, soundfileStore, userStore }}>
+            {/* <storesContext.Provider value={{ companyStore, phoneListStore, soundfileStore, userStore }}> */}
 
                 <CssBaseline />
                 <Routes>
@@ -21,12 +23,13 @@ export default function App() {
                         <Route element={<AuthGuard />}>
                             <Route path='/' element={<DashboardPage />} />
                             <Route path="/virtual-managers" element={<VirtualManagerPage />} />
+                            <Route path="/crm" element={<CRMPage />} />
                         </Route>
 
                         <Route path="/login" element={<SignInPage />} />
                     </Route>
                 </Routes>
-            </storesContext.Provider>
+            {/* </storesContext.Provider> */}
         </CssVarsProvider>
     );
 }

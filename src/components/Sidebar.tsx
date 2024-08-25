@@ -1,4 +1,3 @@
-import * as React from 'react';
 import GlobalStyles from '@mui/joy/GlobalStyles';
 import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
@@ -16,21 +15,23 @@ import SupportRoundedIcon from '@mui/icons-material/SupportRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import PersonIcon from '@mui/icons-material/Person';
-import BrightnessAutoRoundedIcon from '@mui/icons-material/BrightnessAutoRounded';
 import authService from '../utils/api/auth.service';
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { closeSidebar } from '../utils';
-import { storesContext } from '../utils/stores';
-import { observer } from 'mobx-react';
+// import { storesContext } from '../utils/stores';
+// import { observer } from 'mobx-react';
 import DateTimeDisplay from './DateTimeDisplay';
 import { useNavigate } from 'react-router-dom';
 
 import logo from '../assets/logo.png';
 import { Button, Card, Stack } from '@mui/joy';
+import { Dashboard } from '@mui/icons-material';
+import { useUserStore } from '../utils/stores/UserStore';
 
-const Sidebar = observer(() => {
-  const { userStore } = React.useContext(storesContext);
+const Sidebar = (() => {
+  // const { userStore } = React.useContext(storesContext);
   const navigate = useNavigate();
+  const userStore = useUserStore();
 
   return (
     <Sheet
@@ -134,6 +135,14 @@ const Sidebar = observer(() => {
               <PersonIcon />
               <ListItemContent>
                 <Typography level="title-sm">Voice Units</Typography>
+              </ListItemContent>
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton onClick={() => navigate('/crm')}>
+              <Dashboard />
+              <ListItemContent>
+                <Typography level="title-sm">CRM</Typography>
               </ListItemContent>
             </ListItemButton>
           </ListItem>

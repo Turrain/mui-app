@@ -1,15 +1,10 @@
 import { Close } from '@mui/icons-material';
-import { Button, ColorPaletteProp, Snackbar } from '@mui/joy';
-import React from 'react';
+import { Button, Snackbar } from '@mui/joy';
+import { useToastStore } from '../utils/stores/ToastStore';
 
-interface ToastProp {
-    open: boolean,
-    color: ColorPaletteProp,
-    text: string,
-    onClose: () => void
-}
 
-const Toast: React.FC<ToastProp> = ({ open, onClose, color, text }) => {
+const Toast = () => {
+    const { open, message, color, close } = useToastStore();
 
     return (
         <Snackbar
@@ -17,11 +12,11 @@ const Toast: React.FC<ToastProp> = ({ open, onClose, color, text }) => {
             color={color}
             open={open}
             autoHideDuration={1500}
-            onClose={() => onClose()}
+            onClose={() => close()}
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             endDecorator={
                 <Button
-                    onClick={() => onClose()}
+                    onClick={() => close()}
                     size='sm'
                     variant='soft'
                     color={color}
@@ -30,7 +25,7 @@ const Toast: React.FC<ToastProp> = ({ open, onClose, color, text }) => {
                 </Button>
             }
         >
-            {text}
+            {message}
         </Snackbar>
     );
 }

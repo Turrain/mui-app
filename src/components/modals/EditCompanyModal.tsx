@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip, IconButton, ListDivider } from '@mui/joy';
 import { CallToAction, Create, Delete, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
-import { storesContext } from '../../utils/stores';
-import { observer } from 'mobx-react';
 import CreatePhoneModal from './CreatePhoneModal';
 import EditPhoneModal from './EditPhoneModal';
+import { useCompanyStore } from '../../utils/stores/CompanyStore';
+import { useSoundfileStore } from '../../utils/stores/SoundfileStore';
+import { usePhoneListStore } from '../../utils/stores/PhoneListStore';
 
 interface CreateCompanyModalProps {
     id: number;
@@ -13,7 +14,7 @@ interface CreateCompanyModalProps {
     onClose: () => void;
 }
 
-const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open, onClose }) => {
+const EditCompanyModal: React.FC<CreateCompanyModalProps> = (({ id, open, onClose }) => {
     const [companyName, setCompanyName] = useState<string>('');
     const [companyLimit, setCompanyLimit] = useState<string>('90');
     const [dailyLimit, setDailyLimit] = useState<string>('9');
@@ -26,18 +27,20 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
     const { recorderState, ...handlers }: UseRecorder = useRecorder();
     const { audio } = recorderState;
 
-    const { companyStore, soundfileStore, phoneListStore } = React.useContext(storesContext);
+    const companyStore = useCompanyStore();
+    const soundfileStore = useSoundfileStore();
+    const phoneListStore = usePhoneListStore();
 
     const [createPhoneModalOpen, setCreatePhoneModalOpen] = React.useState<boolean>(false);
     const [editPhoneModalOpen, setEditPhoneModalOpen] = React.useState<boolean>(false);
     const [editPhoneModalIndex, setEditPhoneModalIndex] = React.useState<number>(0);
     
     const handleDeletePhoneList = (index: number) => {
-        phoneListStore.deleteOrder(phoneListStore.orders[index].id);
+        phoneListStore.deletePhonesList(phoneListStore.phonesList[index].id);
     }
 
     React.useEffect(() => {
-        const data = companyStore.getOrderById(id);
+        const data = companyStore.getCompanyById(id);
         if (data) {
 
             setCompanyName(data.name);
@@ -53,7 +56,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
     }, [id])
 
     const handleSubmit = () => {
-        companyStore.updateOrder(id, {
+        companyStore.updateCompany(id, {
             name: companyName,
             com_limit: parseInt(companyLimit, 10),
             day_limit: parseInt(dailyLimit, 10),
@@ -126,8 +129,8 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
                                         </ListSubheader>
                                         <List>
                                             {
-                                                phoneListStore.orders.length > 0 ? (
-                                                    phoneListStore.orders.map((item, index) => (
+                                                phoneListStore.phonesList.length > 0 ? (
+                                                    phoneListStore.phonesList.map((item, index) => (
                                                         <Stack key={index}>
                                                             <ListItem endAction={
                                                                 <Stack direction={'row'}>
@@ -181,7 +184,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
                                                                     </ListItemButton>
                                                                 </Tooltip>
                                                             </ListItem>
-                                                            {phoneListStore.orders.length !== 1 && <ListDivider inset={'gutter'} />}
+                                                            {phoneListStore.phonesList.length !== 1 && <ListDivider inset={'gutter'} />}
                                                         </Stack>
                                                     ))) : (
                                                     <ListItem>
@@ -274,7 +277,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
                                 onChange={async (e) => {
                                     const file = e.target.files?.[0];
                                     if (file) {
-                                        soundfileStore.createOrderFromFile(file);
+                                        soundfileStore.createSoundfileFromFile(file);
                                     }
                                 }}
                             />
@@ -293,7 +296,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
                                 }
                                 indicator=''
                             >
-                                {soundfileStore.orders.map((file) => (
+                                {soundfileStore.soundfile.map((file) => (
                                     <Option key={file.id} value={file.id}>
                                         <Box
                                             sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, width: '100%' }}
@@ -312,7 +315,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = observer(({ id, open
                                                 color='danger'
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    soundfileStore.deleteOrder(file.id);
+                                                    soundfileStore.deleteSoundfile(file.id);
                                                 }}
                                             >
                                                 <Delete />
