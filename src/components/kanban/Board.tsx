@@ -2,8 +2,9 @@ import React from 'react';
 import Column from './Column';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Grid } from '@mui/joy';
+import { Box, Button, Grid, Stack, Typography } from '@mui/joy';
 import useKanbanStore from '../../utils/stores/KanbanStore';
+
 
 const Board: React.FC = () => {
     const columns = useKanbanStore(state => state.columns);

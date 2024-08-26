@@ -4,6 +4,7 @@ import SignInPage from "./components/pages/SignInPage";
 import MainLayout from "./components/layouts/MainLayout";
 import DashboardPage from "./components/pages/DashboardPage";
 import AuthGuard from "./utils/api/auth.guard";
+import Kanban from "./components/kanban/Board";
 // import { storesContext } from "./utils/stores";
 // import { companyStore } from "./utils/stores/CompanyStore";
 // import { soundfileStore } from "./utils/stores/SoundfileStore";
@@ -20,11 +21,14 @@ export default function App() {
                 <CssBaseline />
                 <Routes>
                     <Route element={<MainLayout />}>
-                        <Route element={<AuthGuard />}>
+
+                        {/* <Route element={<AuthGuard />}> */}
                             <Route path='/' element={<DashboardPage />} />
                             <Route path="/virtual-managers" element={<VirtualManagerPage />} />
                             <Route path="/crm" element={<CRMPage />} />
-                        </Route>
+                            <Route path="/kanban" element={<Kanban/>} />
+                        {/* </Route> */}
+                    
 
                         <Route path="/login" element={<SignInPage />} />
                     </Route>

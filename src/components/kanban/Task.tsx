@@ -2,6 +2,8 @@ import React from 'react';
 import { Card, CardContent, Typography } from '@mui/joy';
 import { useDrag, useDrop } from 'react-dnd';
 import Subtask from './Subtask';
+import  MessageIcon from '@mui/icons-material/Message';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 
 interface TaskProps {
     task: { id: string; content: string; subtasks: string[] };
@@ -43,6 +45,10 @@ const Task: React.FC<TaskProps> = ({ task, fromColumnId, moveCard }) => {
                         ))}
                     </div>
                 </CardContent>
+                <div style={{display: 'flex' , gap: '16px' , flexDirection: 'row-reverse'}}>
+                    <MessageIcon />
+                    <LocalPhoneIcon />
+                </div>
             </Card>
         </div>
     );

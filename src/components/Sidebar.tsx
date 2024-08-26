@@ -16,6 +16,7 @@ import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import PersonIcon from '@mui/icons-material/Person';
 import authService from '../utils/api/auth.service';
+import MessageIcon from '@mui/icons-material/Message';
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { closeSidebar } from '../utils';
 // import { storesContext } from '../utils/stores';
@@ -143,6 +144,14 @@ const Sidebar = (() => {
               <Dashboard />
               <ListItemContent>
                 <Typography level="title-sm">CRM</Typography>
+              </ListItemContent>
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton onClick={() => navigate('/chats')}>
+              <MessageIcon />
+              <ListItemContent>
+                <Typography level="title-sm">Chats</Typography>
               </ListItemContent>
             </ListItemButton>
           </ListItem>

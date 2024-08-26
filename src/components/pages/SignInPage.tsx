@@ -58,9 +58,9 @@ export default function SignInPage() {
     const from = location.state?.from?.pathname || "/";
     const [lorTab, setLorTab] = React.useState(true)
     React.useEffect(() => {
-        if (authService.getAuthUser()) {
+        // if (authService.getAuthUser()) {
             navigate(from, { replace: true });
-        }
+        // }
     }, [navigate, from]);
 
     return (
