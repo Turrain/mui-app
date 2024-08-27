@@ -1,11 +1,13 @@
 import { Box, Input } from "@mui/joy";
 import MyMessages from "../MyMessages";
 import Header from "../Header";
+import Sidebar from "../Sidebar";
 
 export default function ChatsPage() {
     return (
         <Box sx={{ display: 'flex', minHeight: '100dvh', width: '100%' }}>
             <Header />
+            <Sidebar />
             <Box component="main" className="MainContent" sx={{ flex: 1 }}>
                 <MyMessages />
             </Box>

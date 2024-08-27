@@ -12,6 +12,8 @@ import Kanban from "./components/kanban/Board";
 // import { userStore } from "./utils/stores/UserStore";
 import VirtualManagerPage from "./components/pages/VirtualManagerPage";
 import CRMPage from "./components/pages/CRMPage";
+import ChatsPage from "./components/pages/ChatsPage";
+import CallButton from "./components/CallButton";
 
 export default function App() {
     return (
@@ -22,17 +24,19 @@ export default function App() {
                 <Routes>
                     <Route element={<MainLayout />}>
 
-                        {/* <Route element={<AuthGuard />}> */}
+                        <Route element={<AuthGuard />}>
                             <Route path='/' element={<DashboardPage />} />
                             <Route path="/virtual-managers" element={<VirtualManagerPage />} />
                             <Route path="/crm" element={<CRMPage />} />
                             <Route path="/kanban" element={<Kanban/>} />
-                        {/* </Route> */}
+                            <Route path="/chats" element={<ChatsPage />} />
+                        </Route>
                     
 
                         <Route path="/login" element={<SignInPage />} />
                     </Route>
                 </Routes>
+                <CallButton />
             {/* </storesContext.Provider> */}
         </CssVarsProvider>
     );
