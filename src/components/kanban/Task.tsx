@@ -1,9 +1,8 @@
 import React from 'react';
-import { Card, CardContent, Typography } from '@mui/joy';
+import { Card, CardContent, Input, Stack, Typography } from '@mui/joy';
 import { useDrag, useDrop } from 'react-dnd';
 import Subtask from './Subtask';
-import  MessageIcon from '@mui/icons-material/Message';
-import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
+import { LocalPhone, Message } from '@mui/icons-material';
 
 interface TaskProps {
     task: { id: string; content: string; subtasks: string[] };
@@ -34,20 +33,23 @@ const Task: React.FC<TaskProps> = ({ task, fromColumnId, moveCard }) => {
             <Card sx={{
                 opacity: isDragging ? 0.5 : 1,
                 marginBottom: 2
-            }}>
+            }}
+                variant='soft'
+            >
                 <CardContent>
                     <Typography>
                         {task.content}
                     </Typography>
-                    <div ref={drop}>
-                        {task.subtasks.map((subtask, index) => (
-                            <Subtask key={index} content={subtask} fromColumnId={fromColumnId} taskId={task.id} subtaskIndex={index} moveCard={moveCard} />
-                        ))}
-                    </div>
+                    <Stack spacing={2}>
+                        <Typography>123</Typography>
+                        <Input />
+                        <Input />
+                        <Input />
+                    </Stack>
                 </CardContent>
-                <div style={{display: 'flex' , gap: '16px' , flexDirection: 'row-reverse'}}>
-                    <MessageIcon />
-                    <LocalPhoneIcon />
+                <div style={{ display: 'flex', gap: '16px', flexDirection: 'row-reverse' }}>
+                    <Message />
+                    <LocalPhone />
                 </div>
             </Card>
         </div>

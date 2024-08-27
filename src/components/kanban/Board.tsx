@@ -2,7 +2,7 @@ import React from 'react';
 import Column from './Column';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Box, Button, Grid, Stack, Typography } from '@mui/joy';
+import { Stack } from '@mui/joy';
 import useKanbanStore from '../../utils/stores/KanbanStore';
 
 
@@ -12,11 +12,19 @@ const Board: React.FC = () => {
 
     return (
         <DndProvider backend={HTML5Backend}>
-            <Grid container spacing={2} style={{ display: 'flex', gap: '16px' }}>
+            <Stack
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    flexWrap: 'nowrap',
+                    gap: 2,
+                    overflowX: 'auto',
+                }}
+            >
                 {columns.map((column) => (
                     <Column key={column.id} id={column.id} title={column.title} tasks={column.tasks} moveCard={moveCard} />
                 ))}
-            </Grid>
+            </Stack>
         </DndProvider>
     );
 };

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Card, Typography , Box} from '@mui/joy';
+import { Button, Typography, Box, Sheet } from '@mui/joy';
 import Task from './Task';
 import { useDrop } from 'react-dnd';
-import AddIcon from '@mui/icons-material/Add';
 import CreateTaskModal from '../modals/CreateTaskModal';
+import { Add } from '@mui/icons-material';
 
 interface ColumnProps {
     id: string;
@@ -13,7 +13,7 @@ interface ColumnProps {
 }
 
 const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard }) => {
-    const [isModalOpen , setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [, drop] = useDrop({
         accept: 'CARD',
@@ -24,26 +24,34 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard }) => {
         },
     });
 
-    const handleOpenModal = () =>{
+    const handleOpenModal = () => {
         setIsModalOpen(true);
     }
 
-    const handleCloseModal = () =>{
+    const handleCloseModal = () => {
         setIsModalOpen(false);
     }
 
     return (
-        <Card ref={drop} style={{ width: '300px', padding: '16px', borderRadius: '4px'}}>
+        <Sheet ref={drop} style={{ width: '300px', padding: '16px', borderRadius: '4px' }}>
             <Typography level='title-lg'>{title} | {tasks.length}</Typography>
-            <Button onClick={handleOpenModal}><AddIcon/></Button>
+            <Button
+                fullWidth
+                onClick={handleOpenModal}
+                sx={{
+                    my: 1,
+                }}
+            >
+                <Add />
+            </Button>
             {tasks.map((task) => (
                 <Box>
                     <Task key={task.id} task={task} fromColumnId={id} moveCard={moveCard} />
                 </Box>
             ))}
             <CreateTaskModal open={isModalOpen} onClose={handleCloseModal} />
-        </Card>
-        
+        </Sheet>
+
     );
 };
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { CssBaseline, GlobalStyles, IconButton, Input, Select, Sheet, Table, Typography, Option, Box, Grid, Button } from '@mui/joy';
+import { CssBaseline, GlobalStyles, IconButton, Input, Sheet, Typography, Box, Grid, Button } from '@mui/joy';
 import { Cancel, PhoneEnabled } from '@mui/icons-material';
 
 const CallButton = () => {
@@ -54,6 +54,7 @@ const CallButton = () => {
                     bottom: 32,
                     borderRadius: '50%',
                     '--IconButton-size': '48px',
+                    zIndex: 9999
                 }}
                 variant='soft'
                 color='success'
