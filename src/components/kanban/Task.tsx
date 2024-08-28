@@ -1,17 +1,15 @@
 import React from 'react';
-import { Card, CardContent, Input, Stack, Typography } from '@mui/joy';
-import { useDrag, useDrop } from 'react-dnd';
-import Subtask from './Subtask';
+import { Card, CardContent, IconButton, Stack, Typography } from '@mui/joy';
+import { useDrag } from 'react-dnd';
 import { LocalPhone, Message } from '@mui/icons-material';
 
 interface TaskProps {
     task: { id: string; content: string; subtasks: string[] };
     fromColumnId: string;
-    moveCard: (fromColumnId: string, toColumnId: string, taskId: string, subtaskIndex?: number) => void;
     setIsDraggingBoard: (isDragging: boolean) => void;
 }
 
-const Task: React.FC<TaskProps> = ({ task, fromColumnId, moveCard, setIsDraggingBoard }) => {
+const Task: React.FC<TaskProps> = ({ task, fromColumnId, setIsDraggingBoard }) => {
     const [{ isDragging }, drag] = useDrag({
         type: 'CARD',
         item: { type: 'CARD', content: task.content, fromColumnId, taskId: task.id },
@@ -21,21 +19,13 @@ const Task: React.FC<TaskProps> = ({ task, fromColumnId, moveCard, setIsDragging
         end: () => setIsDraggingBoard(false),
     });
 
-    const [, drop] = useDrop({
-        accept: 'SUBCARD',
-        drop: (item: { type: string; content: string; fromColumnId: string; taskId: string; subtaskIndex: number }) => {
-            if (item.fromColumnId !== fromColumnId || item.taskId !== task.id) {
-                moveCard(item.fromColumnId, fromColumnId, item.taskId, item.subtaskIndex);
-            }
-        },
-    });
-
     return (
         <div ref={drag}>
-            <Card sx={{
-                opacity: isDragging ? 0.5 : 1,
-                marginBottom: 2
-            }}
+            <Card
+                sx={{
+                    opacity: isDragging ? 0.5 : 1,
+                    marginBottom: 2
+                }}
                 variant='soft'
             >
                 <CardContent>
@@ -46,10 +36,19 @@ const Task: React.FC<TaskProps> = ({ task, fromColumnId, moveCard, setIsDragging
                         <Typography>123</Typography>
                     </Stack>
                 </CardContent>
-                <div style={{ display: 'flex', gap: '16px', flexDirection: 'row-reverse' }}>
-                    <Message />
-                    <LocalPhone />
-                </div>
+                <Stack
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row-reverse'
+                    }}
+                >
+                    <IconButton>
+                        <Message />
+                    </IconButton>
+                    <IconButton>
+                        <LocalPhone />
+                    </IconButton>
+                </Stack>
             </Card>
         </div>
     );

@@ -41,7 +41,8 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard, setIsDraggi
                 padding: '16px',
                 borderRadius: '4px',
                 minHeight: '250px',
-                height: 'fit-content'
+                height: 'fit-content',
+                my: 2,
             }}
         >
             <Typography level='title-lg'>{title} | {tasks.length}</Typography>
@@ -56,7 +57,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard, setIsDraggi
             </Button>
             {tasks.map((task) => (
                 <Box>
-                    <Task key={task.id} task={task} fromColumnId={id} moveCard={moveCard} setIsDraggingBoard={setIsDraggingBoard} />
+                    <Task key={task.id} task={task} fromColumnId={id} setIsDraggingBoard={setIsDraggingBoard} />
                 </Box>
             ))}
             <CreateTaskModal open={isModalOpen} onClose={handleCloseModal} />

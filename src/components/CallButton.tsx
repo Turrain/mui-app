@@ -100,7 +100,6 @@ const CallButton = () => {
                                 <Cancel />
                             </IconButton>
                         }
-                        sx={{ mb: 2 }}
                     />
 
                     <Box sx={{ my: 4 }}>
@@ -126,7 +125,8 @@ const CallButton = () => {
                                             key={i}
                                             onClick={() => handlePhoneInput(i)}
                                             sx={{
-                                                maxWidth: '140px'
+                                                width: '48px',
+                                                height: '48px',
                                             }}
                                             variant="outlined"
                                         >
@@ -144,6 +144,7 @@ const CallButton = () => {
                         color='success'
                         sx={{
                             borderRadius: '50%',
+                            '--IconButton-size': '48px',
                         }}
                     >
                         <PhoneEnabled />
