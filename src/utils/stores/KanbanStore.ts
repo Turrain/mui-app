@@ -44,6 +44,46 @@ const useKanbanStore = create<BoardState>((set) => ({
                 { id: 'card-5', content: 'Card 5', subtasks: ['Subcard 5.1', 'Subcard 5.2'] },
             ],
         },
+        {
+            id: 'column-4',
+            title: 'Done',
+            tasks: [
+                { id: 'card-4', content: 'Card 4', subtasks: [] },
+                { id: 'card-5', content: 'Card 5', subtasks: ['Subcard 5.1', 'Subcard 5.2'] },
+            ],
+        },
+        {
+            id: 'column-5',
+            title: 'Done',
+            tasks: [
+                { id: 'card-4', content: 'Card 4', subtasks: [] },
+                { id: 'card-5', content: 'Card 5', subtasks: ['Subcard 5.1', 'Subcard 5.2'] },
+            ],
+        },
+        {
+            id: 'column-6',
+            title: 'Done',
+            tasks: [
+                { id: 'card-4', content: 'Card 4', subtasks: [] },
+                { id: 'card-5', content: 'Card 5', subtasks: ['Subcard 5.1', 'Subcard 5.2'] },
+            ],
+        },
+        {
+            id: 'column-7',
+            title: 'Done',
+            tasks: [
+                { id: 'card-4', content: 'Card 4', subtasks: [] },
+                { id: 'card-5', content: 'Card 5', subtasks: ['Subcard 5.1', 'Subcard 5.2'] },
+            ],
+        },
+        {
+            id: 'column-8',
+            title: 'Done',
+            tasks: [
+                { id: 'card-4', content: 'Card 4', subtasks: [] },
+                { id: 'card-5', content: 'Card 5', subtasks: ['Subcard 5.1', 'Subcard 5.2'] },
+            ],
+        },
     ],
     moveCard: (fromColumnId, toColumnId, cardId, subcardIndex) =>
         set((state) => {

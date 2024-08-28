@@ -10,9 +10,10 @@ interface ColumnProps {
     title: string;
     tasks: { id: string, content: string, subtasks: string[] }[];
     moveCard: (fromColumnId: string, toColumnId: string, taskId: string, subtaskIndex?: number) => void;
+    setIsDraggingBoard: (isDragging: boolean) => void;
 }
 
-const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard }) => {
+const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard, setIsDraggingBoard }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [, drop] = useDrop({
@@ -33,7 +34,16 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard }) => {
     }
 
     return (
-        <Sheet ref={drop} style={{ width: '300px', padding: '16px', borderRadius: '4px' }}>
+        <Sheet
+            ref={drop}
+            sx={{
+                minWidth: '300px',
+                padding: '16px',
+                borderRadius: '4px',
+                minHeight: '250px',
+                height: 'fit-content'
+            }}
+        >
             <Typography level='title-lg'>{title} | {tasks.length}</Typography>
             <Button
                 fullWidth
@@ -46,7 +56,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard }) => {
             </Button>
             {tasks.map((task) => (
                 <Box>
-                    <Task key={task.id} task={task} fromColumnId={id} moveCard={moveCard} />
+                    <Task key={task.id} task={task} fromColumnId={id} moveCard={moveCard} setIsDraggingBoard={setIsDraggingBoard} />
                 </Box>
             ))}
             <CreateTaskModal open={isModalOpen} onClose={handleCloseModal} />

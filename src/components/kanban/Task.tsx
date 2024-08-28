@@ -8,15 +8,17 @@ interface TaskProps {
     task: { id: string; content: string; subtasks: string[] };
     fromColumnId: string;
     moveCard: (fromColumnId: string, toColumnId: string, taskId: string, subtaskIndex?: number) => void;
+    setIsDraggingBoard: (isDragging: boolean) => void;
 }
 
-const Task: React.FC<TaskProps> = ({ task, fromColumnId, moveCard }) => {
+const Task: React.FC<TaskProps> = ({ task, fromColumnId, moveCard, setIsDraggingBoard }) => {
     const [{ isDragging }, drag] = useDrag({
         type: 'CARD',
         item: { type: 'CARD', content: task.content, fromColumnId, taskId: task.id },
         collect: (monitor) => ({
             isDragging: !!monitor.isDragging(),
         }),
+        end: () => setIsDraggingBoard(false),
     });
 
     const [, drop] = useDrop({
@@ -42,9 +44,6 @@ const Task: React.FC<TaskProps> = ({ task, fromColumnId, moveCard }) => {
                     </Typography>
                     <Stack spacing={2}>
                         <Typography>123</Typography>
-                        <Input />
-                        <Input />
-                        <Input />
                     </Stack>
                 </CardContent>
                 <div style={{ display: 'flex', gap: '16px', flexDirection: 'row-reverse' }}>

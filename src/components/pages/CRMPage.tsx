@@ -27,6 +27,7 @@ export default function CRMPage() {
                     flexDirection: 'column',
                     minWidth: 0,
                     height: '100dvh',
+                    width: '100%',
                     gap: 1,
                     overflow: 'auto'
                 }}
