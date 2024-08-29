@@ -29,8 +29,9 @@ interface Soundfile {
 }
 
 interface UserCreate {
-    id: number;
+    // id: number;
     email: string;
+    password: string;
     is_active: boolean;
     is_superuser: boolean;
     is_verified: boolean;
@@ -52,28 +53,28 @@ interface Audio {
     audio: string;
 };
 
-export type UserProps = {
+interface UserProps {
     name: string;
     username: string;
     avatar: string;
     online: boolean;
-  };
-  
-  export type MessageProps = {
+};
+
+interface MessageProps {
     id: string;
     content: string;
     timestamp: string;
     unread?: boolean;
     sender: UserProps | 'You';
     attachment?: {
-      fileName: string;
-      type: string;
-      size: string;
+        fileName: string;
+        type: string;
+        size: string;
     };
-  };
-  
-  export type ChatProps = {
+};
+
+interface ChatProps {
     id: string;
     sender: UserProps;
     messages: MessageProps[];
-  };
+};

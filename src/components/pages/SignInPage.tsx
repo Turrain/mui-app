@@ -57,6 +57,10 @@ export default function SignInPage() {
     const navigate = useNavigate();
     const from = location.state?.from?.pathname || "/";
     const [lorTab, setLorTab] = React.useState(true)
+
+    const [emailRegister, setEmailRegister] = React.useState('');
+    const [passwordRegister, setPasswordRegister] = React.useState('');
+
     React.useEffect(() => {
         if (authService.getAuthUser()) {
             navigate(from, { replace: true });
@@ -140,7 +144,7 @@ export default function SignInPage() {
                                             </Typography>
                                             <Typography level="body-sm">
                                                 Вы не имеете аккаунта?{' '}
-                                                <Button onClick={()=>setLorTab(false)}  variant='plain'>
+                                                <Button onClick={() => setLorTab(false)} variant='plain'>
                                                     Зарегестрируйтесь
                                                 </Button>
                                             </Typography>
@@ -169,7 +173,7 @@ export default function SignInPage() {
                                                 const formElements = event.currentTarget.elements;
                                                 try {
                                                     await userStore.login(formElements.username.value, formElements.password.value)
-                                                    if(userStore.isLoggedIn())
+                                                    if (userStore.isLoggedIn())
                                                         navigate("/");
                                                 } catch (error) {
                                                     console.log('err', error);
@@ -207,30 +211,34 @@ export default function SignInPage() {
                                 </>
                             ) : (
                                 <>
-                                 <Stack gap={4} sx={{ mb: 2 }}>
+                                    <Stack gap={4} sx={{ mb: 2 }}>
                                         <Stack gap={1}>
                                             <Typography component="h1" level="h3">
                                                 Регистрация
                                             </Typography>
                                             <Typography level="body-sm">
                                                 Вы имеете аккаунт?{' '}
-                                                <Button onClick={()=>setLorTab(true)}  variant='plain'>
+                                                <Button onClick={() => setLorTab(true)} variant='plain'>
                                                     Войдите
                                                 </Button>
                                             </Typography>
                                         </Stack>
-                                      
-                                    </Stack><Stack gap={4} sx={{ mt: 2 }}>
+
+                                    </Stack>
+                                    <Stack gap={4} sx={{ mt: 2 }}>
                                         <form
-                                            onSubmit={async (event: React.FormEvent<SignInFormElement>) => {
+                                            onSubmit={async (event: React.FormEvent) => {
                                                 event.preventDefault();
-                                                const formElements = event.currentTarget.elements;
+                                                // const formElements = event.currentTarget.;
                                                 const data = {
-                                                    username: formElements.username.value,
-                                                    password: formElements.password.value,
+                                                    email: emailRegister,
+                                                    password: passwordRegister,
+                                                    is_superuser: true,
+                                                    is_active: true,
+                                                    is_verified: true,
                                                 };
                                                 try {
-                                                    const result = await authService.login(data);
+                                                    const result = await authService.register(data);
                                                     console.log(result);
                                                     navigate("/");
                                                 } catch (error) {
@@ -241,14 +249,28 @@ export default function SignInPage() {
                                         >
                                             <FormControl required>
                                                 <FormLabel>E-mail</FormLabel>
-                                                <Input type="email" name="email" />
+                                                <Input
+                                                    type="email"
+                                                    name="email"
+                                                    value={emailRegister}
+                                                    onChange={
+                                                        (e) => setEmailRegister(e.target.value)
+                                                    }
+                                                />
                                             </FormControl>
                                             <FormControl required>
                                                 <FormLabel>Пароль</FormLabel>
-                                                <Input type="password" name="password" />
+                                                <Input
+                                                    type="password"
+                                                    name="password"
+                                                    value={passwordRegister}
+                                                    onChange={
+                                                        (e) => setPasswordRegister(e.target.value)
+                                                    }
+                                                />
                                             </FormControl>
                                             <Stack gap={4} sx={{ mt: 2 }}>
-                                              
+
                                                 <Button type="submit" fullWidth>
                                                     Зарегестрироваться
                                                 </Button>

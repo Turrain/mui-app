@@ -119,7 +119,13 @@ const Sidebar = (() => {
             <ListItemButton onClick={() => navigate('/')}>
               <HomeRoundedIcon />
               <ListItemContent>
-                <Typography level="title-sm">Главная</Typography>
+                <Stack
+                  direction={'row'}
+                  justifyContent={'space-between'}
+                >
+                  <Typography level="title-sm">Главная</Typography>
+                  <Typography level='title-sm' color='warning'>Soon</Typography>
+                </Stack>
               </ListItemContent>
             </ListItemButton>
           </ListItem>
@@ -143,7 +149,13 @@ const Sidebar = (() => {
             <ListItemButton onClick={() => navigate('/crm')}>
               <Dashboard />
               <ListItemContent>
-                <Typography level="title-sm">CRM</Typography>
+                <Stack
+                  direction={'row'}
+                  justifyContent={'space-between'}
+                >
+                  <Typography level="title-sm">CRM</Typography>
+                  <Typography level='title-sm' color='warning'>Soon</Typography>
+                </Stack>
               </ListItemContent>
             </ListItemButton>
           </ListItem>
@@ -151,7 +163,13 @@ const Sidebar = (() => {
             <ListItemButton onClick={() => navigate('/chats')}>
               <MessageIcon />
               <ListItemContent>
-                <Typography level="title-sm">Chats</Typography>
+                <Stack
+                  direction={'row'}
+                  justifyContent={'space-between'}
+                >
+                  <Typography level="title-sm">Chats</Typography>
+                  <Typography level='title-sm' color='warning'>Soon</Typography>
+                </Stack>
               </ListItemContent>
             </ListItemButton>
           </ListItem>

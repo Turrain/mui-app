@@ -10,11 +10,8 @@ import Textarea from '@mui/joy/Textarea';
 import ToggleButtonGroup from '@mui/joy/ToggleButtonGroup';
 import Button from '@mui/joy/Button';
 import { closeSidebar } from '../utils';
-// import { storesContext } from '../utils/stores';
-import { observer } from 'mobx-react';
 
-const SidebarRight = observer(() => {
-//   const { userStore } = React.useContext(storesContext);
+const SidebarRight = (() => {
   const [filter, setFilter] = React.useState('all');
   const [companyName, setCompanyName] = React.useState('');
   const [businessSphere, setBusinessSphere] = React.useState('');
