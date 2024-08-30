@@ -52,6 +52,7 @@ import http from "../utils/api/http-client";
 import { useCompanyStore } from '../utils/stores/CompanyStore';
 import { useSoundfileStore } from '../utils/stores/SoundfileStore';
 import { useEffect } from 'react';
+import { usePhoneListStore } from '../utils/stores/PhoneListStore';
 
 type Reaction = {
   [key: string]: string;
@@ -133,13 +134,17 @@ const OrderTable = (() => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchQuery, setSearchQuery] = React.useState('');
-  const fetchCompanies = useCompanyStore((state) => state.fetchCompanies);
+  // const fetchCompanies = useCompanyStore((state) => state.fetchCompanies);
+  // const fetchSoundfiles = useSoundfileStore(state => state.fetchSoundfiles);
+  // const fetchPhonesLists = usePhoneListStore(state => state.fetchPhonesLists);
   const companyStore = useCompanyStore();
   const soundfileStore = useSoundfileStore();
 
-  useEffect(() => {
-    fetchCompanies();
-  }, [fetchCompanies]);
+  // useEffect(() => {
+  //   fetchCompanies();
+  //   fetchSoundfiles();
+  //   fetchPhonesLists();
+  // }, [fetchCompanies, fetchSoundfiles, fetchPhonesLists]);
 
   // console.log("ccc store",companyStore)
   const handleRequestSort = (

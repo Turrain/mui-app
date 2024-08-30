@@ -122,3 +122,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 
     isLoggedIn: () => !!get().user,
 }));
+
+useUserStore.subscribe(
+    (state) => state.user
+)

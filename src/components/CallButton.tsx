@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { CssBaseline, GlobalStyles, IconButton, Input, Sheet, Typography, Box, Grid, Button } from '@mui/joy';
 import { Cancel, PhoneEnabled } from '@mui/icons-material';
+import http from '../utils/api/http-client';
 
 const CallButton = () => {
     const [open, setOpen] = useState(false);
@@ -12,8 +13,10 @@ const CallButton = () => {
         setPhoneNumber('');
     };
 
-    const handleCall = () => {
+    const handleCall = async () => {
         console.log(`Calling ${phoneNumber}`);
+        // const response = await http.post(`${ASTERISK_ARI_URI}channels?endpoint=PJSIP/${phoneNumber}@provider-endpoint&extension=1000&context=Autocall&timeout=30&api_key=${ASTERISK_ARI_USER}:${ASTERISK_ARI_PASS}`, {});
+        // console.log(response.data);
         // setOpen(false);
     };
 
