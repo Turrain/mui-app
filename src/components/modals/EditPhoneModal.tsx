@@ -2,7 +2,6 @@ import React from 'react';
 import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, FormLabel, Input, ListItemContent, Typography, List, ListItem, Stack, IconButton, ListDivider } from '@mui/joy';
 import { Create, Delete, Close, Done } from '@mui/icons-material';
 import { IMaskInput } from 'react-imask';
-import { observer } from 'mobx-react';
 import { usePhoneListStore } from '../../utils/stores/PhoneListStore';
 
 interface EditPhoneModalProps {
@@ -32,7 +31,7 @@ const TextMaskAdapter = React.forwardRef<HTMLElement, CustomProps>(
     }
 )
 
-const EditPhoneModal: React.FC<EditPhoneModalProps> = observer(({ id, open, onClose }) => {
+const EditPhoneModal: React.FC<EditPhoneModalProps> = (({ id, open, onClose }) => {
     const [phonesList, setPhonesList] = React.useState<string[]>([]);
     const [phoneNumber, setPhoneNumber] = React.useState<string>('');
     const [phoneBase, setPhoneBase] = React.useState<string>('');
@@ -66,10 +65,10 @@ const EditPhoneModal: React.FC<EditPhoneModalProps> = observer(({ id, open, onCl
     };
 
     const handleAddPhone = (phone: string) => {
-        // if(phoneNumber.length == 16) {
+        if(phoneNumber.length == 16) {
             setPhonesList(prevList => [...prevList, phone]);
             setPhoneNumber('');
-        // }
+        }
     };
 
     const handleEditClick = (index: number) => {
@@ -110,10 +109,10 @@ const EditPhoneModal: React.FC<EditPhoneModalProps> = observer(({ id, open, onCl
                     <FormLabel>Номер</FormLabel>
                     <Input
                         type='tel'
-                        // slotProps={{ input: { component: TextMaskAdapter } }}
+                        slotProps={{ input: { component: TextMaskAdapter } }}
                         value={phoneNumber}
                         onChange={(event) => setPhoneNumber(event.target.value)}
-                        // placeholder="7 (777) 777 7777"
+                        placeholder="7 (777) 777 7777"
                     />
                 </FormControl>
                 <FormControl>
@@ -185,9 +184,9 @@ const EditPhoneModal: React.FC<EditPhoneModalProps> = observer(({ id, open, onCl
                                                     variant='plain'
                                                     value={editPhone}
                                                     onChange={handleEditInputChange}
-                                                    // placeholder="7 (777) 777 7777"
-                                                    // type='tel'
-                                                    // slotProps={{ input: { component: TextMaskAdapter } }}
+                                                    placeholder="7 (777) 777 7777"
+                                                    type='tel'
+                                                    slotProps={{ input: { component: TextMaskAdapter } }}
                                                 />
                                             ) : (
                                                 <Typography>

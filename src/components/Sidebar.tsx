@@ -19,20 +19,25 @@ import authService from '../utils/api/auth.service';
 import MessageIcon from '@mui/icons-material/Message';
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { closeSidebar } from '../utils';
-// import { storesContext } from '../utils/stores';
-// import { observer } from 'mobx-react';
+import { storesContext } from '../utils/stores';
 import DateTimeDisplay from './DateTimeDisplay';
 import { useNavigate } from 'react-router-dom';
 
 import logo from '../assets/logo.png';
 import { Button, Card, Stack } from '@mui/joy';
 import { Dashboard } from '@mui/icons-material';
-import { useUserStore } from '../utils/stores/UserStore';
+import React from 'react';
 
 const Sidebar = (() => {
-  // const { userStore } = React.useContext(storesContext);
   const navigate = useNavigate();
+  const { useUserStore } = React.useContext(storesContext);
   const userStore = useUserStore();
+
+  const fetchUser = useUserStore(state => state.fetchUser);
+
+  React.useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   return (
     <Sheet

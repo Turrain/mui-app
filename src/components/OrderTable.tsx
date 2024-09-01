@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import * as React from 'react';
 import { ColorPaletteProp } from '@mui/joy/styles';
-import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
 import Chip from '@mui/joy/Chip';
@@ -18,7 +17,7 @@ import Option from '@mui/joy/Option';
 import Table from '@mui/joy/Table';
 import Sheet from '@mui/joy/Sheet';
 import Checkbox from '@mui/joy/Checkbox';
-import IconButton, { iconButtonClasses } from '@mui/joy/IconButton';
+import IconButton from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
 import Menu from '@mui/joy/Menu';
 import MenuButton from '@mui/joy/MenuButton';
@@ -26,33 +25,17 @@ import MenuItem from '@mui/joy/MenuItem';
 import Dropdown from '@mui/joy/Dropdown';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import SearchIcon from '@mui/icons-material/Search';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import Grid from '@mui/joy/Grid';
-import ListItem from '@mui/joy/ListItem';
-import List from '@mui/joy/List';
-import { AirplanemodeActive, CallToAction, EditNote, FileUpload, MusicNote, TapAndPlay, Timer } from '@mui/icons-material';
-import Stack from '@mui/joy/Stack';
-import Switch from '@mui/joy/Switch';
-import AccordionDetails, { accordionDetailsClasses } from '@mui/joy/AccordionDetails';
-import ListItemContent from '@mui/joy/ListItemContent';
-import AccordionSummary, { accordionSummaryClasses } from '@mui/joy/AccordionSummary';
-import Accordion from '@mui/joy/Accordion';
-import AccordionGroup from '@mui/joy/AccordionGroup';
-import { FormHelperText, ListItemButton, ListSubheader } from '@mui/joy';
 import EditCompanyModal from './modals/EditCompanyModal';
 import DeleteCompanyModal from './modals/DeleteCompanyModal';
 import http from "../utils/api/http-client";
-import { useCompanyStore } from '../utils/stores/CompanyStore';
-import { useSoundfileStore } from '../utils/stores/SoundfileStore';
 import { useEffect } from 'react';
-import { usePhoneListStore } from '../utils/stores/PhoneListStore';
+import { storesContext } from '../utils/stores';
 
 type Reaction = {
   [key: string]: string;
@@ -134,17 +117,20 @@ const OrderTable = (() => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchQuery, setSearchQuery] = React.useState('');
-  // const fetchCompanies = useCompanyStore((state) => state.fetchCompanies);
-  // const fetchSoundfiles = useSoundfileStore(state => state.fetchSoundfiles);
-  // const fetchPhonesLists = usePhoneListStore(state => state.fetchPhonesLists);
+  const { useCompanyStore, usePhoneListStore, useSoundfileStore } = React.useContext(storesContext);
+
+  const fetchCompanies = useCompanyStore(state => state.fetchCompanies);
+  const fetchPhonesLists = usePhoneListStore(state => state.fetchPhonesLists);
+  const fetchSoundfiles = useSoundfileStore(state => state.fetchSoundfiles);
   const companyStore = useCompanyStore();
+  const phoneListStore = usePhoneListStore();
   const soundfileStore = useSoundfileStore();
 
-  // useEffect(() => {
-  //   fetchCompanies();
-  //   fetchSoundfiles();
-  //   fetchPhonesLists();
-  // }, [fetchCompanies, fetchSoundfiles, fetchPhonesLists]);
+  useEffect(() => {
+    fetchCompanies();
+    fetchSoundfiles();
+    fetchPhonesLists();
+  }, [fetchCompanies, fetchSoundfiles, fetchPhonesLists]);
 
   // console.log("ccc store",companyStore)
   const handleRequestSort = (
@@ -729,7 +715,3 @@ const OrderTable = (() => {
   );
 })
 export default OrderTable
-
-function fetchCompanies() {
-  throw new Error('Function not implemented.');
-}
