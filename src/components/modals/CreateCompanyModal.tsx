@@ -249,7 +249,6 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                         defaultValue={2.5}
                                         slotProps={{
                                             input: {
-
                                                 min: 1,
                                                 max: 5,
                                                 step: 0.1,
@@ -383,11 +382,12 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                     role="group"
                                     orientation="horizontal"
                                     sx={{
+                                        justifyContent: 'space-evenly',
                                         flexGrow: 0,
                                         '--List-gap': '8px',
                                         '--List-padding': '8px',
                                         '--List-radius': '8px',
-                                        gap: 2,
+                                        gap: 1,
                                         px: 2
                                     }}
                                 >
@@ -398,7 +398,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                                 overlay
                                                 label={item}
                                                 checked={days.includes(index)}
-                                                color="neutral"
+                                                // color="neutral"
                                                 variant={days.includes(index) ? 'outlined' : 'plain'}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                                     if (event.target.checked) {
@@ -411,7 +411,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                                 slotProps={{
                                                     action: ({ checked }) => ({
                                                         sx: {
-                                                            bgcolor: checked ? 'background.level1' : 'transparent',
+                                                            bgcolor: checked ? 'primary.plainHoverBg' : 'transparent',
                                                             boxShadow: checked ? 'sm' : 'none',
                                                         },
                                                     }),
@@ -426,34 +426,39 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                 sx={{ mt: 4 }}
                                 alignItems="center"
                                 spacing={3}
+                                justifyContent={'center'}
                             >
                                 <FormControl>
-                                    <Input
-                                        value={startTime}
-                                        onChange={(e) => setStartTime(e.target.value)}
-                                        type="time"
-                                        slotProps={{
-                                            input: {
-                                                min: '09:00',
-                                                max: '18:00',
-                                            },
-                                        }}
-                                    />
-                                    <FormHelperText>C</FormHelperText>
+                                    <Stack direction={'row'} spacing={2}>
+                                        <FormHelperText>C</FormHelperText>
+                                        <Input
+                                            value={startTime}
+                                            onChange={(e) => setStartTime(e.target.value)}
+                                            type="time"
+                                            slotProps={{
+                                                input: {
+                                                    min: '09:00',
+                                                    max: '18:00',
+                                                },
+                                            }}
+                                        />
+                                    </Stack>
                                 </FormControl>
                                 <FormControl>
-                                    <Input
-                                        value={endTime}
-                                        onChange={(e) => setEndTime(e.target.value)}
-                                        type="time"
-                                        slotProps={{
-                                            input: {
-                                                min: '09:00',
-                                                max: '18:00',
-                                            },
-                                        }}
-                                    />
-                                    <FormHelperText>До </FormHelperText>
+                                    <Stack direction={'row'} spacing={2}>
+                                        <FormHelperText>До</FormHelperText>
+                                        <Input
+                                            value={endTime}
+                                            onChange={(e) => setEndTime(e.target.value)}
+                                            type="time"
+                                            slotProps={{
+                                                input: {
+                                                    min: '09:00',
+                                                    max: '18:00',
+                                                },
+                                            }}
+                                        />
+                                    </Stack>
                                 </FormControl>
                             </Stack>
                         </AccordionDetails>

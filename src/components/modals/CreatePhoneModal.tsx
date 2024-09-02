@@ -1,9 +1,9 @@
-import React from 'react';
-import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, FormLabel, Input, ListItemContent, Typography, List, ListItem, Stack, IconButton, ListDivider } from '@mui/joy';
+import React, { useImperativeHandle, useRef } from 'react';
+import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, FormLabel, Input, ListItemContent, Typography, List, ListItem, Stack, IconButton, ListDivider, Textarea, Tab, Tabs, TabList, TabPanel, tabClasses } from '@mui/joy';
 import { Create, Delete, Close, Done } from '@mui/icons-material';
 import { IMaskInput } from 'react-imask';
-import { observer } from 'mobx-react';
 import { usePhoneListStore } from '../../utils/stores/PhoneListStore';
+import * as XLSX from 'xlsx';
 
 interface CreatePhoneModalProps {
     open: boolean;
@@ -15,28 +15,33 @@ interface CustomProps {
     name: string;
 }
 
-const TextMaskAdapter = React.forwardRef<HTMLElement, CustomProps>(
+const TextMaskAdapter = React.forwardRef<HTMLInputElement, CustomProps>(
     function TextMaskAdapter(props, ref) {
         const { onChange, ...other } = props;
+
         return (
             <IMaskInput
                 {...other}
                 mask={'# (000) 000 0000'}
                 definitions={{ '#': /[1-9]/, }}
-                ref={ref}
+                inputRef={ref}
                 onAccept={(value: any) => onChange({ target: { name: props.name, value } })}
                 overwrite
             />
         )
     }
-)
+);
 
-const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onClose }) => {
+const CreatePhoneModal: React.FC<CreatePhoneModalProps> = (({ open, onClose }) => {
     const [phonesList, setPhonesList] = React.useState<string[]>([]);
     const [phoneNumber, setPhoneNumber] = React.useState<string>('');
     const [phoneBase, setPhoneBase] = React.useState<string>('');
     const [editIndex, setEditIndex] = React.useState<number | null>(null);
     const [editPhone, setEditPhone] = React.useState<string>('');
+    const [sheetUrl, setSheetUrl] = React.useState<string>('');
+    const [pastedData, setPastedData] = React.useState<string>('');
+    const [copyPasteData, setCopyPasteData] = React.useState<string>('');
+    const [selectedFile, setSelectedFile] = React.useState<string>('');
 
     const phoneListStore = usePhoneListStore();
 
@@ -57,7 +62,7 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
     };
 
     const handleAddPhone = (phone: string) => {
-        if(phoneNumber.length == 16) {
+        if (phoneNumber.length == 16) {
             setPhonesList(prevList => [...prevList, phone]);
             setPhoneNumber('');
         }
@@ -85,11 +90,70 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
         setEditPhone(event.target.value);
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedFile(file.name);
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const data = new Uint8Array(event.target?.result as ArrayBuffer);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const phoneNumbers = XLSX.utils.sheet_to_json<object[]>(worksheet, { header: "A" });
+
+                const extractedPhones = phoneNumbers.flat().map((phone: any) => phone['A'].toString());
+
+                console.log(extractedPhones);
+
+                setPhonesList(prevList => [...prevList, ...extractedPhones]);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    };
+
+    const fetchGoogleSheetData = async () => {
+        try {
+            const response = await fetch(sheetUrl);
+            const text = await response.json();
+            console.log(text);
+
+            // const rows = text.split('\n').map(row => row.split(','));
+            // const extractedPhones = rows.flat().filter(phone => phone.trim());
+            // setPhonesList(prevList => [...prevList, ...extractedPhones]);
+        } catch (error) {
+            console.error('Error fetching data', error);
+        }
+    };
+
+    const handleProcessPastedData = () => {
+        const newPhones = pastedData.split('\n').map(phone => phone.trim()).filter(phone => phone.length > 0);
+        setPhonesList(prevList => [...prevList, ...newPhones]);
+        setPastedData('');
+    };
+
+    const handlePasteAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setPastedData(e.target.value);
+    };
+
+    const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+        const text = event.clipboardData.getData('text');
+        const rows = text.split('\n').map(row => row.trim()).filter(row => row);
+        setPhonesList(prevList => [...prevList, ...rows]);
+    };
+
     return (
-        <Modal open={open} onClose={() => onClose()} >
+        <Modal
+            open={open}
+            onClose={() => onClose()}
+        >
             <ModalDialog
                 size='md'
                 maxWidth='460px'
+                minWidth='400px'
+                sx={{
+                    height: '100%'
+                }}
             >
                 <ModalClose />
                 <FormControl>
@@ -107,7 +171,7 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
                         slotProps={{ input: { component: TextMaskAdapter } }}
                         value={phoneNumber}
                         onChange={(event) => setPhoneNumber(event.target.value)}
-                    placeholder="7 (777) 777 7777"
+                        placeholder="7 (777) 777 7777"
                     />
                 </FormControl>
                 <FormControl>
@@ -115,6 +179,107 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
                         Добавить номер
                     </Button>
                 </FormControl>
+                <Tabs
+                    defaultValue={0}
+                    sx={{
+                        bgcolor: 'transparent',
+                    }}
+                >
+                    <TabList
+                        disableUnderline
+                        sx={{
+                            flexDirection: { xs: 'column', sm: 'row' },
+                            p: 0.5,
+                            gap: 0.5,
+                            borderRadius: 6,
+                            bgcolor: 'var(--joy-palette-background-level2)',
+                            [`& .${tabClasses.root}[aria-selected="true"]`]: {
+                                bgcolor: 'background.surface',
+                                borderRadius: 6,
+                            },
+                        }}
+                    >
+                        <Tab disableIndicator>
+                            <Typography level='body-sm'>Загрузить из Excel</Typography>
+                        </Tab>
+                        <Tab disableIndicator>
+                            <Typography level='body-sm'>Вставить номера из таблиц</Typography>
+                        </Tab>
+                    </TabList>
+                    <TabPanel
+                        value={0}
+                        sx={{
+                            px: 0,
+                        }}
+                    >
+                        <FormControl>
+                            {/* <FormLabel>Загрузить из Excel</FormLabel> */}
+                            <input
+                                type='file'
+                                id='excelFileInput'
+                                style={{ display: 'none' }}
+                                accept='.xlsx, .xls'
+                                onChange={handleFileChange}
+                            />
+                            <Input
+                                value={selectedFile}
+                                endDecorator={
+                                    <Button
+                                        onClick={() => {
+                                            document.getElementById('excelFileInput')?.click();
+                                        }}
+                                    >
+                                        Загрузить файл
+                                    </Button>
+                                }
+                                sx={{
+                                    alignItems: 'center',
+                                }}
+                            />
+                        </FormControl>
+                    </TabPanel>
+                    <TabPanel
+                        value={1}
+                        sx={{
+                            px: 0,
+                        }}
+                    >
+                        <FormControl>
+                            {/* <FormLabel>Вставить номера из таблиц</FormLabel> */}
+                            <textarea
+                                style={{
+                                    width: '100%',
+                                    minHeight: '100px',
+                                    borderWidth: '1px',
+                                    borderStyle: 'solid',
+                                    borderColor: 'var(--joy-palette-neutral-outlinedBorder)',
+                                    padding: '8px',
+                                    borderRadius: 6,
+                                    fontFamily: 'monospace',
+                                    fontSize: '14px',
+                                    resize: 'none',
+                                    backgroundColor: 'var(--joy-palette-background-surface)',
+                                    display: 'block',
+                                }}
+                                onPaste={handlePaste}
+                                onChange={(e) => setCopyPasteData(e.target.value)}
+                                value={copyPasteData}
+                                placeholder="Вставьте скопированные номера сюда"
+                            />
+                        </FormControl>
+                    </TabPanel>
+                </Tabs>
+                {/* <FormControl>
+                    <FormLabel>Ссылка на Google Sheets (CSV)</FormLabel>
+                    <Input
+                        value={sheetUrl}
+                        onChange={(event) => setSheetUrl(event.target.value)}
+                        placeholder="Введите URL Google Sheets"
+                    />
+                    <Button onClick={fetchGoogleSheetData}>
+                        Загрузить из Google Sheets
+                    </Button>
+                </FormControl> */}
                 <Sheet
                     variant='outlined'
                     sx={{
@@ -123,7 +288,7 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
                         borderRadius: 'sm'
                     }}
                 >
-                    <List sx={{ maxWidth: 250 }}>
+                    <List>
                         {
                             phonesList.length > 0 ? (
                                 phonesList.map((item, index) => (
@@ -179,9 +344,9 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
                                                     variant='plain'
                                                     value={editPhone}
                                                     onChange={handleEditInputChange}
-                                                placeholder="7 (777) 777 7777"
-                                                type='tel'
-                                                slotProps={{ input: { component: TextMaskAdapter } }}
+                                                    placeholder="7 (777) 777 7777"
+                                                    type='tel'
+                                                    slotProps={{ input: { component: TextMaskAdapter } }}
                                                 />
                                             ) : (
                                                 <Typography>
@@ -201,7 +366,11 @@ const CreatePhoneModal: React.FC<CreatePhoneModalProps> = observer(({ open, onCl
                             )}
                     </List>
                 </Sheet>
-                <Button onClick={handleSubmit}>Создать</Button>
+                <Button
+                    onClick={handleSubmit}
+                >
+                    Создать
+                </Button>
             </ModalDialog>
         </Modal>
     );

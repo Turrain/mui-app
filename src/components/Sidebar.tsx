@@ -121,7 +121,7 @@ const Sidebar = (() => {
           }}
         >
           <ListItem>
-            <ListItemButton onClick={() => navigate('/')}>
+            <ListItemButton disabled onClick={() => navigate('/')}>
               <HomeRoundedIcon />
               <ListItemContent>
                 <Stack
@@ -151,7 +151,7 @@ const Sidebar = (() => {
             </ListItemButton>
           </ListItem>
           <ListItem>
-            <ListItemButton onClick={() => navigate('/crm')}>
+            <ListItemButton disabled onClick={() => navigate('/crm')}>
               <Dashboard />
               <ListItemContent>
                 <Stack
@@ -165,7 +165,7 @@ const Sidebar = (() => {
             </ListItemButton>
           </ListItem>
           <ListItem>
-            <ListItemButton onClick={() => navigate('/chats')}>
+            <ListItemButton disabled onClick={() => navigate('/chats')}>
               <MessageIcon />
               <ListItemContent>
                 <Stack
