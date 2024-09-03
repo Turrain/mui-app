@@ -246,7 +246,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                         value={companyLimit}
                                         onChange={(e) => setCompanyLimit(e.target.value)}
                                         type="number"
-                                        defaultValue={2.5}
+                                        // defaultValue={2.5}
                                         slotProps={{
                                             input: {
                                                 min: 1,
@@ -264,7 +264,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                         value={dailyLimit}
                                         onChange={(e) => setDailyLimit(e.target.value)}
                                         type="number"
-                                        defaultValue={2.5}
+                                        // defaultValue={2.5}
                                         slotProps={{
                                             input: {
                                                 min: 1,

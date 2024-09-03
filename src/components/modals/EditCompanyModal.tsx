@@ -34,7 +34,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = (({ id, open, onClos
     const [createPhoneModalOpen, setCreatePhoneModalOpen] = React.useState<boolean>(false);
     const [editPhoneModalOpen, setEditPhoneModalOpen] = React.useState<boolean>(false);
     const [editPhoneModalIndex, setEditPhoneModalIndex] = React.useState<number>(0);
-    
+
     const handleDeletePhoneList = (index: number) => {
         phoneListStore.deletePhonesList(phoneListStore.phonesList[index].id);
     }
@@ -221,7 +221,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = (({ id, open, onClos
                                         value={companyLimit}
                                         onChange={(e) => setCompanyLimit(e.target.value)}
                                         type="number"
-                                        defaultValue={2.5}
+                                        // defaultValue={2.5}
                                         slotProps={{
                                             input: {
 
@@ -240,7 +240,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = (({ id, open, onClos
                                         value={dailyLimit}
                                         onChange={(e) => setDailyLimit(e.target.value)}
                                         type="number"
-                                        defaultValue={2.5}
+                                        // defaultValue={2.5}
                                         slotProps={{
                                             input: {
                                                 min: 1,
@@ -356,11 +356,12 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = (({ id, open, onClos
                                     role="group"
                                     orientation="horizontal"
                                     sx={{
+                                        justifyContent: 'space-evenly',
                                         flexGrow: 0,
                                         '--List-gap': '8px',
                                         '--List-padding': '8px',
                                         '--List-radius': '8px',
-                                        gap: 2,
+                                        gap: 1,
                                         px: 2
                                     }}
                                 >
@@ -371,7 +372,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = (({ id, open, onClos
                                                 overlay
                                                 label={item}
                                                 checked={days.includes(index)}
-                                                color="neutral"
+                                                // color="neutral"
                                                 variant={days.includes(index) ? 'outlined' : 'plain'}
                                                 value={days[index]}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -385,7 +386,7 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = (({ id, open, onClos
                                                 slotProps={{
                                                     action: ({ checked }) => ({
                                                         sx: {
-                                                            bgcolor: checked ? 'background.level1' : 'transparent',
+                                                            bgcolor: checked ? 'primary.plainHoverBg' : 'transparent',
                                                             boxShadow: checked ? 'sm' : 'none',
                                                         },
                                                     }),
@@ -400,34 +401,39 @@ const EditCompanyModal: React.FC<CreateCompanyModalProps> = (({ id, open, onClos
                                 sx={{ mt: 4 }}
                                 alignItems="center"
                                 spacing={3}
+                                justifyContent={'center'}
                             >
                                 <FormControl>
-                                    <Input
-                                        value={startTime}
-                                        onChange={(e) => setStartTime(e.target.value)}
-                                        type="time"
-                                        slotProps={{
-                                            input: {
-                                                min: '09:00',
-                                                max: '18:00',
-                                            },
-                                        }}
-                                    />
-                                    <FormHelperText>C</FormHelperText>
+                                    <Stack direction={'row'} spacing={2}>
+                                        <FormHelperText>C</FormHelperText>
+                                        <Input
+                                            value={startTime}
+                                            onChange={(e) => setStartTime(e.target.value)}
+                                            type="time"
+                                            slotProps={{
+                                                input: {
+                                                    min: '09:00',
+                                                    max: '18:00',
+                                                },
+                                            }}
+                                        />
+                                    </Stack>
                                 </FormControl>
                                 <FormControl>
-                                    <Input
-                                        value={endTime}
-                                        onChange={(e) => setEndTime(e.target.value)}
-                                        type="time"
-                                        slotProps={{
-                                            input: {
-                                                min: '09:00',
-                                                max: '18:00',
-                                            },
-                                        }}
-                                    />
-                                    <FormHelperText>До </FormHelperText>
+                                    <Stack direction={'row'} spacing={2}>
+                                        <FormHelperText>До</FormHelperText>
+                                        <Input
+                                            value={endTime}
+                                            onChange={(e) => setEndTime(e.target.value)}
+                                            type="time"
+                                            slotProps={{
+                                                input: {
+                                                    min: '09:00',
+                                                    max: '18:00',
+                                                },
+                                            }}
+                                        />
+                                    </Stack>
                                 </FormControl>
                             </Stack>
                         </AccordionDetails>

@@ -129,6 +129,7 @@ export const useCompanyStore = create<CompanyState>((set, get) => ({
     },
 
     updateCompany: (id, updatedData) => {
+        console.log(updatedData)
         const show = useToastStore.getState().show;
         http.put(`/api/companies/${id}`, updatedData, {
             headers: { 'Content-Type': 'application/json' },
