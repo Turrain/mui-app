@@ -24,13 +24,13 @@ export default function App() {
                 <Routes>
                     <Route element={<MainLayout />}>
 
-                        <Route element={<AuthGuard />}>
+                        {/* <Route element={<AuthGuard />}> */}
                             <Route path='/' element={<DashboardPage />} />
                             <Route path="/virtual-managers" element={<VirtualManagerPage />} />
                             <Route path="/crm" element={<CRMPage />} />
                             <Route path="/kanban" element={<Kanban />} />
                             <Route path="/chats" element={<ChatsPage />} />
-                        </Route>
+                        {/* </Route> */}
 
 
                         <Route path="/login" element={<SignInPage />} />

@@ -62,9 +62,9 @@ export default function SignInPage() {
     const [passwordRegister, setPasswordRegister] = React.useState('');
 
     React.useEffect(() => {
-        if (authService.getAuthUser()) {
+        // if (authService.getAuthUser()) {
             navigate(from, { replace: true });
-        }
+        // }
     }, [navigate, from]);
 
     return (
