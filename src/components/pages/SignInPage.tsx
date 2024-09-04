@@ -17,7 +17,6 @@ import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import { useLocation, useNavigate } from 'react-router-dom';
 import authService from '../../utils/api/auth.service';
 import { useUserStore } from '../../utils/stores/UserStore';
-import http from '../../utils/api/http-client';
 
 interface FormElements extends HTMLFormControlsCollection {
     username: HTMLInputElement;
@@ -67,10 +66,6 @@ export default function SignInPage() {
             navigate(from, { replace: true });
         }
     }, [navigate, from]);
-
-    const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:8001/api/auth/google';
-    }
 
     return (
         <Box>
@@ -158,7 +153,7 @@ export default function SignInPage() {
                                             variant="soft"
                                             color="neutral"
                                             fullWidth
-                                            onClick={handleGoogleLogin}
+                                            disabled
                                         >
                                             Продолжить с Google
                                         </Button>
