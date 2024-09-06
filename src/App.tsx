@@ -14,6 +14,7 @@ import VirtualManagerPage from "./components/pages/VirtualManagerPage";
 import CRMPage from "./components/pages/CRMPage";
 import ChatsPage from "./components/pages/ChatsPage";
 import CallButton from "./components/CallButton";
+import PomodoroTimer from "./components/pages/PomodoroPage";
 
 export default function App() {
     return (
@@ -30,6 +31,7 @@ export default function App() {
                             <Route path="/crm" element={<CRMPage />} />
                             <Route path="/kanban" element={<Kanban />} />
                             <Route path="/chats" element={<ChatsPage />} />
+                            <Route path="/pomodoro" element={<PomodoroTimer/>} />
                         {/* </Route> */}
 
 
