@@ -1,16 +1,5 @@
 import { create } from 'zustand';
 
-interface Task {
-    id: string;
-    content: string;
-}
-
-interface Column {
-    id: string;
-    title: string;
-    tasks: Task[];
-}
-
 interface BoardState {
     columns: Column[];
     moveCard: (fromColumnId: string, toColumnId: string, taskId: string) => void;
@@ -41,59 +30,60 @@ const useKanbanStore = create<BoardState>((set) => ({
                 { id: 'card-5', content: 'Card 5' },
             ],
         },
-        {
-            id: 'column-4',
-            title: 'Done',
-            tasks: [
-                { id: 'card-4', content: 'Card 4' },
-                { id: 'card-5', content: 'Card 5' },
-            ],
-        },
-        {
-            id: 'column-5',
-            title: 'Done',
-            tasks: [
-                { id: 'card-4', content: 'Card 4' },
-                { id: 'card-5', content: 'Card 5' },
-            ],
-        },
-        {
-            id: 'column-6',
-            title: 'Done',
-            tasks: [
-                { id: 'card-4', content: 'Card 4' },
-                { id: 'card-5', content: 'Card 5' },
-            ],
-        },
-        {
-            id: 'column-7',
-            title: 'Done',
-            tasks: [
-                { id: 'card-4', content: 'Card 4' },
-                { id: 'card-5', content: 'Card 5' },
-            ],
-        },
-        {
-            id: 'column-8',
-            title: 'Done',
-            tasks: [
-                { id: 'card-4', content: 'Card 4' },
-                { id: 'card-5', content: 'Card 5' },
-            ],
-        },
+        // {
+        //     id: 'column-4',
+        //     title: 'Done',
+        //     tasks: [
+        //         { id: 'card-4', content: 'Card 4' },
+        //         { id: 'card-5', content: 'Card 5' },
+        //     ],
+        // },
+        // {
+        //     id: 'column-5',
+        //     title: 'Done',
+        //     tasks: [
+        //         { id: 'card-4', content: 'Card 4' },
+        //         { id: 'card-5', content: 'Card 5' },
+        //     ],
+        // },
+        // {
+        //     id: 'column-6',
+        //     title: 'Done',
+        //     tasks: [
+        //         { id: 'card-4', content: 'Card 4' },
+        //         { id: 'card-5', content: 'Card 5' },
+        //     ],
+        // },
+        // {
+        //     id: 'column-7',
+        //     title: 'Done',
+        //     tasks: [
+        //         { id: 'card-4', content: 'Card 4' },
+        //         { id: 'card-5', content: 'Card 5' },
+        //     ],
+        // },
+        // {
+        //     id: 'column-8',
+        //     title: 'Done',
+        //     tasks: [
+        //         { id: 'card-4', content: 'Card 4' },
+        //         { id: 'card-5', content: 'Card 5' },
+        //     ],
+        // },
     ],
-    moveCard: (fromColumnId, toColumnId, cardId) =>
+    moveCard: (fromColumnId, toColumnId, taskId) =>
         set((state) => {
             const fromColumn = state.columns.find((column) => column.id === fromColumnId);
             const toColumn = state.columns.find((column) => column.id === toColumnId);
 
             if (!fromColumn || !toColumn) return state;
 
-            const fromCardIndex = fromColumn.tasks.findIndex((card) => card.id === cardId);
-            const toCardIndex = toColumn.tasks.findIndex((card) => card.id === cardId);
+            const fromCardIndex = fromColumn.tasks.findIndex((card) => card.id === taskId);
 
-            const [movedCard] = fromColumn.tasks.splice(fromCardIndex, 1);
-            toColumn.tasks.push(movedCard);
+            if (fromCardIndex !== -1) {
+                const [movedCard] = fromColumn.tasks.splice(fromCardIndex, 1);
+                toColumn.tasks.push(movedCard);
+            }
 
             return { columns: [...state.columns] };
         }),

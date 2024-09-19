@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Button, Typography, Box, FormControl, FormLabel, Input } from '@mui/joy';
 import Sidebar from '../Sidebar';
+import Header from '../Header';
 
 const PomodoroTimer: React.FC = () => {
     const [time, setTime] = useState<number>(25 * 60); // Default time 25 minutes
@@ -48,15 +49,48 @@ const PomodoroTimer: React.FC = () => {
     };
 
     return (
-        <>
+        <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
+            <Header />
             <Sidebar />
-            <Box sx={{ textAlign: 'center', p: 3, height: '100%'}}>
-                <Typography level="h2" component="div">
-                    Pomodoro Timer
-                </Typography>
-                <Typography level="h4" component="div" sx={{ mb: 2 }}>
-                    {formatTime(time)}
-                </Typography>
+            <Box
+                component="main"
+                className="MainContent"
+                sx={{
+                    px: { xs: 2, md: 6 },
+                    pt: {
+                        xs: 'calc(12px + var(--Header-height))',
+                        sm: 'calc(12px + var(--Header-height))',
+                        md: 3,
+                    },
+                    pb: { xs: 2, sm: 2, md: 3 },
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minWidth: 0,
+                    height: '100dvh',
+                    width: '100%',
+                    gap: 1,
+                    overflow: 'auto'
+                }}
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        mb: 1,
+                        gap: 1,
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        alignItems: { xs: 'start', sm: 'center' },
+                        flexWrap: 'wrap',
+                        justifyContent: 'space-between',
+                    }}
+                >
+                    <Typography level="h2">
+                        Pomodoro Timer
+                    </Typography>
+                    <Typography level="h4">
+                        {formatTime(time)}
+                    </Typography>
+                </Box>
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
                     <FormControl sx={{ mb: 2, mr: 2, width: '30%' }}>
@@ -77,7 +111,7 @@ const PomodoroTimer: React.FC = () => {
                     </Box>
                 </Box>
             </Box>
-        </>
+        </Box>
     );
 };
 

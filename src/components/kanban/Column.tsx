@@ -8,7 +8,7 @@ import { Add } from '@mui/icons-material';
 interface ColumnProps {
     id: string;
     title: string;
-    tasks: { id: string, content: string, subtasks: string[] }[];
+    tasks: { id: string, content: string }[];
     moveCard: (fromColumnId: string, toColumnId: string, taskId: string, subtaskIndex?: number) => void;
     setIsDraggingBoard: (isDragging: boolean) => void;
 }

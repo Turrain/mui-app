@@ -4,7 +4,7 @@ import { useDrag } from 'react-dnd';
 import { LocalPhone, Message } from '@mui/icons-material';
 
 interface TaskProps {
-    task: { id: string; content: string; subtasks: string[] };
+    task: { id: string; content: string };
     fromColumnId: string;
     setIsDraggingBoard: (isDragging: boolean) => void;
 }

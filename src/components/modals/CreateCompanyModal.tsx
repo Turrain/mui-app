@@ -82,7 +82,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
     return (
         <Modal open={open} onClose={() => onClose()} >
             <ModalDialog
-                size='sm'
+                size='lg'
                 color="primary"
                 layout={isMobile ? "fullscreen" : "center"}
                 variant="outlined"
