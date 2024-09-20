@@ -12,7 +12,8 @@ const TableView: React.FC<TableViewProps> = ({ columns, moveCard }) => {
         <Stack
             sx={{
                 display: 'flex',
-                gap: '20px'
+                gap: '20px',
+                my: 2,
             }}
         >
             {columns.map((column) => (
@@ -47,7 +48,10 @@ const TableInside: React.FC<{ column: Column; moveCard: (fromColumnId: string, t
                 ref={drop}
                 level='title-lg'
                 sx={{
-                    backgroundColor: isOver ? 'lightgray' : 'transparent',
+                    // backgroundColor: isOver ? 'lightgray' : 'transparent',
+                    borderColor: isOver ? 'lightgray' : 'transparent',
+                    borderWidth: 1,
+                    borderStyle: 'solid',
                     p: '10px',
                     cursor: 'pointer',
                 }}
@@ -57,7 +61,20 @@ const TableInside: React.FC<{ column: Column; moveCard: (fromColumnId: string, t
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <tbody>
                     {column.tasks.map((task) => (
-                        <DraggableTask key={task.id} task={task} fromColumnId={column.id} moveCard={moveCard} columnName={column.title} />
+                        <DraggableTask
+                            key={task.id}
+                            task={task}
+                            fromColumnId={column.id}
+                            moveCard={moveCard}
+                            columnName={column.title}
+                            chipCustomize={
+                                {
+                                    'To Do': 'var(--joy-palette-primary-softBg)',
+                                    'In Progress': 'var(--joy-palette-warning-softBg)',
+                                    'Done': 'var(--joy-palette-success-softBg)'
+                                }
+                            }
+                        />
                     ))}
                 </tbody>
             </table>
@@ -65,64 +82,70 @@ const TableInside: React.FC<{ column: Column; moveCard: (fromColumnId: string, t
     );
 };
 
-const DraggableTask: React.FC<{ task: Task; fromColumnId: string; moveCard: (fromColumnId: string, toColumnId: string, taskId: string) => void; columnName: string }> = ({ task, fromColumnId, moveCard, columnName }) => {
-    const [{ isDragging }, drag] = useDrag({
-        type: 'CARD',
-        item: { taskId: task.id, fromColumnId },
-        collect: (monitor) => ({
-            isDragging: !!monitor.isDragging(),
-        }),
-    });
+const DraggableTask: React.FC<{
+    task: Task;
+    fromColumnId: string;
+    moveCard: (fromColumnId: string, toColumnId: string, taskId: string) => void;
+    columnName: string;
+    chipCustomize: TaskChipCustomize;
+}> = ({
+    task,
+    fromColumnId,
+    moveCard,
+    columnName,
+    chipCustomize = {
+        'To Do': 'primary',
+        'In Progress': 'warning',
+        'Done': 'success'
+    }
+}) => {
+        const [{ isDragging }, drag] = useDrag({
+            type: 'CARD',
+            item: { taskId: task.id, fromColumnId },
+            collect: (monitor) => ({
+                isDragging: !!monitor.isDragging(),
+            }),
+        });
 
-    const [, drop] = useDrop({
-        accept: 'CARD',
-        drop: (item: { taskId: string; fromColumnId: string }) => {
-            if (item.fromColumnId !== fromColumnId) {
-                moveCard(item.fromColumnId, fromColumnId, item.taskId);
-            }
-        },
-    });
+        const [, drop] = useDrop({
+            accept: 'CARD',
+            drop: (item: { taskId: string; fromColumnId: string }) => {
+                if (item.fromColumnId !== fromColumnId) {
+                    moveCard(item.fromColumnId, fromColumnId, item.taskId);
+                }
+            },
+        });
 
-    return (
-        <tr
-            ref={(node) => drag(drop(node))}
-            style={{
-                opacity: isDragging ? 0.5 : 1,
-            }}
-        >
-            <Sheet
-                variant='outlined'
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    borderRadius: '4px',
-                    p: '8px',
-                    my: '4px',
+        return (
+            <tr
+                ref={(node) => drag(drop(node))}
+                style={{
+                    opacity: isDragging ? 0.5 : 1,
                 }}
             >
-                <td>{task.content}</td>
-                <td>
-                    <Chip
-                        // startDecorator={
-                        //     {
-                        //         'To Do': <AutorenewRounded />,
-                        //         'In Progress': <Block />,
-                        //     }[columnName]
-                        // }
-                        color={
-                            {
-                                'To Do': 'primary',
-                                'In Progress': 'warning',
-                                'Done': 'success'
-                            }[columnName] as ColorPaletteProp
-                        }
-                    >
-                        {columnName}
-                    </Chip>
-                </td>
-            </Sheet>
-        </tr >
-    );
-};
+                <Sheet
+                    variant='outlined'
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        borderRadius: '4px',
+                        p: '8px',
+                        my: '4px',
+                    }}
+                >
+                    <td>{task.content}</td>
+                    <td>
+                        <Chip
+                            sx={{
+                                backgroundColor: chipCustomize[columnName] || 'var(--joy-palette-primary-softBg)'
+                            }}
+                        >
+                            {columnName}
+                        </Chip>
+                    </td>
+                </Sheet>
+            </tr >
+        );
+    };
 
 export default TableView;

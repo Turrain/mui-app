@@ -89,3 +89,7 @@ interface Column {
     title: string;
     tasks: Task[];
 }
+
+interface TaskChipCustomize {
+    [key: string]: string;
+}

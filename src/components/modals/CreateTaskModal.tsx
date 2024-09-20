@@ -34,19 +34,25 @@ const CreateTaskModal: React.FC<CreateManagerModalProps> = ({ open, onClose }) =
 
 
     return (
-        <Modal open={open} onClose={() => onClose()}>
+        <Modal
+            open={open}
+            onClose={() => onClose()}
+            sx={{
+                display: 'flex', minHeight: '100dvh'
+            }}
+        >
             <ModalDialog
                 size='md'
                 color="primary"
                 layout="fullscreen"
                 variant="outlined"
             >
-                <Box sx={{ display: 'flex', minHeight: '100dvh'  , width: '100%'}}>
+                <Box sx={{ display: 'flex', minHeight: '100dvh', width: '100%' }}>
                     <Header />
                     <Box component="main" className="MainContent" sx={{ flex: 1 }}>
                         <MyMessages />
                     </Box>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
                         <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
                         <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
