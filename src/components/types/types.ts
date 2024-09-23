@@ -88,6 +88,7 @@ interface Column {
     id: string;
     title: string;
     tasks: Task[];
+    tagColor: string;
 }
 
 interface TaskChipCustomize {

@@ -1,6 +1,5 @@
 import { Box, Input, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useState, useEffect } from "react";
-import Header from "../Header";
 import MyMessages from "../MyMessages";
 
 interface CreateManagerModalProps {
@@ -38,28 +37,40 @@ const CreateTaskModal: React.FC<CreateManagerModalProps> = ({ open, onClose }) =
             open={open}
             onClose={() => onClose()}
             sx={{
-                display: 'flex', minHeight: '100dvh'
+                display: 'flex', minHeight: '100dvh', flex: 1
             }}
+            
         >
             <ModalDialog
-                size='md'
+                size='lg'
                 color="primary"
-                layout="fullscreen"
+                layout={isMobile ? "fullscreen" : 'center'}
                 variant="outlined"
+                sx={{
+                    maxWidth: '460px',
+                    '@media (max-width: 600px)': {
+                        maxWidth: '100%',
+                        margin: '0 10px',
+                    },
+                    '@media (max-width: 450px)': {
+                        maxWidth: '100vw',
+                        margin: '0',
+                        borderRadius: 0,
+                    },
+                }}
             >
                 <Box sx={{ display: 'flex', minHeight: '100dvh', width: '100%' }}>
-                    <Header />
-                    <Box component="main" className="MainContent" sx={{ flex: 1 }}>
+                    <Box>
                         <MyMessages />
                     </Box>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    {/* <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
                         <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
                         <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
                         <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
                         <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
                         <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
-                    </Box>
+                    </Box> */}
                 </Box>
                 <ModalClose />
             </ModalDialog>

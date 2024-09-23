@@ -8,8 +8,8 @@ import { Add } from '@mui/icons-material';
 interface ColumnProps {
     id: string;
     title: string;
-    tasks: { id: string, content: string }[];
-    moveCard: (fromColumnId: string, toColumnId: string, taskId: string, subtaskIndex?: number) => void;
+    tasks: Task[];
+    moveCard: (fromColumnId: string, toColumnId: string, taskId: string) => void;
     setIsDraggingBoard: (isDragging: boolean) => void;
 }
 
@@ -18,9 +18,9 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard, setIsDraggi
 
     const [, drop] = useDrop({
         accept: 'CARD',
-        drop: (item: { type: string; content: string; fromColumnId: string; taskId: string; subtaskIndex?: number }) => {
+        drop: (item: { type: string; content: string; fromColumnId: string; taskId: string }) => {
             if (item.fromColumnId !== id) {
-                moveCard(item.fromColumnId, id, item.taskId, item.subtaskIndex);
+                moveCard(item.fromColumnId, id, item.taskId);
             }
         },
     });
@@ -55,9 +55,9 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard, setIsDraggi
             >
                 <Add />
             </Button>
-            {tasks.map((task) => (
+            {tasks.map((task, index) => (
                 <Box>
-                    <Task key={task.id} task={task} fromColumnId={id} setIsDraggingBoard={setIsDraggingBoard} />
+                    <Task key={`task-${index}`} task={task} fromColumnId={id} setIsDraggingBoard={setIsDraggingBoard} />
                 </Box>
             ))}
             <CreateTaskModal open={isModalOpen} onClose={handleCloseModal} />

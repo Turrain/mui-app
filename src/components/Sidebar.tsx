@@ -151,7 +151,7 @@ const Sidebar = (() => {
             </ListItemButton>
           </ListItem>
           <ListItem>
-            <ListItemButton disabled onClick={() => navigate('/crm')}>
+            <ListItemButton onClick={() => navigate('/crm')}>
               <Dashboard />
               <ListItemContent>
                 <Stack

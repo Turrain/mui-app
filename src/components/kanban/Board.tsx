@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Column from './Column';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 import { Button, Stack } from '@mui/joy';
 import useKanbanStore from '../../utils/stores/KanbanStore';
 import TableView from './TableView';
@@ -52,8 +53,10 @@ const Board: React.FC = () => {
         setViewMode((prevMode) => (prevMode === 'kanban' ? 'table' : 'kanban'));
     };
 
+    const backend = window.matchMedia('(pointer: coarse)').matches ? TouchBackend : HTML5Backend;
+
     return (
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider backend={backend}>
             <Button onClick={toggleViewMode}>
                 Switch to {viewMode === 'kanban' ? 'Table View' : 'Kanban View'}
             </Button>
@@ -74,8 +77,8 @@ const Board: React.FC = () => {
                         userSelect: isDraggingBoard ? 'none' : 'auto',
                     }}
                 >
-                    {columns.map((column) => (
-                        <Column key={column.id} id={column.id} title={column.title} tasks={column.tasks} moveCard={moveCard} setIsDraggingBoard={setIsDraggingBoard} />
+                    {columns.map((column, index) => (
+                        <Column key={`kanban-column-${index}`} id={column.id} title={column.title} tasks={column.tasks} moveCard={moveCard} setIsDraggingBoard={setIsDraggingBoard} />
                     ))}
                 </Stack>
             ) : (

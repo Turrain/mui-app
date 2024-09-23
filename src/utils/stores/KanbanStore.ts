@@ -16,11 +16,13 @@ const useKanbanStore = create<BoardState>((set) => ({
                 { id: 'card-1', content: 'Card 1' },
                 { id: 'card-2', content: 'Card 2' },
             ],
+            tagColor: '#909090',
         },
         {
             id: 'column-2',
             title: 'In Progress',
             tasks: [{ id: 'card-3', content: 'Card 3' }],
+            tagColor: '#778899',
         },
         {
             id: 'column-3',
@@ -29,6 +31,7 @@ const useKanbanStore = create<BoardState>((set) => ({
                 { id: 'card-4', content: 'Card 4' },
                 { id: 'card-5', content: 'Card 5' },
             ],
+            tagColor: '#664455',
         },
         // {
         //     id: 'column-4',

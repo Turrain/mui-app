@@ -110,7 +110,7 @@ const CallButton = () => {
                             justifyContent="space-around"
                             container
                             spacing={{ xs: 2, md: 3 }}
-                            columns={{ xs: 4, sm: 8, md: 12 }}
+                            columns={{ xs: 6, sm: 8, md: 12 }}
                             sx={{ flexGrow: 1 }}
                         >
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((i) => (

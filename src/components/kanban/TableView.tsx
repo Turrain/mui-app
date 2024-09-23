@@ -1,5 +1,5 @@
-import { Chip, ColorPaletteProp, Sheet, Stack, Typography } from '@mui/joy';
-import React from 'react';
+import { Button, Chip, Sheet, Stack, Typography } from '@mui/joy';
+import React, { Dispatch, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
 interface TableViewProps {
@@ -16,22 +16,24 @@ const TableView: React.FC<TableViewProps> = ({ columns, moveCard }) => {
                 my: 2,
             }}
         >
-            {columns.map((column) => (
+            {columns.map((column, index) => (
                 <Sheet
-                    key={column.id}
+                    key={`table-${index}`}
                     sx={{
                         padding: '16px',
                         borderRadius: '4px',
                     }}
                 >
-                    <TableInside column={column} moveCard={moveCard} />
+                    <TableInside key={`kanban-table-${index}`} column={column} moveCard={moveCard} />
                 </Sheet>
             ))}
         </Stack>
     );
 };
 
-const TableInside: React.FC<{ column: Column; moveCard: (fromColumnId: string, toColumnId: string, cardId: string) => void }> = ({ column, moveCard }) => {
+const TableInside: React.FC<{ column: Column; moveCard: (fromColumnId: string, toColumnId: string, taskId: string) => void }> = ({ column, moveCard }) => {
+    const [chipColor, setChipColor] = useState({ [column.title]: column.tagColor });
+
     const [{ isOver }, drop] = useDrop({
         accept: 'CARD',
         drop: (item: { taskId: string; fromColumnId: string }) => {
@@ -48,7 +50,6 @@ const TableInside: React.FC<{ column: Column; moveCard: (fromColumnId: string, t
                 ref={drop}
                 level='title-lg'
                 sx={{
-                    // backgroundColor: isOver ? 'lightgray' : 'transparent',
                     borderColor: isOver ? 'lightgray' : 'transparent',
                     borderWidth: 1,
                     borderStyle: 'solid',
@@ -60,20 +61,15 @@ const TableInside: React.FC<{ column: Column; moveCard: (fromColumnId: string, t
             </Typography>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <tbody>
-                    {column.tasks.map((task) => (
+                    {column.tasks.map((task, index) => (
                         <DraggableTask
-                            key={task.id}
+                            key={`drag-task-${index}`}
                             task={task}
                             fromColumnId={column.id}
                             moveCard={moveCard}
                             columnName={column.title}
-                            chipCustomize={
-                                {
-                                    'To Do': 'var(--joy-palette-primary-softBg)',
-                                    'In Progress': 'var(--joy-palette-warning-softBg)',
-                                    'Done': 'var(--joy-palette-success-softBg)'
-                                }
-                            }
+                            chipCustomize={chipColor}
+                            setChipColor={setChipColor}
                         />
                     ))}
                 </tbody>
@@ -88,16 +84,14 @@ const DraggableTask: React.FC<{
     moveCard: (fromColumnId: string, toColumnId: string, taskId: string) => void;
     columnName: string;
     chipCustomize: TaskChipCustomize;
+    setChipColor: Dispatch<React.SetStateAction<TaskChipCustomize>>;
 }> = ({
     task,
     fromColumnId,
     moveCard,
     columnName,
-    chipCustomize = {
-        'To Do': 'primary',
-        'In Progress': 'warning',
-        'Done': 'success'
-    }
+    chipCustomize,
+    setChipColor
 }) => {
         const [{ isDragging }, drag] = useDrag({
             type: 'CARD',
@@ -116,6 +110,10 @@ const DraggableTask: React.FC<{
             },
         });
 
+        const handleColorChange = (color: string) => {
+            setChipColor(prev => ({ ...prev, [columnName]: color }));
+        };
+
         return (
             <tr
                 ref={(node) => drag(drop(node))}
@@ -123,18 +121,18 @@ const DraggableTask: React.FC<{
                     opacity: isDragging ? 0.5 : 1,
                 }}
             >
-                <Sheet
-                    variant='outlined'
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        borderRadius: '4px',
-                        p: '8px',
-                        my: '4px',
-                    }}
-                >
-                    <td>{task.content}</td>
-                    <td>
+                <td>
+                    <Sheet
+                        variant='outlined'
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            borderRadius: '4px',
+                            p: '8px',
+                            my: '4px',
+                        }}
+                    >
+                        <Typography>{task.content}</Typography>
                         <Chip
                             sx={{
                                 backgroundColor: chipCustomize[columnName] || 'var(--joy-palette-primary-softBg)'
@@ -142,9 +140,14 @@ const DraggableTask: React.FC<{
                         >
                             {columnName}
                         </Chip>
-                    </td>
-                </Sheet>
-            </tr >
+                        <div>
+                            <Button onClick={() => handleColorChange('#aa2200')}>Blue</Button>
+                            <Button onClick={() => handleColorChange('#bb5566')}>Green</Button>
+                            <Button onClick={() => handleColorChange('#cc1177')}>Red</Button>
+                        </div>
+                    </Sheet>
+                </td>
+            </tr>
         );
     };
 
