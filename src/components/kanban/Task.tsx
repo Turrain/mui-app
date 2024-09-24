@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, CardContent, IconButton, Stack, Typography } from '@mui/joy';
 import { useDrag } from 'react-dnd';
-import { LocalPhone, Message } from '@mui/icons-material';
+import { Edit, LocalPhone } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 interface TaskProps {
     task: Task;
@@ -10,6 +11,8 @@ interface TaskProps {
 }
 
 const Task: React.FC<TaskProps> = ({ task, fromColumnId, setIsDraggingBoard }) => {
+    const navigate = useNavigate();
+
     const [{ isDragging }, drag] = useDrag({
         type: 'CARD',
         item: { type: 'CARD', content: task.content, fromColumnId, taskId: task.id },
@@ -18,6 +21,10 @@ const Task: React.FC<TaskProps> = ({ task, fromColumnId, setIsDraggingBoard }) =
         }),
         end: () => setIsDraggingBoard(false),
     });
+
+    const handleOpenEditTask = () => {
+        navigate(`/edit/${task.id}`);
+    }
 
     return (
         <div ref={drag}>
@@ -42,8 +49,10 @@ const Task: React.FC<TaskProps> = ({ task, fromColumnId, setIsDraggingBoard }) =
                         flexDirection: 'row-reverse'
                     }}
                 >
-                    <IconButton>
-                        <Message />
+                    <IconButton
+                        onClick={handleOpenEditTask}
+                    >
+                        <Edit />
                     </IconButton>
                     <IconButton>
                         <LocalPhone />

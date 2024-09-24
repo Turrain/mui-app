@@ -43,7 +43,7 @@ export default function CRMPage() {
                             justifyContent: 'space-between',
                         }}
                     >
-                        <Typography level="h2" component="h1">
+                        <Typography level="h3" component="h1">
                             CRM
                         </Typography>
                     </Box>

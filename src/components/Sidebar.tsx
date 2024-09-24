@@ -96,7 +96,7 @@ const Sidebar = (() => {
           <BrightnessAutoRoundedIcon />
         </IconButton> */}
         <img src={logo} height={50} />
-        <Typography level="title-lg">Моя компания</Typography>
+        <Typography level="title-lg">aitomaton</Typography>
         <ColorSchemeToggle sx={{ ml: 'auto' }} />
       </Box>
 
@@ -159,7 +159,7 @@ const Sidebar = (() => {
                   justifyContent={'space-between'}
                 >
                   <Typography level="title-sm">CRM</Typography>
-                  <Typography level='title-sm' color='warning'>Soon</Typography>
+                  <Typography level='title-sm' color='warning'>Trial</Typography>
                 </Stack>
               </ListItemContent>
             </ListItemButton>

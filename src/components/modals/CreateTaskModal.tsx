@@ -1,6 +1,5 @@
-import { Box, Input, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
+import { Box, Button, Input, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useState, useEffect } from "react";
-import MyMessages from "../MyMessages";
 
 interface CreateManagerModalProps {
     open: boolean;
@@ -8,6 +7,12 @@ interface CreateManagerModalProps {
 }
 
 const CreateTaskModal: React.FC<CreateManagerModalProps> = ({ open, onClose }) => {
+    const [taskName, setTaskName] = React.useState('');
+    const [taskCompany, setTaskCompany] = React.useState('');
+    const [taskPhone, setTaskPhone] = React.useState('');
+    const [taskComment, setTaskComment] = React.useState('');
+    const [taskTask, setTaskTask] = React.useState('');
+    const [taskDateTime, setTaskDateTime] = React.useState('');
 
     const useMediaQuery = (query: string): boolean => {
         const [matches, setMatches] = useState<boolean>(false);
@@ -31,6 +36,9 @@ const CreateTaskModal: React.FC<CreateManagerModalProps> = ({ open, onClose }) =
 
     const isMobile = useMediaQuery('(max-width:600px)');
 
+    const handleCreateTask = () => {
+
+    }
 
     return (
         <Modal
@@ -39,7 +47,6 @@ const CreateTaskModal: React.FC<CreateManagerModalProps> = ({ open, onClose }) =
             sx={{
                 display: 'flex', minHeight: '100dvh', flex: 1
             }}
-            
         >
             <ModalDialog
                 size='lg'
@@ -47,32 +54,71 @@ const CreateTaskModal: React.FC<CreateManagerModalProps> = ({ open, onClose }) =
                 layout={isMobile ? "fullscreen" : 'center'}
                 variant="outlined"
                 sx={{
-                    maxWidth: '460px',
-                    '@media (max-width: 600px)': {
-                        maxWidth: '100%',
-                        margin: '0 10px',
-                    },
-                    '@media (max-width: 450px)': {
-                        maxWidth: '100vw',
-                        margin: '0',
-                        borderRadius: 0,
-                    },
+
                 }}
             >
-                <Box sx={{ display: 'flex', minHeight: '100dvh', width: '100%' }}>
-                    <Box>
-                        <MyMessages />
+                <Box sx={{ display: 'flex', width: '100%', pt: 'var(--Header-height)' }}>
+                    <Box
+                        display={'flex'}
+                        flexDirection={'column'}
+                        gap={1}
+                        width={'100%'}
+                    >
+                        <Typography level="h3">Create Task</Typography>
+                        <Input
+                            placeholder="Name"
+                            variant="outlined"
+                            fullWidth
+                            value={taskName}
+                            onChange={(e) => setTaskName(e.target.value)}
+                        />
+                        <Input
+                            placeholder="Company"
+                            variant="outlined"
+                            fullWidth
+                            value={taskCompany}
+                            onChange={(e) => setTaskCompany(e.target.value)}
+                        />
+                        <Input
+                            placeholder="Phone"
+                            variant="outlined"
+                            fullWidth
+                            value={taskPhone}
+                            onChange={(e) => setTaskPhone(e.target.value)}
+                        />
+                        <Input
+                            placeholder="Comment"
+                            variant="outlined"
+                            fullWidth
+                            value={taskComment}
+                            onChange={(e) => setTaskComment(e.target.value)}
+                        />
+                        <Input
+                            placeholder="Task"
+                            variant="outlined"
+                            fullWidth
+                            value={taskTask}
+                            onChange={(e) => setTaskTask(e.target.value)}
+                        />
+                        <Input
+                            placeholder="Datetime"
+                            variant="outlined"
+                            fullWidth
+                            value={taskDateTime}
+                            onChange={(e) => setTaskDateTime(e.target.value)}
+                        />
+                        <Button
+                            onClick={handleCreateTask}
+                        >
+                            Create Task
+                        </Button>
                     </Box>
-                    {/* <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
-                        <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
-                        <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
-                        <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
-                        <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
-                        <Input placeholder="Type in here…" variant="outlined" color="primary" size="lg" />
-                    </Box> */}
                 </Box>
-                <ModalClose />
+                <ModalClose
+                    sx={{
+                        mt: isMobile ? 'var(--Header-height)' : 0
+                    }}
+                />
             </ModalDialog>
         </Modal>
     );

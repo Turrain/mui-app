@@ -35,6 +35,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard, setIsDraggi
 
     return (
         <Sheet
+            key={`board-${id}`}
             ref={drop}
             sx={{
                 minWidth: '300px',
@@ -62,7 +63,6 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard, setIsDraggi
             ))}
             <CreateTaskModal open={isModalOpen} onClose={handleCloseModal} />
         </Sheet>
-
     );
 };
 

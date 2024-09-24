@@ -9,7 +9,6 @@ import CircleIcon from '@mui/icons-material/Circle';
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import PhoneInTalkRoundedIcon from '@mui/icons-material/PhoneInTalkRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import { UserProps } from '../components/types/types';
 import { toggleMessagesPane } from '../utils/utils';
 
 type MessagesPaneHeaderProps = {
@@ -25,7 +24,7 @@ export default function MessagesPaneHeader(props: MessagesPaneHeaderProps) {
       sx={{
         borderBottom: '1px solid',
         borderColor: 'divider',
-        backgroundColor: 'background.body',
+        // backgroundColor: 'background.body',
       }}
       py={{ xs: 2, md: 2 }}
       px={{ xs: 1, md: 2 }}

@@ -6,7 +6,6 @@ import AvatarWithStatus from './AvatarWithStatus';
 import ChatBubble from './ChatBubble';
 import MessageInput from './MessageInput';
 import MessagesPaneHeader from './MessagesPaneHeader';
-import { ChatProps, MessageProps } from './types/types';
 
 type MessagesPaneProps = {
   chat: ChatProps;
@@ -24,7 +23,7 @@ export default function MessagesPane(props: MessagesPaneProps) {
   return (
     <Sheet
       sx={{
-        height: { xs: 'calc(100dvh - var(--Header-height))', lg: '100dvh' },
+        height: { xs: 'calc(100dvh - var(--Header-height) - 48px - 48px - 16px - 52px)', lg: '100dvh' },
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: 'background.level1',

@@ -15,6 +15,7 @@ import CRMPage from "./components/pages/CRMPage";
 import ChatsPage from "./components/pages/ChatsPage";
 import CallButton from "./components/CallButton";
 import PomodoroTimer from "./components/pages/PomodoroPage";
+import EditTaskPage from "./components/pages/kanban/EditTaskPage";
 
 export default function App() {
     return (
@@ -26,12 +27,13 @@ export default function App() {
                     <Route element={<MainLayout />}>
 
                         {/* <Route element={<AuthGuard />}> */}
-                            <Route path='/' element={<DashboardPage />} />
-                            <Route path="/virtual-managers" element={<VirtualManagerPage />} />
-                            <Route path="/crm" element={<CRMPage />} />
-                            <Route path="/kanban" element={<Kanban />} />
-                            <Route path="/chats" element={<ChatsPage />} />
-                            <Route path="/pomodoro" element={<PomodoroTimer/>} />
+                        <Route path='/' element={<DashboardPage />} />
+                        <Route path="/virtual-managers" element={<VirtualManagerPage />} />
+                        <Route path="/crm" element={<CRMPage />} />
+                        <Route path="/kanban" element={<Kanban />} />
+                        <Route path="/chats" element={<ChatsPage />} />
+                        <Route path="/pomodoro" element={<PomodoroTimer />} />
+                        <Route path="/edit/:taskId" element={<EditTaskPage />} />
                         {/* </Route> */}
 
 
