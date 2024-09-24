@@ -26,15 +26,15 @@ export default function App() {
                 <Routes>
                     <Route element={<MainLayout />}>
 
-                        {/* <Route element={<AuthGuard />}> */}
-                        <Route path='/' element={<DashboardPage />} />
-                        <Route path="/virtual-managers" element={<VirtualManagerPage />} />
-                        <Route path="/crm" element={<CRMPage />} />
-                        <Route path="/kanban" element={<Kanban />} />
-                        <Route path="/chats" element={<ChatsPage />} />
-                        <Route path="/pomodoro" element={<PomodoroTimer />} />
-                        <Route path="/edit/:taskId" element={<EditTaskPage />} />
-                        {/* </Route> */}
+                        <Route element={<AuthGuard />}>
+                            <Route path='/' element={<DashboardPage />} />
+                            <Route path="/virtual-managers" element={<VirtualManagerPage />} />
+                            <Route path="/crm" element={<CRMPage />} />
+                            <Route path="/kanban" element={<Kanban />} />
+                            <Route path="/chats" element={<ChatsPage />} />
+                            <Route path="/pomodoro" element={<PomodoroTimer />} />
+                            <Route path="/edit/:taskId" element={<EditTaskPage />} />
+                        </Route>
 
 
                         <Route path="/login" element={<SignInPage />} />
