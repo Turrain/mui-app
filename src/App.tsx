@@ -16,6 +16,7 @@ import ChatsPage from "./components/pages/ChatsPage";
 import CallButton from "./components/CallButton";
 import PomodoroTimer from "./components/pages/PomodoroPage";
 import EditTaskPage from "./components/pages/kanban/EditTaskPage";
+import GoogleAuthRedirect from "./components/pages/auth/GoogleAuthRedirect";
 
 export default function App() {
     return (
@@ -38,6 +39,7 @@ export default function App() {
 
 
                         <Route path="/login" element={<SignInPage />} />
+                        <Route path="/auth/google/callback" element={<GoogleAuthRedirect />} />
                     </Route>
                 </Routes>
             </storesContext.Provider>

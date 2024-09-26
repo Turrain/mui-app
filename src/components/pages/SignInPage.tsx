@@ -62,10 +62,15 @@ export default function SignInPage() {
     const [passwordRegister, setPasswordRegister] = React.useState('');
 
     React.useEffect(() => {
-        // if (authService.getAuthUser()) {
+        if (authService.getAuthUser()) {
             navigate(from, { replace: true });
-        // }
+        }
     }, [navigate, from]);
+
+    const handleGoogleLogin = async () => {
+        const url = await authService.googleLogin();
+        window.location.href = url.authorization_url
+    }
 
     return (
         <Box>
@@ -153,7 +158,7 @@ export default function SignInPage() {
                                             variant="soft"
                                             color="neutral"
                                             fullWidth
-                                            disabled
+                                            onClick={handleGoogleLogin}
                                         >
                                             Продолжить с Google
                                         </Button>

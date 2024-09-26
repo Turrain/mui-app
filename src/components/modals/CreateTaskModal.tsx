@@ -1,6 +1,6 @@
 import { Box, Button, Input, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useState, useEffect } from "react";
-import { gapi } from 'gapi-script';
+import http from '../../utils/api/http-client';
 
 interface CreateManagerModalProps {
     open: boolean;
@@ -37,46 +37,19 @@ const CreateTaskModal: React.FC<CreateManagerModalProps> = ({ open, onClose }) =
 
     const isMobile = useMediaQuery('(max-width:600px)');
 
-    // useEffect(() => {
-    //     const initClient = () => {
-    //         gapi.client.init({
-    //             apiKey: 'AIzaSyDh6TsStWx7fMEB4t5V9UI_ZLGwHrBhkmQ',
-    //             clientId: '920149483036-0k7bht13rihp49hr06rg75hvhks8c0s9.apps.googleusercontent.com',
-    //             discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
-    //             scope: "https://www.googleapis.com/auth/calendar"
-    //         }).then(() => {
-    //             gapi.auth2.getAuthInstance().signIn({
-    //                 scope: "https://www.googleapis.com/auth/calendar"
-    //             }).then(() => {
-    //                 console.log('User signed in');
-    //             }).catch(error => console.error("Sign in error", error));
-    //         });
-    //     };
-
-    //     gapi.load("client:auth2", initClient);
-    // }, []);
-
     const handleCreateTask = async () => {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
         const event = {
             summary: taskName + " " + taskCompany,
             description: taskComment + "\n" + taskTask + "\n" + taskPhone,
-            start: {
-                dateTime: taskDateTime,
-                timeZone: timeZone
-            },
-            end: {
-                dateTime: new Date(new Date(taskDateTime).getTime() + 60 * 60 * 1000).toISOString(),
-                timeZone: timeZone
-            },
+            start_date_time: taskDateTime,
+            end_date_time: new Date(new Date(taskDateTime).getTime() + 60 * 60 * 1000).toISOString(),
+            time_zone: timeZone
         };
 
         try {
-            await gapi.client.calendar.events.insert({
-                calendarId: 'primary',
-                resource: event,
-            });
+            await http.post('/api/add-event', event);
             alert('Event created: ' + event.summary);
             onClose();
         } catch (error) {

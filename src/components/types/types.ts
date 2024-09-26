@@ -82,12 +82,12 @@ interface ChatProps {
 interface Task {
     id: string;
     content: string;
-    name: string;
-    company: string;
-    phone: string;
-    comment: string;
-    task: string;
-    datetime: Date;
+    // name: string;
+    // company: string;
+    // phone: string;
+    // comment: string;
+    // task: string;
+    // datetime: Date;
 }
 
 interface Column {
@@ -99,4 +99,17 @@ interface Column {
 
 interface TaskChipCustomize {
     [key: string]: string;
+}
+
+interface CalendarEvents {
+    id: number;
+    title: string;
+    startHour: number;
+    endHour: number;
+    date: Date;
+}
+
+interface DayViewProps {
+    events: CalendarEvents[];
+    onDrop: (item: any, hour: number, date: Date) => void;
 }

@@ -22,6 +22,23 @@ const login = async (data: UserLogin) => {
     }
 }
 
+const googleLogin = async () => {
+    try {
+        const response = await http.get('/auth/google/authorize')
+        const url = response.data;
+        return url;
+    } catch (error) {
+        console.error('Ошибка входа', error);
+        throw error;
+    }
+}
+
+const google_login = async (token: any) => {
+    localStorage.setItem('authUser', JSON.stringify(token));
+    
+    return token;
+}
+
 const register = (data: UserCreate) => {
     return http.post('/auth/register', data);
 }
@@ -54,7 +71,9 @@ const methods = {
     register,
     profile,
     logout,
-    getAuthUser
+    getAuthUser,
+    googleLogin,
+    google_login
 }
 
 export default methods;
