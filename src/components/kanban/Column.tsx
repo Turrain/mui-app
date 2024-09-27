@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Button, Typography, Box, Sheet } from '@mui/joy';
 import Task from './Task';
 import { useDrop } from 'react-dnd';
@@ -9,21 +9,31 @@ interface ColumnProps {
     id: string;
     title: string;
     tasks: Task[];
-    moveCard: (fromColumnId: string, toColumnId: string, taskId: string) => void;
+    moveTask: (fromColumnId: string, toColumnId: string, taskId: string) => void;
     setIsDraggingBoard: (isDragging: boolean) => void;
 }
 
-const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard, setIsDraggingBoard }) => {
+const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveTask, setIsDraggingBoard }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [, drop] = useDrop({
-        accept: 'CARD',
-        drop: (item: { type: string; content: string; fromColumnId: string; taskId: string }) => {
-            if (item.fromColumnId !== id) {
-                moveCard(item.fromColumnId, id, item.taskId);
-            }
+    const moveTask1 = useCallback(
+        (dragIndex: number, hoverIndex: number) => {
+          const draggedTask = tasks[dragIndex];
+          const newTasks = [...tasks];
+          newTasks.splice(dragIndex, 1);
+          newTasks.splice(hoverIndex, 0, draggedTask);
+          // Обновите состояние задач соответсвенно
         },
-    });
+        [tasks],
+      );
+    // const [, drop] = useDrop({
+    //     accept: 'TASK',
+    //     drop: (item: { taskId: string, fromColumnId: string }) => {
+    //         if (item.fromColumnId !== id) {
+    //             moveTask(item.fromColumnId, id, item.taskId, -1, -1);
+    //         }
+    //     },
+    // });
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -36,7 +46,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard, setIsDraggi
     return (
         <Sheet
             key={`board-${id}`}
-            ref={drop}
+            // ref={drop}
             sx={{
                 minWidth: '300px',
                 padding: '16px',
@@ -58,7 +68,14 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, moveCard, setIsDraggi
             </Button>
             {tasks.map((task, index) => (
                 <Box>
-                    <Task key={`task-${index}`} task={task} fromColumnId={id} setIsDraggingBoard={setIsDraggingBoard} />
+                    <Task
+                        key={`task-${index}`}
+                        task={task}
+                        index={index}
+                        fromColumnId={id}
+                        moveTask={moveTask1}
+                        setIsDraggingBoard={setIsDraggingBoard}
+                    />
                 </Box>
             ))}
             <CreateTaskModal open={isModalOpen} onClose={handleCloseModal} />

@@ -49,9 +49,9 @@ export default function CRMPage() {
                             CRM
                         </Typography>
                     </Box>
-                    {/* <Board /> */}
+                    <Board />
                     {/* <Calendar /> */}
-                    <Scheduler />
+                    {/* <Scheduler /> */}
                 </Box>
         </Box>
     );

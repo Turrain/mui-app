@@ -1,26 +1,29 @@
 import React from 'react';
-import { Box } from '@mui/joy';
-import { startOfWeek, addDays } from 'date-fns';
-import DayView from './DayView';
+import { Box, Typography } from '@mui/joy';
+import DraggableEvent from './DraggableEvent';
+import { startOfWeek, endOfWeek, addDays, format } from 'date-fns';
 
-const WeekView: React.FC<DayViewProps> = ({ events, onDrop }) => {
-    const start = startOfWeek(new Date(), { weekStartsOn: 0 });
+const WeekView: React.FC<{ events: CalendarEvents[]; startDate: Date; onDelete: (id: number) => void }> = ({ events, startDate, onDelete }) => {
+    const renderDays = () => {
+        const start = startOfWeek(startDate);
+        const end = endOfWeek(startDate);
+        const days = [];
 
-    const renderWeek = () => {
-        return Array.from({ length: 7 }, (_, i) => {
-            const day = addDays(start, i);
+        for (let i = start; i <= end; i = addDays(i, 1)) {
+            days.push(new Date(i));
+        }
 
-            return (
-                <Box key={i} sx={{ border: '1px solid black', margin: 1 }}>
-                    <Box sx={{ fontWeight: 'bold', padding: 1 }}>{day.toDateString()}</Box>
-                    {/* Reuse the DayView logic here for hour slots */}
-                    <DayView events={events} onDrop={onDrop} />
-                </Box>
-            );
-        });
+        return days.map((day) => (
+            <Box key={day.toISOString()} sx={{ width: '14%', borderLeft: '1px solid lightgray', padding: 1 }}>
+                <Typography>{format(day, 'eeee do')}</Typography>
+                {events.filter((event) => event.date.toDateString() === day.toDateString()).map((event) => (
+                    <DraggableEvent key={event.id} event={event} onDelete={onDelete} />
+                ))}
+            </Box>
+        ));
     };
 
-    return <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>{renderWeek()}</Box>;
+    return <Box display="flex">{renderDays()}</Box>;
 };
 
 export default WeekView;
