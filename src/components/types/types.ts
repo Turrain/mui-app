@@ -80,7 +80,7 @@ interface ChatProps {
 };
 
 interface Task {
-    id: string;
+    id: number;
     content: string;
     // name: string;
     // company: string;
@@ -91,7 +91,7 @@ interface Task {
 }
 
 interface Column {
-    id: string;
+    id: number;
     title: string;
     tasks: Task[];
     tagColor: string;

@@ -5,12 +5,13 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { Button, Stack } from '@mui/joy';
 import useKanbanStore from '../../utils/stores/KanbanStore';
-import TableView from './TableView';
+import TableColumn from './TableColumn';
 
 
 const Board: React.FC = () => {
-    const columns = useKanbanStore(state => state.columns);
-    const moveCard = useKanbanStore(state => state.moveCard);
+    const { columns } = useKanbanStore(state => ({
+        columns: state.columns,
+    }));
     const [isDraggingBoard, setIsDraggingBoard] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
@@ -78,11 +79,42 @@ const Board: React.FC = () => {
                     }}
                 >
                     {columns.map((column, index) => (
-                        <Column key={`kanban-column-${index}`} id={column.id} title={column.title} tasks={column.tasks} moveCard={moveCard} setIsDraggingBoard={setIsDraggingBoard} />
+                        <Column
+                            key={`board-column-${index}`}
+                            id={column.id}
+                            title={column.title}
+                            tasks={column.tasks}
+                            tagColor={column.tagColor}
+                            setIsDraggingBoard={setIsDraggingBoard}
+                        />
                     ))}
                 </Stack>
             ) : (
-                <TableView columns={columns} moveCard={moveCard} />
+                <Stack
+                    sx={{
+                        display: 'flex',
+                        gap: '20px',
+                        my: 2,
+                    }}
+                >
+                    {columns.map((column, index) => (
+                        <Stack
+                            key={`table-${index}`}
+                            sx={{
+                                padding: '16px',
+                                borderRadius: '4px',
+                            }}
+                        >
+                            <TableColumn
+                                key={`kanban-table-${index}`}
+                                id={column.id}
+                                title={column.title}
+                                tasks={column.tasks}
+                                tagColor={column.tagColor}
+                            />
+                        </Stack>
+                    ))}
+                </Stack>
             )}
         </DndProvider>
     );

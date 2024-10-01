@@ -4,10 +4,10 @@ import { useDrag, useDrop } from 'react-dnd';
 
 interface TableViewProps {
     columns: Column[];
-    moveCard: (fromColumnId: string, toColumnId: string, taskId: string) => void;
+    moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void;
 }
 
-const TableView: React.FC<TableViewProps> = ({ columns, moveCard }) => {
+const TableView: React.FC<TableViewProps> = ({ columns, moveTask }) => {
     return (
         <Stack
             sx={{
@@ -24,20 +24,23 @@ const TableView: React.FC<TableViewProps> = ({ columns, moveCard }) => {
                         borderRadius: '4px',
                     }}
                 >
-                    <TableInside key={`kanban-table-${index}`} column={column} moveCard={moveCard} />
+                    <TableInside key={`kanban-table-${index}`} column={column} moveTask={moveTask} />
                 </Sheet>
             ))}
         </Stack>
     );
 };
 
-const TableInside: React.FC<{ column: Column; moveCard: (fromColumnId: string, toColumnId: string, taskId: string) => void }> = ({ column, moveCard }) => {
+const TableInside: React.FC<{
+    column: Column;
+    moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void
+}> = ({ column, moveTask }) => {
     const [chipColor, setChipColor] = useState({ [column.title]: column.tagColor });
 
     const [{ isOver }, drop] = useDrop({
         accept: 'CARD',
-        drop: (item: { taskId: string; fromColumnId: string }) => {
-            moveCard(item.fromColumnId, column.id, item.taskId);
+        drop: (item: { index: number; fromColumnId: number }) => {
+            moveTask(item.fromColumnId, column.id, item.index, column.tasks.length);
         },
         collect: (monitor) => ({
             isOver: !!monitor.isOver(),
@@ -65,8 +68,9 @@ const TableInside: React.FC<{ column: Column; moveCard: (fromColumnId: string, t
                         <DraggableTask
                             key={`drag-task-${index}`}
                             task={task}
+                            index={index}
                             fromColumnId={column.id}
-                            moveCard={moveCard}
+                            moveTask={moveTask}
                             columnName={column.title}
                             chipCustomize={chipColor}
                             setChipColor={setChipColor}
@@ -80,22 +84,24 @@ const TableInside: React.FC<{ column: Column; moveCard: (fromColumnId: string, t
 
 const DraggableTask: React.FC<{
     task: Task;
-    fromColumnId: string;
-    moveCard: (fromColumnId: string, toColumnId: string, taskId: string) => void;
+    index: number,
+    fromColumnId: number;
+    moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void;
     columnName: string;
     chipCustomize: TaskChipCustomize;
     setChipColor: Dispatch<React.SetStateAction<TaskChipCustomize>>;
 }> = ({
     task,
+    index,
     fromColumnId,
-    moveCard,
+    moveTask,
     columnName,
     chipCustomize,
     setChipColor
 }) => {
         const [{ isDragging }, drag] = useDrag({
             type: 'CARD',
-            item: { taskId: task.id, fromColumnId },
+            item: { index, fromColumnId },
             collect: (monitor) => ({
                 isDragging: !!monitor.isDragging(),
             }),
@@ -103,9 +109,9 @@ const DraggableTask: React.FC<{
 
         const [, drop] = useDrop({
             accept: 'CARD',
-            drop: (item: { taskId: string; fromColumnId: string }) => {
+            drop: (item: { index: number; fromColumnId: number }) => {
                 if (item.fromColumnId !== fromColumnId) {
-                    moveCard(item.fromColumnId, fromColumnId, item.taskId);
+                    moveTask(item.fromColumnId, fromColumnId, item.index, index);
                 }
             },
         });

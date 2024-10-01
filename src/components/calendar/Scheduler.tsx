@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, ButtonGroup, Button } from '@mui/joy';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -16,6 +16,11 @@ const Scheduler: React.FC = () => {
         { id: 1, title: 'Meeting', startHour: 9, endHour: 10, date: new Date() },
         { id: 2, title: 'Lunch', startHour: 12, endHour: 13, date: new Date() },
     ]);
+
+    useEffect(() => {
+        console.log(events);
+        
+    }, [events]);
 
     const [viewMode, setViewMode] = useState<ViewMode>('Day');
     const [currentDate, setCurrentDate] = useState<Date>(new Date());

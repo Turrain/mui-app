@@ -1,7 +1,7 @@
+import Scheduler from '../calendar/Scheduler';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
 import { Typography, Box } from '@mui/joy';
-import Board from '../kanban/Board';
 
 export default function CRMPage() {
 
@@ -43,10 +43,10 @@ export default function CRMPage() {
                     }}
                 >
                     <Typography level="h3" component="h1">
-                        CRM
+                        Календарь
                     </Typography>
                 </Box>
-                <Board />
+                <Scheduler />
             </Box>
         </Box>
     );

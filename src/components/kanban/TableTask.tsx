@@ -1,21 +1,20 @@
-import React, { useRef } from 'react';
-import { Card, CardContent, IconButton, Stack, Typography } from '@mui/joy';
-import { useDrag, useDrop } from 'react-dnd';
-import { Edit, LocalPhone } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { Sheet, Typography, Chip, Button } from "@mui/joy";
+import { Dispatch, useRef } from "react";
+import { useDrag, useDrop } from "react-dnd";
 
-interface TaskProps {
+interface TableTaskProps {
     task: Task;
-    index: number;
+    index: number,
     fromColumnId: number;
     moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void;
-    setIsDraggingBoard: (isDragging: boolean) => void;
+    columnName: string;
+    chipCustomize: TaskChipCustomize;
+    setChipColor: Dispatch<React.SetStateAction<TaskChipCustomize>>;
 }
 
-const Task: React.FC<TaskProps> = ({ task, index, fromColumnId, moveTask, setIsDraggingBoard }) => {
-    const navigate = useNavigate();
+const TableTask: React.FC<TableTaskProps> = ({ task, index, fromColumnId, moveTask, columnName, chipCustomize, setChipColor }) => {
+    const ref = useRef<HTMLTableRowElement>(null);
 
-    const ref = useRef<HTMLDivElement>(null);
     const [, drop] = useDrop({
         accept: 'TASK',
         hover(item: { index: number, fromColumnId: number}, monitor) {
@@ -56,50 +55,49 @@ const Task: React.FC<TaskProps> = ({ task, index, fromColumnId, moveTask, setIsD
         collect: (monitor) => ({
             isDragging: !!monitor.isDragging(),
         }),
-        end: () => setIsDraggingBoard(false),
     });
 
-    const handleOpenEditTask = () => {
-        navigate(`/edit/${task.id}`);
-    }
+    const handleColorChange = (color: string) => {
+        setChipColor(prev => ({ ...prev, [columnName]: color }));
+    };
 
-    drag(drop(ref));
+    drag(drop(ref))
 
     return (
-        <div ref={ref}>
-            <Card
-                sx={{
-                    opacity: isDragging ? 0.5 : 1,
-                    marginBottom: 2
-                }}
-                variant='soft'
-            >
-                <CardContent>
-                    <Typography>
-                        {task.content}
-                    </Typography>
-                    <Stack spacing={2}>
-                        <Typography>123</Typography>
-                    </Stack>
-                </CardContent>
-                <Stack
+        <tr
+            ref={ref}
+            style={{
+                opacity: isDragging ? 0.5 : 1,
+            }}
+        >
+            <td>
+                <Sheet
+                    variant='outlined'
                     sx={{
                         display: 'flex',
-                        flexDirection: 'row-reverse'
+                        justifyContent: 'space-between',
+                        borderRadius: '4px',
+                        p: '8px',
+                        my: '4px',
                     }}
                 >
-                    <IconButton
-                        onClick={handleOpenEditTask}
+                    <Typography>{task.content}</Typography>
+                    <Chip
+                        sx={{
+                            backgroundColor: chipCustomize[columnName] || 'var(--joy-palette-primary-softBg)'
+                        }}
                     >
-                        <Edit />
-                    </IconButton>
-                    <IconButton>
-                        <LocalPhone />
-                    </IconButton>
-                </Stack>
-            </Card>
-        </div>
+                        {columnName}
+                    </Chip>
+                    <div>
+                        <Button onClick={() => handleColorChange('#aa2200')}>Blue</Button>
+                        <Button onClick={() => handleColorChange('#bb5566')}>Green</Button>
+                        <Button onClick={() => handleColorChange('#cc1177')}>Red</Button>
+                    </div>
+                </Sheet>
+            </td>
+        </tr>
     );
 };
 
-export default Task;
+export default TableTask;

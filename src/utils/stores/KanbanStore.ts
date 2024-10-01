@@ -2,95 +2,55 @@ import { create } from 'zustand';
 
 interface BoardState {
     columns: Column[];
-    moveCard: (fromColumnId: string, toColumnId: string, taskId: string) => void;
-    addCard: (columnId: string, task: Task) => void;
-    removeCard: (columnId: string, taskId: string) => void;
+    moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void;
+    addTask: (columnId: number, task: Task) => void;
+    removeTask: (columnId: number, taskId: number) => void;
 }
 
 const useKanbanStore = create<BoardState>((set) => ({
     columns: [
         {
-            id: 'column-1',
+            id: 1,
             title: 'To Do',
             tasks: [
-                { id: 'card-1', content: 'Card 1' },
-                { id: 'card-2', content: 'Card 2' },
+                { id: 1, content: 'Card 1' },
+                { id: 2, content: 'Card 2' },
             ],
             tagColor: '#909090',
         },
         {
-            id: 'column-2',
+            id: 2,
             title: 'In Progress',
-            tasks: [{ id: 'card-3', content: 'Card 3' }],
+            tasks: [{ id: 3, content: 'Card 3' }],
             tagColor: '#778899',
         },
         {
-            id: 'column-3',
+            id: 3,
             title: 'Done',
             tasks: [
-                { id: 'card-4', content: 'Card 4' },
-                { id: 'card-5', content: 'Card 5' },
+                { id: 4, content: 'Card 4' },
+                { id: 5, content: 'Card 5' },
             ],
             tagColor: '#664455',
         },
-        // {
-        //     id: 'column-4',
-        //     title: 'Done',
-        //     tasks: [
-        //         { id: 'card-4', content: 'Card 4' },
-        //         { id: 'card-5', content: 'Card 5' },
-        //     ],
-        // },
-        // {
-        //     id: 'column-5',
-        //     title: 'Done',
-        //     tasks: [
-        //         { id: 'card-4', content: 'Card 4' },
-        //         { id: 'card-5', content: 'Card 5' },
-        //     ],
-        // },
-        // {
-        //     id: 'column-6',
-        //     title: 'Done',
-        //     tasks: [
-        //         { id: 'card-4', content: 'Card 4' },
-        //         { id: 'card-5', content: 'Card 5' },
-        //     ],
-        // },
-        // {
-        //     id: 'column-7',
-        //     title: 'Done',
-        //     tasks: [
-        //         { id: 'card-4', content: 'Card 4' },
-        //         { id: 'card-5', content: 'Card 5' },
-        //     ],
-        // },
-        // {
-        //     id: 'column-8',
-        //     title: 'Done',
-        //     tasks: [
-        //         { id: 'card-4', content: 'Card 4' },
-        //         { id: 'card-5', content: 'Card 5' },
-        //     ],
-        // },
     ],
-    moveCard: (fromColumnId, toColumnId, taskId) =>
+    moveTask: (fromColumnId, toColumnId, dragIndex, hoverIndex) =>
         set((state) => {
             const fromColumn = state.columns.find((column) => column.id === fromColumnId);
             const toColumn = state.columns.find((column) => column.id === toColumnId);
 
             if (!fromColumn || !toColumn) return state;
 
-            const fromCardIndex = fromColumn.tasks.findIndex((card) => card.id === taskId);
-
-            if (fromCardIndex !== -1) {
-                const [movedCard] = fromColumn.tasks.splice(fromCardIndex, 1);
-                toColumn.tasks.push(movedCard);
+            if (fromColumnId === toColumnId) {
+                fromColumn.tasks.splice(hoverIndex, 0, fromColumn.tasks.splice(dragIndex, 1)[0]);
+            } else {
+                const [movedTask] = fromColumn.tasks.splice(dragIndex, 1);
+                toColumn.tasks.splice(hoverIndex, 0, movedTask);
             }
 
             return { columns: [...state.columns] };
         }),
-    addCard: (columnId, card) =>
+    addTask: (columnId, card) =>
         set((state) => {
             const column = state.columns.find((col) => col.id === columnId);
             if (column) {
@@ -98,7 +58,7 @@ const useKanbanStore = create<BoardState>((set) => ({
             }
             return { columns: [...state.columns] };
         }),
-    removeCard: (columnId, cardId) =>
+    removeTask: (columnId, cardId) =>
         set((state) => {
             const column = state.columns.find((col) => col.id === columnId);
             if (column) {

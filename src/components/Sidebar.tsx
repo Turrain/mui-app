@@ -9,14 +9,8 @@ import ListItemButton, { listItemButtonClasses } from '@mui/joy/ListItemButton';
 import ListItemContent from '@mui/joy/ListItemContent';
 import Typography from '@mui/joy/Typography';
 import Sheet from '@mui/joy/Sheet';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import PhoneCallbackIcon from '@mui/icons-material/PhoneCallback';
-import SupportRoundedIcon from '@mui/icons-material/SupportRounded';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import PersonIcon from '@mui/icons-material/Person';
+import { CalendarMonth, HomeRounded, LogoutRounded, Message, Person, PhoneCallback, SettingsRounded, SupportRounded } from '@mui/icons-material';
 import authService from '../utils/api/auth.service';
-import MessageIcon from '@mui/icons-material/Message';
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { closeSidebar } from '../utils';
 import { storesContext } from '../utils/stores';
@@ -122,7 +116,7 @@ const Sidebar = (() => {
         >
           <ListItem>
             <ListItemButton disabled onClick={() => navigate('/')}>
-              <HomeRoundedIcon />
+              <HomeRounded />
               <ListItemContent>
                 <Stack
                   direction={'row'}
@@ -136,7 +130,7 @@ const Sidebar = (() => {
           </ListItem>
           <ListItem>
             <ListItemButton onClick={() => navigate('/')}>
-              <PhoneCallbackIcon />
+              <PhoneCallback />
               <ListItemContent>
                 <Typography level="title-sm">Dobrozvon U</Typography>
               </ListItemContent>
@@ -144,7 +138,7 @@ const Sidebar = (() => {
           </ListItem>
           <ListItem>
             <ListItemButton onClick={() => navigate('/virtual-managers')}>
-              <PersonIcon />
+              <Person />
               <ListItemContent>
                 <Typography level="title-sm">Voice Units</Typography>
               </ListItemContent>
@@ -166,13 +160,27 @@ const Sidebar = (() => {
           </ListItem>
           <ListItem>
             <ListItemButton disabled onClick={() => navigate('/chats')}>
-              <MessageIcon />
+              <Message />
               <ListItemContent>
                 <Stack
                   direction={'row'}
                   justifyContent={'space-between'}
                 >
                   <Typography level="title-sm">Chats</Typography>
+                  <Typography level='title-sm' color='warning'>Soon</Typography>
+                </Stack>
+              </ListItemContent>
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton onClick={() => navigate('/calendar')}>
+              <CalendarMonth />
+              <ListItemContent>
+                <Stack
+                  direction={'row'}
+                  justifyContent={'space-between'}
+                >
+                  <Typography level="title-sm">Calendar</Typography>
                   <Typography level='title-sm' color='warning'>Soon</Typography>
                 </Stack>
               </ListItemContent>
@@ -219,11 +227,11 @@ const Sidebar = (() => {
                 <Typography level='title-sm'>XXX тнг.</Typography>
               </Stack>
               <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <PhoneCallbackIcon />
+                <PhoneCallback />
                 <Typography level='title-sm'>XXX мин.</Typography>
               </Stack>
               <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <PersonIcon />
+                <Person />
                 <Typography level='title-sm'>XXX мин.</Typography>
               </Stack>
               <Button size="sm" variant="solid">
@@ -236,13 +244,13 @@ const Sidebar = (() => {
           </ListItem>
           <ListItem>
             <ListItemButton>
-              <SupportRoundedIcon />
+              <SupportRounded />
               Поддержка
             </ListItemButton>
           </ListItem>
           <ListItem>
             <ListItemButton>
-              <SettingsRoundedIcon />
+              <SettingsRounded />
               Настройки
             </ListItemButton>
           </ListItem>
@@ -264,7 +272,7 @@ const Sidebar = (() => {
           authService.logout()
 
         }}>
-          <LogoutRoundedIcon />
+          <LogoutRounded />
         </IconButton>
       </Box>
     </Sheet>
