@@ -6,7 +6,8 @@ import DayView from './DayView';
 import WeekView from './WeekView';
 import MonthView from './MonthView';
 import CreateCalendarEventModal from './CreateCalendarEventModal';
-import { addDays, addMonths } from 'date-fns';
+import { addDays, addMonths, setHours } from 'date-fns';
+import { TouchBackend } from 'react-dnd-touch-backend';
 
 // Types and Enums
 type ViewMode = 'Day' | 'Week' | 'Month';
@@ -20,16 +21,36 @@ const Scheduler: React.FC = () => {
     useEffect(() => {
         console.log(events);
         
-    }, [events]);
+    }, [])
 
     const [viewMode, setViewMode] = useState<ViewMode>('Day');
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
-    const handleDrop = (item: CalendarEvents, hour: number) => {
+    const handleDropInDay = (item: CalendarEvents, newDate: Date, newHour?: number) => {
         setEvents((prevEvents) =>
             prevEvents.map((event) =>
-                event.id === item.id ? { ...event, startHour: hour, endHour: hour + (event.endHour - event.startHour) } : event
+                event.id === item.id
+                    ? {
+                        ...event,
+                        date: setHours(newDate, newHour!),
+                        startHour: newHour!,
+                        endHour: newHour! + (event.endHour - event.startHour)
+                    }
+                    : event
+            )
+        );
+    };
+
+    const handleDropInWeekOrMonth = (item: CalendarEvents, newDate: Date) => {
+        setEvents((prevEvents) =>
+            prevEvents.map((event) =>
+                event.id === item.id
+                    ? {
+                        ...event,
+                        date: setHours(newDate, event.startHour),
+                    }
+                    : event
             )
         );
     };
@@ -53,8 +74,10 @@ const Scheduler: React.FC = () => {
         }
     };
 
+    const backend = window.matchMedia('(pointer: coarse)').matches ? TouchBackend : HTML5Backend;
+
     return (
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider backend={backend}>
             <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
                 <ButtonGroup>
                     <Button onClick={() => setViewMode('Day')}>Day</Button>
@@ -72,7 +95,7 @@ const Scheduler: React.FC = () => {
                     <DayView
                         events={events}
                         date={currentDate}
-                        onDrop={handleDrop}
+                        onDrop={handleDropInDay}
                         onDelete={handleDeleteEvent}
                     />
                 )}
@@ -80,6 +103,7 @@ const Scheduler: React.FC = () => {
                     <WeekView
                         events={events}
                         startDate={currentDate}
+                        onDrop={handleDropInWeekOrMonth}
                         onDelete={handleDeleteEvent}
                     />
                 )}
@@ -87,6 +111,7 @@ const Scheduler: React.FC = () => {
                     <MonthView
                         events={events}
                         startDate={currentDate}
+                        onDrop={handleDropInWeekOrMonth}
                         onDelete={handleDeleteEvent}
                     />
                 )}

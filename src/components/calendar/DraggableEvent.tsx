@@ -1,5 +1,5 @@
 import { Close } from "@mui/icons-material";
-import { Box, IconButton } from "@mui/joy";
+import { Box, Chip, IconButton } from "@mui/joy";
 import { useDrag } from "react-dnd";
 
 interface DraggableEventProps {
@@ -14,9 +14,17 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({ event, onDelete }) => {
     });
 
     return (
-        <Box
+        <Chip
             ref={drag}
-            sx={{ backgroundColor: 'lightblue', margin: 1, padding: 1, cursor: 'move', position: 'relative' }}
+            variant="solid"
+            color="primary"
+            sx={{
+                margin: 1,
+                padding: 1,
+                cursor: 'move',
+                position: 'relative',
+                // width: '100%',
+            }}
         >
             {event.title}
             <IconButton
@@ -25,7 +33,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({ event, onDelete }) => {
             >
                 <Close fontSize="small" />
             </IconButton>
-        </Box>
+        </Chip>
     );
 };
 

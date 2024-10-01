@@ -1,29 +1,45 @@
 import React from 'react';
-import { Box, Typography } from '@mui/joy';
-import DraggableEvent from './DraggableEvent';
-import { startOfMonth, endOfMonth, addDays, format } from 'date-fns';
+import { Box } from '@mui/joy';
+import { startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import DayCell from './DayCell';
 
-const MonthView: React.FC<{ events: CalendarEvents[]; startDate: Date; onDelete: (id: number) => void }> = ({ events, startDate, onDelete }) => {
-    const renderDays = () => {
-        const start = startOfMonth(startDate);
-        const end = endOfMonth(startDate);
-        const days = [];
+interface MonthViewProps {
+    events: CalendarEvents[];
+    startDate: Date;
+    onDrop: (event: CalendarEvents, newDate: Date) => void;
+    onDelete: (id: number) => void;
+}
 
-        for (let i = start; i <= end; i = addDays(i, 1)) {
-            days.push(new Date(i));
-        }
+const MonthView: React.FC<MonthViewProps> = ({ events, startDate, onDrop, onDelete }) => {
+    const start = startOfMonth(startDate);
+    const end = endOfMonth(startDate);
+    const days = eachDayOfInterval({
+        start: start,
+        end: end,
+    });
 
-        return days.map((day) => (
-            <Box key={day.toISOString()} sx={{ border: '1px solid lightgray', minHeight: 50, padding: 1 }}>
-                <Typography>{format(day, 'd')}</Typography>
-                {events.filter((event) => event.date.toDateString() === day.toDateString()).map((event) => (
-                    <DraggableEvent key={event.id} event={event} onDelete={onDelete} />
-                ))}
-            </Box>
-        ));
-    };
-
-    return <Box display="grid" gridTemplateColumns="repeat(7, 1fr)">{renderDays()}</Box>;
+    return (
+        <Box
+            display="grid"
+            gridTemplateColumns="repeat(7, 1fr)"
+        >
+            {days.map(day => (
+                <Box
+                    key={day.toISOString()}
+                    sx={{
+                        display: 'flex',
+                    }}
+                >
+                    <DayCell
+                        events={events}
+                        day={day}
+                        onDrop={onDrop}
+                        onDelete={onDelete}
+                    />
+                </Box>
+            ))}
+        </Box>
+    )
 };
 
 export default MonthView;

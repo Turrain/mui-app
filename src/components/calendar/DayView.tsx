@@ -3,22 +3,24 @@ import { Box } from '@mui/joy';
 import { useDrop } from 'react-dnd';
 import DraggableEvent from './DraggableEvent'; // Assume a similar DraggableEvent component is used
 
-const DayView: React.FC<{ events: CalendarEvents[]; date: Date; onDrop: (event: CalendarEvents, hour: number) => void; onDelete: (id: number) => void }> = ({
-    events,
-    date,
-    onDrop,
-    onDelete,
-}) => {
+interface DayViewProps {
+    events: CalendarEvents[];
+    date: Date;
+    onDrop: (event: CalendarEvents, newDate: Date, newHour?: number) => void;
+    onDelete: (id: number) => void
+}
+
+const DayView: React.FC<DayViewProps> = ({ events, date, onDrop, onDelete }) => {
     const renderHours = () => {
         return Array.from({ length: 24 }, (_, i) => i).map((hour) => {
-            const [, dropRef] = useDrop({
+            const [, drop] = useDrop({
                 accept: 'EVENT',
-                drop: (item: CalendarEvents) => onDrop(item, hour),
+                hover: (item: CalendarEvents) => onDrop(item, date, hour),
             });
 
             return (
                 <Box
-                    ref={dropRef}
+                    ref={drop}
                     key={hour}
                     sx={{
                         height: 50,
@@ -30,7 +32,11 @@ const DayView: React.FC<{ events: CalendarEvents[]; date: Date; onDrop: (event: 
                     {events
                         .filter((e) => e.date.toDateString() === date.toDateString() && e.startHour <= hour && e.endHour > hour)
                         .map((event) => (
-                            <DraggableEvent key={event.id} event={event} onDelete={onDelete} />
+                            <DraggableEvent
+                                key={event.id}
+                                event={event}
+                                onDelete={onDelete}
+                            />
                         ))}
                 </Box>
             );
