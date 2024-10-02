@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Box, ButtonGroup, Button } from '@mui/joy';
+import { Box, ButtonGroup, Button, Stack, Typography } from '@mui/joy';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import DayView from './DayView';
 import WeekView from './WeekView';
 import MonthView from './MonthView';
 import CreateCalendarEventModal from './CreateCalendarEventModal';
-import { addDays, addMonths, setHours } from 'date-fns';
+import { addDays, addMonths, format, setHours, setMinutes } from 'date-fns';
 import { TouchBackend } from 'react-dnd-touch-backend';
+import { ru } from 'date-fns/locale';
 
 // Types and Enums
 type ViewMode = 'Day' | 'Week' | 'Month';
@@ -18,24 +19,19 @@ const Scheduler: React.FC = () => {
         { id: 2, title: 'Lunch', startHour: 12, endHour: 13, date: new Date() },
     ]);
 
-    useEffect(() => {
-        console.log(events);
-        
-    }, [])
-
     const [viewMode, setViewMode] = useState<ViewMode>('Day');
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
-    const handleDropInDay = (item: CalendarEvents, newDate: Date, newHour?: number) => {
+    const handleDropInDay = (item: CalendarEvents, newDate: Date, newHour: number, newMinutes: number) => {
         setEvents((prevEvents) =>
             prevEvents.map((event) =>
                 event.id === item.id
                     ? {
                         ...event,
-                        date: setHours(newDate, newHour!),
-                        startHour: newHour!,
-                        endHour: newHour! + (event.endHour - event.startHour)
+                        date: setMinutes(setHours(newDate, newHour), newMinutes),
+                        startHour: newHour,
+                        endHour: newHour + (event.endHour - event.startHour)
                     }
                     : event
             )
@@ -84,20 +80,36 @@ const Scheduler: React.FC = () => {
                     <Button onClick={() => setViewMode('Week')}>Week</Button>
                     <Button onClick={() => setViewMode('Month')}>Month</Button>
                 </ButtonGroup>
-                <Box>
+                <ButtonGroup>
                     <Button onClick={() => navigateDate('previous')}>Previous</Button>
                     <Button onClick={() => navigateDate('next')}>Next</Button>
-                </Box>
+                </ButtonGroup>
                 <Button onClick={() => setModalOpen(true)}>New Event</Button>
             </Box>
             <Box sx={{ marginTop: 2, padding: 2 }}>
                 {viewMode === 'Day' && (
-                    <DayView
-                        events={events}
-                        date={currentDate}
-                        onDrop={handleDropInDay}
-                        onDelete={handleDeleteEvent}
-                    />
+                    <Stack
+                        gap={2}
+                    >
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Typography
+                                level='h3'
+                            >
+                                {format(currentDate, 'dd MMMM yyyy', { locale: ru })}
+                            </Typography>
+                        </Box>
+                        <DayView
+                            events={events}
+                            date={currentDate}
+                            onDrop={handleDropInDay}
+                            onDelete={handleDeleteEvent}
+                        />
+                    </Stack>
                 )}
                 {viewMode === 'Week' && (
                     <WeekView
