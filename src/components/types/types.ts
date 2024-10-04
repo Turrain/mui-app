@@ -104,9 +104,8 @@ interface TaskChipCustomize {
 interface CalendarEvents {
     id: number;
     title: string;
-    startHour: number;
-    endHour: number;
-    date: Date;
+    start: Date;
+    end: Date;
 }
 
 interface DayViewProps {

@@ -20,12 +20,12 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({ event, onDelete }) => {
             variant="solid"
             color="primary"
             sx={{
-                margin: '8px',
                 cursor: 'move',
-                position: 'absolute',
-                width: '100%',
+                position: 'relative',
+                // width: '100%',
                 borderRadius: '8px',
                 padding: '8px',
+                marginLeft: '8px',
                 zIndex: 5,
             }}
             invertedColors
@@ -41,7 +41,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({ event, onDelete }) => {
                 <Typography
                     level="body-xs"
                 >
-                    {format(event.date, 'HH:mm')} - {format(addHours(event.date, 1), 'HH:mm')}
+                    {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
                 </Typography>
             </Stack>
             {/* <IconButton
@@ -55,3 +55,46 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({ event, onDelete }) => {
 };
 
 export default DraggableEvent;
+
+// import React from 'react';
+// import { Sheet, Stack, Typography, IconButton } from '@mui/joy';
+// import { addHours, format } from 'date-fns';
+
+// interface DraggableEventProps {
+//     event: CalendarEvents;
+//     onDelete: (id: number) => void;
+//     onDragStart: (event: CalendarEvents) => void;
+// }
+
+// const DraggableEvent: React.FC<DraggableEventProps> = ({ event, onDelete, onDragStart }) => {
+//     const handleDragStart = () => {
+//         onDragStart(event);
+//     };
+
+//     return (
+//         <Sheet
+//             variant="solid"
+//             color="primary"
+//             draggable
+//             onDragStart={handleDragStart}
+//             sx={{
+//                 cursor: 'move',
+//                 position: 'absolute',
+//                 borderRadius: '8px',
+//                 padding: '8px',
+//                 marginLeft: '8px',
+//                 zIndex: 5,
+//             }}
+//             invertedColors
+//         >
+//             <Stack flexDirection={'column'}>
+//                 <Typography level="title-sm">{event.title}</Typography>
+//                 <Typography level="body-xs">
+//                     {format(event.date, 'HH:mm')} - {format(addHours(event.date, 1), 'HH:mm')}
+//                 </Typography>
+//             </Stack>
+//         </Sheet>
+//     );
+// };
+
+// export default DraggableEvent;

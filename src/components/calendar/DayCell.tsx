@@ -94,7 +94,7 @@ const DayCell: React.FC<DayCellProps> = ({ events, day, onDrop, onDelete }) => {
                     )
             }
             {/* </Box> */}
-            {events.filter((event) => event.date.toDateString() === day.toDateString()).map((event) => (
+            {events.filter((event) => event.start.toDateString() === day.toDateString()).map((event) => (
                 <DraggableEvent
                     key={event.id}
                     event={event}
