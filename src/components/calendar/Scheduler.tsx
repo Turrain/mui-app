@@ -17,6 +17,7 @@ const Scheduler: React.FC = () => {
     const [events, setEvents] = useState<CalendarEvents[]>([
         { id: 1, title: 'Meeting', start: setHours(setMinutes(new Date(), 0), 9), end: setHours(setMinutes(new Date(), 0), 10) },
         { id: 2, title: 'Lunch', start: setHours(setMinutes(new Date(), 0), 12), end: setHours(setMinutes(new Date(), 0), 13) },
+        { id: 3, title: 'Lunch 2', start: setHours(setMinutes(new Date(), 0), 14), end: setHours(setMinutes(new Date(), 0), 15) },
     ]);
 
     const [viewMode, setViewMode] = useState<ViewMode>('Day');

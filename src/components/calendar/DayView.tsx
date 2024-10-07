@@ -103,10 +103,10 @@
 
 // export default DayView;
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Box, Typography, Stack, Sheet } from '@mui/joy';
 import DraggableEvent from './DraggableEvent';
-import { addHours, format, setHours, setMinutes } from 'date-fns';
+import { addHours, compareAsc, format, isBefore, isWithinInterval, setHours, setMinutes } from 'date-fns';
 
 interface DayViewProps {
     events: CalendarEvents[];
@@ -159,60 +159,15 @@ const DayView = React.forwardRef<HTMLDivElement, DayViewProps>(({ events, date, 
                                         e.start.getHours() === hour &&
                                         e.start.getMinutes() === minutes
                                     )
-                                    .map((event) => {
-                                        const eventHeight = (event.end.getTime() - event.start.getTime()) / (1000 * 60 * 15) * 16;
-                                        const offset = eventOffsets[event.id] || 0;
-                                        const width = `calc(${100 / 1}%)`;
-
-                                        return (
-                                            <Sheet
-                                                key={event.id}
-                                                variant='solid'
-                                                color='primary'
-                                                invertedColors
-                                                onMouseDown={(e) => onDragStart(event, e)}
-                                                sx={{
-                                                    display: 'flex',
-                                                    flexDirection: eventHeight < 48 ? 'row' : 'column',
-                                                    position: 'absolute',
-                                                    top: '0',
-                                                    left: 0,
-                                                    width: width,
-                                                    padding: eventHeight < 48 ? 0 : '8px',
-                                                    paddingLeft: '8px',
-                                                    gap: eventHeight < 48 ? 1 : 0,
-                                                    alignItems: eventHeight < 48 ? 'center' : 'left',
-                                                    cursor: 'move',
-                                                    zIndex: 1000 + event.id,
-                                                    height: `${eventHeight}px`,
-                                                    borderRadius: '8px',
-                                                }}
-                                            >
-                                                <Typography
-                                                    level="title-sm"
-                                                >
-                                                    {event.title}
-                                                </Typography>
-                                                <Typography
-                                                    level="body-xs"
-                                                >
-                                                    {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
-                                                </Typography>
-                                                <Box
-                                                    onMouseDown={(e) => onResizeStart(event, e)}
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        bottom: 0,
-                                                        left: 0,
-                                                        right: 0,
-                                                        height: '8px',
-                                                        // backgroundColor: '#fff',
-                                                        cursor: 'ns-resize',
-                                                    }}
-                                                />
-                                            </Sheet>
-                                        );
-                                    })}
+                                    .map((event, index) => (
+                                        <Event
+                                            event={event}
+                                            events={events}
+                                            index={index}
+                                            onDragStart={onDragStart}
+                                            onResizeStart={onResizeStart}
+                                        />
+                                    ))}
                             </Box>
                         );
                     })}
@@ -233,5 +188,89 @@ const DayView = React.forwardRef<HTMLDivElement, DayViewProps>(({ events, date, 
         </Box>
     )
 });
+
+const Event: React.FC<{ event: CalendarEvents, events: CalendarEvents[], index: number, onDragStart: (event: CalendarEvents, e: React.MouseEvent) => void, onResizeStart: (event: CalendarEvents, e: React.MouseEvent) => void }> = ({ event, events, index, onDragStart, onResizeStart }) => {
+    const eventHeight = (event.end.getTime() - event.start.getTime()) / (1000 * 60 * 15) * 16;
+    const ref = useRef<HTMLDivElement>(null);
+    // const overlapEvents = events.filter((e) =>
+    //     isWithinInterval(event.start, { start: e.start, end: e.end })
+    // );
+
+    // const offset = overlapEvents.findIndex(e => e.start === event.start);
+
+    // useEffect(() => {
+    //     console.log('offset: ', offset);
+    //     console.log('overlap: ', overlapEvents);
+    // });
+
+    useLayoutEffect(() => {
+        const overlappingEvents = events.filter((e) =>
+            isWithinInterval(event.start, {
+                start: e.start,
+                end: new Date(e.end.getTime() - 1), // End exclusive for overlap check
+              })
+        );
+    
+        const totalOverlapping = overlappingEvents.length + 1; // Include the current event
+        const index = overlappingEvents.findIndex((e) => e.id === event.id); // Find the index of the current event
+        const offset = (index === -1 ? overlappingEvents.length : index) * (100 / totalOverlapping); // Position based on total overlapping
+    
+        if (ref.current) {
+          ref.current.style.left = `${offset}%`;
+          ref.current.style.width = `calc(${100 / totalOverlapping}%)`;
+        }
+      }, [event, events]);
+
+    return (
+        <Sheet
+            ref={ref}
+            key={`event-${event.id}`}
+            variant='solid'
+            color='primary'
+            invertedColors
+            onMouseDown={(e) => onDragStart(event, e)}
+            sx={{
+                display: 'flex',
+                flexDirection: eventHeight < 48 ? 'row' : 'column',
+                position: 'absolute',
+                top: 0,
+                // left: `${100 / overlapEvents.length * offset}%`,
+                // width: overlapEvents.length > 0 ? `calc(${100 / overlapEvents.length}%)` : '100%',
+                padding: eventHeight < 48 ? 0 : '8px',
+                paddingLeft: '8px',
+                gap: eventHeight < 48 ? 1 : 0,
+                alignItems: eventHeight < 48 ? 'center' : 'left',
+                cursor: 'move',
+                zIndex: 1000 + event.id,
+                height: `${eventHeight}px`,
+                borderRadius: '8px',
+                border: '1px solid gray'
+            }}
+        >
+            <Typography
+                level="title-sm"
+            >
+                {event.title}
+            </Typography>
+            <Typography
+                level="body-xs"
+            >
+                {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
+            </Typography>
+            <Box
+                onMouseDown={(e) => onResizeStart(event, e)}
+                sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '8px',
+                    // backgroundColor: '#fff',
+                    cursor: 'ns-resize',
+                }}
+            />
+        </Sheet>
+    );
+}
 
 export default DayView;
