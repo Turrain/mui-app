@@ -18,6 +18,7 @@ const Scheduler: React.FC = () => {
         { id: 1, title: 'Meeting', start: setHours(setMinutes(new Date(), 0), 9), end: setHours(setMinutes(new Date(), 0), 10) },
         { id: 2, title: 'Lunch', start: setHours(setMinutes(new Date(), 0), 12), end: setHours(setMinutes(new Date(), 0), 13) },
         { id: 3, title: 'Lunch 2', start: setHours(setMinutes(new Date(), 0), 14), end: setHours(setMinutes(new Date(), 0), 15) },
+        { id: 4, title: 'Lunch 3', start: setHours(setMinutes(new Date(), 0), 15), end: setHours(setMinutes(new Date(), 0), 16) },
     ]);
 
     const [viewMode, setViewMode] = useState<ViewMode>('Day');
@@ -26,21 +27,6 @@ const Scheduler: React.FC = () => {
     const [draggingEvent, setDraggingEvent] = useState<CalendarEvents | null>(null);
     const [resizingEvent, setResizingEvent] = useState<CalendarEvents | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
-
-    // const handleDropInDay = (item: CalendarEvents, newDate: Date, newHour: number, newMinutes: number) => {
-    //     setEvents((prevEvents) =>
-    //         prevEvents.map((event) =>
-    //             event.id === item.id
-    //                 ? {
-    //                     ...event,
-    //                     date: setMinutes(setHours(newDate, newHour), newMinutes),
-    //                     startHour: newHour,
-    //                     endHour: newHour + (event.endHour - event.startHour)
-    //                 }
-    //                 : event
-    //         )
-    //     );
-    // };
 
     const handleDropInWeekOrMonth = (item: CalendarEvents, newDate: Date) => {
         setEvents((prevEvents) =>
@@ -74,7 +60,7 @@ const Scheduler: React.FC = () => {
         }
     };
 
-    const handleDragStart = (event: CalendarEvents, e: React.MouseEvent) => {
+    const handleDragStart = (event: CalendarEvents, e: React.MouseEvent | React.TouchEvent) => {
         setDraggingEvent(event);
     };
 
@@ -82,7 +68,7 @@ const Scheduler: React.FC = () => {
         setDraggingEvent(null);
     };
 
-    const handleResizeStart = (event: CalendarEvents, e: React.MouseEvent) => {
+    const handleResizeStart = (event: CalendarEvents, e: React.MouseEvent | React.TouchEvent) => {
         setResizingEvent(event);
         e.stopPropagation(); // Prevent drag from starting when resizing
     };
@@ -91,65 +77,40 @@ const Scheduler: React.FC = () => {
         setResizingEvent(null);
     };
 
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (draggingEvent) {
-            // Handle auto-scrolling
-            const container = containerRef.current;
-            if (container) {
-                const rect = container.getBoundingClientRect();
-                const offsetTop = e.clientY - rect.top;
-                const offsetBottom = rect.bottom - e.clientY;
+    const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+        if (e && 'clientX' in e && 'clientY' in e) {
+            if (draggingEvent) {
+                // Handle auto-scrolling
+                const container = containerRef.current;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    const offsetTop = e.clientY - rect.top;
+                    const offsetBottom = rect.bottom - e.clientY;
 
-                // Auto-scroll if near the edges
-                if (offsetTop < 20 && container.scrollTop > 0) {
-                    container.scrollTop -= 10;
-                } else if (offsetBottom < 20 && container.scrollTop < container.scrollHeight - container.clientHeight) {
-                    container.scrollTop += 10;
-                }
+                    // Auto-scroll if near the edges
+                    if (offsetTop < 20 && container.scrollTop > 0) {
+                        container.scrollTop -= 10;
+                    } else if (offsetBottom < 20 && container.scrollTop < container.scrollHeight - container.clientHeight) {
+                        container.scrollTop += 10;
+                    }
 
-                // Logic for dragging and snapping
-                const mouseYPosition = e.clientY - rect.top + container.scrollTop;
-                const slotHeight = 16;
-                const totalMinutes = Math.round(mouseYPosition / slotHeight) * 15;
-                const snappedHour = Math.floor(totalMinutes / 60);
-                const snappedMinute = totalMinutes % 60;
+                    // Logic for dragging and snapping
+                    const mouseYPosition = e.clientY - rect.top + container.scrollTop;
+                    const slotHeight = 16;
+                    const totalMinutes = Math.round(mouseYPosition / slotHeight) * 15;
+                    const snappedHour = Math.floor(totalMinutes / 60);
+                    const snappedMinute = totalMinutes % 60;
 
-                const eventDuration = (draggingEvent.end.getTime() - draggingEvent.start.getTime()) / (1000 * 60); // Duration in minutes
-                const newStart = setHours(setMinutes(currentDate, snappedMinute), snappedHour);
-                const newEnd = addMinutes(newStart, eventDuration);
+                    const eventDuration = (draggingEvent.end.getTime() - draggingEvent.start.getTime()) / (1000 * 60); // Duration in minutes
+                    const newStart = setHours(setMinutes(currentDate, snappedMinute), snappedHour);
+                    const newEnd = addMinutes(newStart, eventDuration);
 
-                setEvents((prevEvents) =>
-                    prevEvents.map((evt) =>
-                        evt.id === draggingEvent.id
-                            ? {
-                                ...evt,
-                                start: newStart,
-                                end: newEnd,
-                            }
-                            : evt
-                    )
-                );
-            }
-        }
-
-        if (resizingEvent) {
-            const container = containerRef.current;
-            if (container) {
-                const rect = container.getBoundingClientRect();
-                const mouseYPosition = e.clientY - rect.top + container.scrollTop;
-                const slotHeight = 16; // assuming each time slot represents 15 minutes and is 16px high
-                const totalMinutes = Math.round(mouseYPosition / slotHeight) * 15;
-                const snappedHour = Math.floor(totalMinutes / 60);
-                const snappedMinute = totalMinutes % 60;
-                const newEnd = setHours(setMinutes(currentDate, snappedMinute), snappedHour);
-                const newDuration = (newEnd.getTime() - resizingEvent.start.getTime()) / (1000 * 60);
-
-                if (newDuration >= 15) {
                     setEvents((prevEvents) =>
                         prevEvents.map((evt) =>
-                            evt.id === resizingEvent.id
+                            evt.id === draggingEvent.id
                                 ? {
                                     ...evt,
+                                    start: newStart,
                                     end: newEnd,
                                 }
                                 : evt
@@ -157,33 +118,105 @@ const Scheduler: React.FC = () => {
                     );
                 }
             }
-        }
-    };
 
-    const calculateOffsets = (events: CalendarEvents[]) => {
-        const eventOffsets: Record<number, number> = {};
-        const columns: CalendarEvents[][] = [];
+            if (resizingEvent) {
+                const container = containerRef.current;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    const mouseYPosition = e.clientY - rect.top + container.scrollTop;
+                    const slotHeight = 16; // assuming each time slot represents 15 minutes and is 16px high
+                    const totalMinutes = Math.round(mouseYPosition / slotHeight) * 15;
+                    const snappedHour = Math.floor(totalMinutes / 60);
+                    const snappedMinute = totalMinutes % 60;
+                    const newEnd = setHours(setMinutes(currentDate, snappedMinute), snappedHour);
+                    const newDuration = (newEnd.getTime() - resizingEvent.start.getTime()) / (1000 * 60);
 
-        events.forEach((event) => {
-            let columnFound = false;
-            for (const column of columns) {
-                if (!column.some(e => event.start < e.end && e.start < event.end)) {
-                    column.push(event);
-                    eventOffsets[event.id] = column.length - 1; // Offset is based on column position
-                    columnFound = true;
-                    break;
+                    if (newDuration >= 15) {
+                        setEvents((prevEvents) =>
+                            prevEvents.map((evt) =>
+                                evt.id === resizingEvent.id
+                                    ? {
+                                        ...evt,
+                                        end: newEnd,
+                                    }
+                                    : evt
+                            )
+                        );
+                    }
                 }
             }
-            if (!columnFound) {
-                columns.push([event]);
-                eventOffsets[event.id] = columns.length - 1; // Put in a new column
+        } else {
+            if (draggingEvent) {
+                // Handle auto-scrolling
+                const container = containerRef.current;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+
+                    const touch = e.touches[0];
+                    const offsetTop = touch.clientY - rect.top;
+                    const offsetBottom = rect.bottom - touch.clientY;
+
+                    // Auto-scroll if near the edges
+                    if (offsetTop < 20 && container.scrollTop > 0) {
+                        container.scrollTop -= 10;
+                    } else if (offsetBottom < 20 && container.scrollTop < container.scrollHeight - container.clientHeight) {
+                        container.scrollTop += 10;
+                    }
+
+                    // Logic for dragging and snapping
+                    const mouseYPosition = touch.clientY - rect.top + container.scrollTop;
+                    const slotHeight = 16;
+                    const totalMinutes = Math.round(mouseYPosition / slotHeight) * 15;
+                    const snappedHour = Math.floor(totalMinutes / 60);
+                    const snappedMinute = totalMinutes % 60;
+
+                    const eventDuration = (draggingEvent.end.getTime() - draggingEvent.start.getTime()) / (1000 * 60); // Duration in minutes
+                    const newStart = setHours(setMinutes(currentDate, snappedMinute), snappedHour);
+                    const newEnd = addMinutes(newStart, eventDuration);
+
+                    setEvents((prevEvents) =>
+                        prevEvents.map((evt) =>
+                            evt.id === draggingEvent.id
+                                ? {
+                                    ...evt,
+                                    start: newStart,
+                                    end: newEnd,
+                                }
+                                : evt
+                        )
+                    );
+                }
             }
-        });
 
-        return eventOffsets;
+            if (resizingEvent) {
+                const container = containerRef.current;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    const mouseYPosition = touch.clientY - rect.top + container.scrollTop;
+                    const slotHeight = 16; // assuming each time slot represents 15 minutes and is 16px high
+                    const totalMinutes = Math.round(mouseYPosition / slotHeight) * 15;
+                    const snappedHour = Math.floor(totalMinutes / 60);
+                    const snappedMinute = totalMinutes % 60;
+                    const newEnd = setHours(setMinutes(currentDate, snappedMinute), snappedHour);
+                    const newDuration = (newEnd.getTime() - resizingEvent.start.getTime()) / (1000 * 60);
+
+                    if (newDuration >= 15) {
+                        setEvents((prevEvents) =>
+                            prevEvents.map((evt) =>
+                                evt.id === resizingEvent.id
+                                    ? {
+                                        ...evt,
+                                        end: newEnd,
+                                    }
+                                    : evt
+                            )
+                        );
+                    }
+                }
+            }
+        }
     };
-
-    const eventOffsets = useMemo(() => calculateOffsets(events), [events]);
 
     const backend = window.matchMedia('(pointer: coarse)').matches ? TouchBackend : HTML5Backend;
 
@@ -208,7 +241,12 @@ const Scheduler: React.FC = () => {
                     userSelect: 'none'
                 }}
                 onMouseMove={handleMouseMove}
+                onTouchMoveCapture={handleMouseMove}
                 onMouseUp={() => {
+                    handleDragEnd();
+                    handleResizeEnd();
+                }}
+                onTouchEnd={() => {
                     handleDragEnd();
                     handleResizeEnd();
                 }}
@@ -236,7 +274,6 @@ const Scheduler: React.FC = () => {
                             onDragStart={handleDragStart}
                             onResizeStart={handleResizeStart}
                             onDelete={handleDeleteEvent}
-                            eventOffsets={eventOffsets}
                         />
                     </Stack>
                 )}

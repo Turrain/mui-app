@@ -103,7 +103,7 @@
 
 // export default DayView;
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Box, Typography, Stack, Sheet } from '@mui/joy';
 import DraggableEvent from './DraggableEvent';
 import { addHours, compareAsc, format, isBefore, isWithinInterval, setHours, setMinutes } from 'date-fns';
@@ -111,13 +111,12 @@ import { addHours, compareAsc, format, isBefore, isWithinInterval, setHours, set
 interface DayViewProps {
     events: CalendarEvents[];
     date: Date;
-    onDragStart: (event: CalendarEvents, e: React.MouseEvent) => void;
-    onResizeStart: (event: CalendarEvents, e: React.MouseEvent) => void;
+    onDragStart: (event: CalendarEvents, e: React.MouseEvent | React.TouchEvent) => void;
+    onResizeStart: (event: CalendarEvents, e: React.MouseEvent | React.TouchEvent) => void;
     onDelete: (id: number) => void;
-    eventOffsets: Record<number, number>;
 }
 
-const DayView = React.forwardRef<HTMLDivElement, DayViewProps>(({ events, date, onDragStart, onResizeStart, onDelete, eventOffsets }, ref) => {
+const DayView = React.forwardRef<HTMLDivElement, DayViewProps>(({ events, date, onDragStart, onResizeStart, onDelete }, ref) => {
     const renderTimeSlots = () => {
         return Array.from({ length: 24 }, (_, hour) => (
             <Box
@@ -152,6 +151,7 @@ const DayView = React.forwardRef<HTMLDivElement, DayViewProps>(({ events, date, 
                                     position: 'relative',
                                 }}
                                 onMouseMove={(e) => e.preventDefault()}
+                                // onTouchMove={(e) => e.preventDefault()}
                             >
                                 {events
                                     .filter(e =>
@@ -159,11 +159,10 @@ const DayView = React.forwardRef<HTMLDivElement, DayViewProps>(({ events, date, 
                                         e.start.getHours() === hour &&
                                         e.start.getMinutes() === minutes
                                     )
-                                    .map((event, index) => (
+                                    .map((event) => (
                                         <Event
                                             event={event}
                                             events={events}
-                                            index={index}
                                             onDragStart={onDragStart}
                                             onResizeStart={onResizeStart}
                                         />
@@ -189,7 +188,12 @@ const DayView = React.forwardRef<HTMLDivElement, DayViewProps>(({ events, date, 
     )
 });
 
-const Event: React.FC<{ event: CalendarEvents, events: CalendarEvents[], index: number, onDragStart: (event: CalendarEvents, e: React.MouseEvent) => void, onResizeStart: (event: CalendarEvents, e: React.MouseEvent) => void }> = ({ event, events, index, onDragStart, onResizeStart }) => {
+const Event: React.FC<{
+    event: CalendarEvents,
+    events: CalendarEvents[],
+    onDragStart: (event: CalendarEvents, e: React.MouseEvent | React.TouchEvent) => void,
+    onResizeStart: (event: CalendarEvents, e: React.MouseEvent | React.TouchEvent) => void,
+}> = ({ event, events, onDragStart, onResizeStart }) => {
     const eventHeight = (event.end.getTime() - event.start.getTime()) / (1000 * 60 * 15) * 16;
     const ref = useRef<HTMLDivElement>(null);
     // const overlapEvents = events.filter((e) =>
@@ -198,28 +202,28 @@ const Event: React.FC<{ event: CalendarEvents, events: CalendarEvents[], index: 
 
     // const offset = overlapEvents.findIndex(e => e.start === event.start);
 
-    // useEffect(() => {
-    //     console.log('offset: ', offset);
-    //     console.log('overlap: ', overlapEvents);
-    // });
-
     useLayoutEffect(() => {
         const overlappingEvents = events.filter((e) =>
             isWithinInterval(event.start, {
                 start: e.start,
-                end: new Date(e.end.getTime() - 1), // End exclusive for overlap check
-              })
+                end: new Date(e.end.getTime() - 1),
+            })
         );
-    
-        const totalOverlapping = overlappingEvents.length + 1; // Include the current event
-        const index = overlappingEvents.findIndex((e) => e.id === event.id); // Find the index of the current event
-        const offset = (index === -1 ? overlappingEvents.length : index) * (100 / totalOverlapping); // Position based on total overlapping
-    
+
+        const totalOverlapping = overlappingEvents.length;
+        const index = overlappingEvents.findIndex((e) => e.id === event.id);
+        const offset = index * (100 / totalOverlapping);
+
+        // console.log('total: ', totalOverlapping);
+        // console.log('index: ', index);
+        // console.log('offset: ', offset);
+        // console.log('event: ', overlappingEvents);
+
         if (ref.current) {
-          ref.current.style.left = `${offset}%`;
-          ref.current.style.width = `calc(${100 / totalOverlapping}%)`;
+            ref.current.style.left = `${offset}%`;
+            ref.current.style.width = totalOverlapping > 1 ? `calc(${100 / totalOverlapping}% - 2px)` : '100%';
         }
-      }, [event, events]);
+    }, [event, events]);
 
     return (
         <Sheet
@@ -229,6 +233,7 @@ const Event: React.FC<{ event: CalendarEvents, events: CalendarEvents[], index: 
             color='primary'
             invertedColors
             onMouseDown={(e) => onDragStart(event, e)}
+            onTouchStart={(e) => onDragStart(event, e)}
             sx={{
                 display: 'flex',
                 flexDirection: eventHeight < 48 ? 'row' : 'column',
@@ -241,7 +246,7 @@ const Event: React.FC<{ event: CalendarEvents, events: CalendarEvents[], index: 
                 gap: eventHeight < 48 ? 1 : 0,
                 alignItems: eventHeight < 48 ? 'center' : 'left',
                 cursor: 'move',
-                zIndex: 1000 + event.id,
+                zIndex: 10 + event.id,
                 height: `${eventHeight}px`,
                 borderRadius: '8px',
                 border: '1px solid gray'
@@ -259,13 +264,13 @@ const Event: React.FC<{ event: CalendarEvents, events: CalendarEvents[], index: 
             </Typography>
             <Box
                 onMouseDown={(e) => onResizeStart(event, e)}
+                onTouchStart={(e) => onResizeStart(event, e)}
                 sx={{
                     position: 'absolute',
                     bottom: 0,
                     left: 0,
                     right: 0,
                     height: '8px',
-                    // backgroundColor: '#fff',
                     cursor: 'ns-resize',
                 }}
             />
