@@ -151,7 +151,6 @@ const DayView = React.forwardRef<HTMLDivElement, DayViewProps>(({ events, date, 
                                     position: 'relative',
                                 }}
                                 onMouseMove={(e) => e.preventDefault()}
-                                // onTouchMove={(e) => e.preventDefault()}
                             >
                                 {events
                                     .filter(e =>

@@ -1,7 +1,9 @@
 import { create } from 'zustand';
+import http from '../api/http-client';
 
 interface BoardState {
     columns: Column[];
+    fetchInitialData: () => Promise<void>;
     moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void;
     addTask: (columnId: number, task: Task) => void;
     removeTask: (columnId: number, taskId: number) => void;
@@ -34,6 +36,11 @@ const useKanbanStore = create<BoardState>((set) => ({
             tagColor: '#664455',
         },
     ],
+    fetchInitialData: async () => {
+        try {
+            
+        }
+    },
     moveTask: (fromColumnId, toColumnId, dragIndex, hoverIndex) =>
         set((state) => {
             const fromColumn = state.columns.find((column) => column.id === fromColumnId);

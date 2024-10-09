@@ -1,4 +1,5 @@
 import Scheduler from '../calendar/Scheduler';
+import Sheduler2 from '../calendar/Sheduler2';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
 import { Typography, Box } from '@mui/joy';
@@ -46,7 +47,7 @@ export default function CRMPage() {
                         Календарь
                     </Typography>
                 </Box>
-                <Scheduler />
+                <Sheduler2 />
             </Box>
         </Box>
     );

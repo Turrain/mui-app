@@ -28,6 +28,8 @@ const Scheduler: React.FC = () => {
     const [resizingEvent, setResizingEvent] = useState<CalendarEvents | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
 
+    // containerRef.current?.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+
     const handleDropInWeekOrMonth = (item: CalendarEvents, newDate: Date) => {
         setEvents((prevEvents) =>
             prevEvents.map((event) =>
@@ -62,6 +64,7 @@ const Scheduler: React.FC = () => {
 
     const handleDragStart = (event: CalendarEvents, e: React.MouseEvent | React.TouchEvent) => {
         setDraggingEvent(event);
+        if (e.cancelable) e.preventDefault();
     };
 
     const handleDragEnd = () => {
@@ -69,8 +72,8 @@ const Scheduler: React.FC = () => {
     };
 
     const handleResizeStart = (event: CalendarEvents, e: React.MouseEvent | React.TouchEvent) => {
+        e.stopPropagation();
         setResizingEvent(event);
-        e.stopPropagation(); // Prevent drag from starting when resizing
     };
 
     const handleResizeEnd = () => {
@@ -241,12 +244,16 @@ const Scheduler: React.FC = () => {
                     userSelect: 'none'
                 }}
                 onMouseMove={handleMouseMove}
-                onTouchMoveCapture={handleMouseMove}
+                onTouchMove={handleMouseMove}
                 onMouseUp={() => {
                     handleDragEnd();
                     handleResizeEnd();
                 }}
                 onTouchEnd={() => {
+                    handleDragEnd();
+                    handleResizeEnd();
+                }}
+                onTouchCancel={() => {
                     handleDragEnd();
                     handleResizeEnd();
                 }}
