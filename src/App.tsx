@@ -18,17 +18,18 @@ import PomodoroTimer from "./components/pages/PomodoroPage";
 import EditTaskPage from "./components/pages/kanban/EditTaskPage";
 import GoogleAuthRedirect from "./components/pages/auth/GoogleAuthRedirect";
 import SchedulerPage from "./components/pages/SchedulerPage";
+import { useCalendarStore } from "./utils/stores/CalendarStore";
 
 export default function App() {
     return (
         <CssVarsProvider disableTransitionOnChange>
-            <storesContext.Provider value={{ useCompanyStore, usePhoneListStore, useSoundfileStore, useUserStore }}>
+            <storesContext.Provider value={{ useCompanyStore, usePhoneListStore, useSoundfileStore, useUserStore, useCalendarStore }}>
 
                 <CssBaseline />
                 <Routes>
                     <Route element={<MainLayout />}>
 
-                        {/* <Route element={<AuthGuard />}> */}
+                        <Route element={<AuthGuard />}>
                             <Route path='/' element={<DashboardPage />} />
                             <Route path="/virtual-managers" element={<VirtualManagerPage />} />
                             <Route path="/crm" element={<CRMPage />} />
@@ -37,7 +38,7 @@ export default function App() {
                             <Route path="/calendar" element={<SchedulerPage />} />
                             <Route path="/pomodoro" element={<PomodoroTimer />} />
                             <Route path="/edit/:taskId" element={<EditTaskPage />} />
-                        {/* </Route> */}
+                        </Route>
 
 
                         <Route path="/login" element={<SignInPage />} />

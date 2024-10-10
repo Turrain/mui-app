@@ -61,11 +61,11 @@ export default function SignInPage() {
     const [emailRegister, setEmailRegister] = React.useState('');
     const [passwordRegister, setPasswordRegister] = React.useState('');
 
-    // React.useEffect(() => {
-    //     if (authService.getAuthUser()) {
-    //         navigate(from, { replace: true });
-    //     }
-    // }, [navigate, from]);
+    React.useEffect(() => {
+        if (authService.getAuthUser()) {
+            navigate(from, { replace: true });
+        }
+    }, [navigate, from]);
 
     const handleGoogleLogin = async () => {
         const url = await authService.googleLogin();

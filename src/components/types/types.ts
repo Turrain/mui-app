@@ -105,6 +105,7 @@ interface CalendarEvents {
     title: string;
     start: Date;
     end: Date;
+    // description?: string;
 }
 
 interface DayViewProps {

@@ -37,9 +37,7 @@ const useKanbanStore = create<BoardState>((set) => ({
         },
     ],
     fetchInitialData: async () => {
-        try {
-            
-        }
+        
     },
     moveTask: (fromColumnId, toColumnId, dragIndex, hoverIndex) =>
         set((state) => {
