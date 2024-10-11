@@ -1,5 +1,5 @@
 import { Button, IconButton, Input, Modal, ModalClose, ModalDialog, Stack, styled, Typography } from "@mui/joy"
-import { format } from "date-fns";
+import { format, formatISO } from "date-fns";
 import { ru } from "date-fns/locale";
 import { FC, useContext, useEffect, useState } from "react";
 import { storesContext } from "../../../utils/stores";
@@ -52,8 +52,8 @@ const EditCalendarEventModal: FC<EditCalendarEventModalProps> = ({ id, open, onC
     const handleEditCalendarEvent = () => {
         updateEvent({
             title: title,
-            start: start?.toISOString(),
-            end: end?.toISOString()
+            start: formatISO(start!, { representation: 'complete' }),
+            end: formatISO(end!, { representation: 'complete' })
         });
         setTitle('');
         onClose();

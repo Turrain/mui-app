@@ -19,11 +19,12 @@ import EditTaskPage from "./components/pages/kanban/EditTaskPage";
 import GoogleAuthRedirect from "./components/pages/auth/GoogleAuthRedirect";
 import SchedulerPage from "./components/pages/SchedulerPage";
 import { useCalendarStore } from "./utils/stores/CalendarStore";
+import useKanbanStore from "./utils/stores/KanbanStore";
 
 export default function App() {
     return (
         <CssVarsProvider disableTransitionOnChange>
-            <storesContext.Provider value={{ useCompanyStore, usePhoneListStore, useSoundfileStore, useUserStore, useCalendarStore }}>
+            <storesContext.Provider value={{ useCompanyStore, usePhoneListStore, useSoundfileStore, useUserStore, useCalendarStore, useKanbanStore }}>
 
                 <CssBaseline />
                 <Routes>

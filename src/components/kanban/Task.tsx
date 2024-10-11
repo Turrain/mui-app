@@ -78,10 +78,12 @@ const Task: React.FC<TaskProps> = ({ task, index, fromColumnId, moveTask, setIsD
             >
                 <CardContent>
                     <Typography>
-                        {task.content}
+                        {task.name}
                     </Typography>
                     <Stack spacing={2}>
-                        <Typography>123</Typography>
+                        <Typography>
+                            {task.company}
+                        </Typography>
                     </Stack>
                 </CardContent>
                 <Stack

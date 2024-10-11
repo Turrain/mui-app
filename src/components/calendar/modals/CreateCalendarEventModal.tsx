@@ -1,5 +1,5 @@
 import { Button, Input, Modal, ModalClose, ModalDialog, Stack, styled, Typography } from "@mui/joy"
-import { format } from "date-fns";
+import { format, formatISO } from "date-fns";
 import { ru } from "date-fns/locale";
 import { FC, useEffect, useState } from "react";
 import { SlotInfo } from "react-big-calendar";
@@ -37,8 +37,8 @@ const CreateCalendarEventModal: FC<CreateCalendarEventModalProps> = ({ open, onC
     const handleCreateCalendarEvent = () => {
         createEvent({
             title: title,
-            start: slotInfo.start.toISOString(),
-            end: slotInfo.end.toISOString()
+            start: formatISO(slotInfo.start, { representation: 'complete' }),
+            end: formatISO(slotInfo.end, { representation: 'complete' })
         });
         setTitle('');
         onClose();

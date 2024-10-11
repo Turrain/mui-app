@@ -1,19 +1,40 @@
 import { Box, Button, Input, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import http from '../../utils/api/http-client';
+import { storesContext } from "../../utils/stores";
+import { formatISO } from "date-fns";
 
-interface CreateManagerModalProps {
+interface CreateTaskModalProps {
+    id: number;
     open: boolean;
     onClose: () => void;
 }
 
-const CreateTaskModal: React.FC<CreateManagerModalProps> = ({ open, onClose }) => {
-    const [taskName, setTaskName] = React.useState('');
-    const [taskCompany, setTaskCompany] = React.useState('');
-    const [taskPhone, setTaskPhone] = React.useState('');
-    const [taskComment, setTaskComment] = React.useState('');
-    const [taskTask, setTaskTask] = React.useState('');
-    const [taskDateTime, setTaskDateTime] = React.useState(new Date(Date.now()).toISOString());
+const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ id, open, onClose }) => {
+    // const [taskName, setTaskName] = React.useState('');
+    // const [taskCompany, setTaskCompany] = React.useState('');
+    // const [taskPhone, setTaskPhone] = React.useState('');
+    // const [taskComment, setTaskComment] = React.useState('');
+    // const [taskTask, setTaskTask] = React.useState('');
+    // const [taskDateTime, setTaskDateTime] = React.useState('');
+    const [formData, setFormData] = React.useState({
+        taskName: '',
+        taskCompany: '',
+        taskPhone: '',
+        taskComment: '',
+        taskTask: '',
+        taskDateTime: '',
+    });
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    const { useKanbanStore } = useContext(storesContext);
+    const { addTask } = useKanbanStore();
 
     const useMediaQuery = (query: string): boolean => {
         const [matches, setMatches] = useState<boolean>(false);
@@ -38,24 +59,14 @@ const CreateTaskModal: React.FC<CreateManagerModalProps> = ({ open, onClose }) =
     const isMobile = useMediaQuery('(max-width:600px)');
 
     const handleCreateTask = async () => {
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        const event = {
-            summary: taskName + " " + taskCompany,
-            description: taskComment + "\n" + taskTask + "\n" + taskPhone,
-            start_date_time: taskDateTime,
-            end_date_time: new Date(new Date(taskDateTime).getTime() + 60 * 60 * 1000).toISOString(),
-            time_zone: timeZone
-        };
-
-        try {
-            await http.post('/api/add-event', event);
-            alert('Event created: ' + event.summary);
-            onClose();
-        } catch (error) {
-            console.error("Error creating event: ", error);
-            alert('Error creating event');
-        }
+        addTask(id, {
+            name: formData.taskName,
+            company: formData.taskCompany,
+            phone: formData.taskPhone,
+            comment: formData.taskComment,
+            task: formData.taskTask,
+            datetime: formatISO(formData.taskDateTime, { representation: 'complete' }),
+        })
     }
 
     return (
@@ -85,45 +96,52 @@ const CreateTaskModal: React.FC<CreateManagerModalProps> = ({ open, onClose }) =
                         <Typography level="h3">Create Task</Typography>
                         <Input
                             placeholder="Name"
+                            name="taskName"
                             variant="outlined"
                             fullWidth
-                            value={taskName}
-                            onChange={(e) => setTaskName(e.target.value)}
+                            value={formData.taskName}
+                            onChange={handleInputChange}
                         />
                         <Input
                             placeholder="Company"
+                            name="taskCompany"
                             variant="outlined"
                             fullWidth
-                            value={taskCompany}
-                            onChange={(e) => setTaskCompany(e.target.value)}
+                            value={formData.taskCompany}
+                            onChange={handleInputChange}
                         />
                         <Input
                             placeholder="Phone"
+                            name="taskPhone"
                             variant="outlined"
                             fullWidth
-                            value={taskPhone}
-                            onChange={(e) => setTaskPhone(e.target.value)}
+                            value={formData.taskPhone}
+                            onChange={handleInputChange}
                         />
                         <Input
                             placeholder="Comment"
+                            name="taskComment"
                             variant="outlined"
                             fullWidth
-                            value={taskComment}
-                            onChange={(e) => setTaskComment(e.target.value)}
+                            value={formData.taskComment}
+                            onChange={handleInputChange}
                         />
                         <Input
                             placeholder="Task"
+                            name="taskTask"
                             variant="outlined"
                             fullWidth
-                            value={taskTask}
-                            onChange={(e) => setTaskTask(e.target.value)}
+                            value={formData.taskTask}
+                            onChange={handleInputChange}
                         />
                         <Input
                             placeholder="Datetime"
+                            name="taskDateTime"
                             variant="outlined"
                             fullWidth
-                            value={taskDateTime}
-                            onChange={(e) => setTaskDateTime(e.target.value)}
+                            type="datetime-local"
+                            value={formData.taskDateTime}
+                            onChange={handleInputChange}
                         />
                         <Button
                             onClick={handleCreateTask}

@@ -6,7 +6,7 @@ import startOfWeek from 'date-fns/startOfWeek'
 import getDay from 'date-fns/getDay'
 import { ru } from 'date-fns/locale'
 import { useContext, useEffect, useState } from 'react'
-import { setHours, setMinutes } from 'date-fns'
+import { formatISO, setHours, setMinutes } from 'date-fns'
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import CreateCalendarEventModal from './modals/CreateCalendarEventModal'
@@ -54,13 +54,21 @@ const Sheduler2 = () => {
 
     const onEventResize = (data: any) => {
         const { event, start, end } = data;
-        const updatedEvent = { ...event, start, end };
+        const updatedEvent = {
+            ...event,
+            start: formatISO(start, { representation: 'complete' }),
+            end: formatISO(end, { representation: 'complete' })
+        };
         updateEvent(updatedEvent);
     };
 
     const onEventDrop = (data: any) => {
         const { event, start, end } = data;
-        const updatedEvent = { ...event, start, end };
+        const updatedEvent = {
+            ...event,
+            start: formatISO(start, { representation: 'complete' }),
+            end: formatISO(end, { representation: 'complete' })
+        };
         updateEvent(updatedEvent);
     };
 

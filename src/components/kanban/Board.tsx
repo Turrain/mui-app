@@ -3,20 +3,31 @@ import Column from './Column';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import { Button, Stack } from '@mui/joy';
+import { Button, IconButton, Sheet, Stack } from '@mui/joy';
 import useKanbanStore from '../../utils/stores/KanbanStore';
 import TableColumn from './TableColumn';
+import { Add, Create } from '@mui/icons-material';
 
 
 const Board: React.FC = () => {
-    const { columns } = useKanbanStore(state => ({
-        columns: state.columns,
-    }));
+    const { columns, fetchColumns, addColumn } = useKanbanStore();
+
     const [isDraggingBoard, setIsDraggingBoard] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        fetchColumns();
+        console.log(columns);
+    }, []);
+
+    const handleCreateColumn = () => {
+        addColumn({
+            title: 'test',
+        })
+    }
 
     const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         setIsDraggingBoard(true);
@@ -61,61 +72,86 @@ const Board: React.FC = () => {
             <Button onClick={toggleViewMode}>
                 Switch to {viewMode === 'kanban' ? 'Table View' : 'Kanban View'}
             </Button>
-            {viewMode === 'kanban' ? (
-                <Stack
-                    ref={scrollContainerRef}
-                    onMouseDown={onMouseDown}
-                    onMouseMove={onMouseMove}
-                    onMouseUp={onMouseUp}
-                    sx={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        flexWrap: 'nowrap',
-                        gap: 2,
-                        overflowX: 'auto',
-                        cursor: isDraggingBoard ? 'grabbing' : 'grab',
-                        userSelect: isDraggingBoard ? 'none' : 'auto',
-                    }}
-                >
-                    {columns.map((column, index) => (
-                        <Column
-                            key={`board-column-${index}`}
-                            id={column.id}
-                            title={column.title}
-                            tasks={column.tasks}
-                            tagColor={column.tagColor}
-                            setIsDraggingBoard={setIsDraggingBoard}
-                        />
-                    ))}
-                </Stack>
-            ) : (
-                <Stack
-                    sx={{
-                        display: 'flex',
-                        gap: '20px',
-                        my: 2,
-                    }}
-                >
-                    {columns.map((column, index) => (
+            {
+                viewMode === 'kanban'
+                    ? (
+                        <>
+                            <Stack
+                                ref={scrollContainerRef}
+                                onMouseDown={onMouseDown}
+                                onMouseMove={onMouseMove}
+                                onMouseUp={onMouseUp}
+                                sx={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    flexWrap: 'nowrap',
+                                    gap: 2,
+                                    overflowX: 'auto',
+                                    cursor: isDraggingBoard ? 'grabbing' : 'grab',
+                                    userSelect: isDraggingBoard ? 'none' : 'auto',
+                                }}
+                            >
+                                {columns.map((column, index) => (
+                                    <Column
+                                        key={`board-column-${index}`}
+                                        id={column.id}
+                                        title={column.title}
+                                        tasks={column.tasks}
+                                        tagColor={column.tagColor}
+                                        setIsDraggingBoard={setIsDraggingBoard}
+                                    />
+                                ))}
+                                <Sheet
+                                    sx={{
+                                        minWidth: '300px',
+                                        padding: '16px',
+                                        borderRadius: '4px',
+                                        minHeight: '250px',
+                                        my: 2,
+                                    }}
+                                >
+                                    <IconButton
+                                        onClick={handleCreateColumn}
+                                        sx={{
+                                            display: 'flex',
+                                            height: '100%',
+                                            width: '100%',
+                                        }}
+                                    >
+                                        <Add />
+                                    </IconButton>
+                                </Sheet>
+                            </Stack>
+                        </>
+                    ) : (
                         <Stack
-                            key={`table-${index}`}
                             sx={{
-                                padding: '16px',
-                                borderRadius: '4px',
+                                display: 'flex',
+                                gap: '20px',
+                                my: 2,
                             }}
                         >
-                            <TableColumn
-                                key={`kanban-table-${index}`}
-                                id={column.id}
-                                title={column.title}
-                                tasks={column.tasks}
-                                tagColor={column.tagColor}
-                            />
+                            {columns.map((column, index) => (
+                                <Stack
+                                    key={`table-${index}`}
+                                    sx={{
+                                        padding: '16px',
+                                        borderRadius: '4px',
+                                    }}
+                                >
+                                    <TableColumn
+                                        key={`kanban-table-${index}`}
+                                        id={column.id}
+                                        title={column.title}
+                                        tasks={column.tasks}
+                                        tagColor={column.tagColor}
+                                    />
+                                </Stack>
+                            ))}
                         </Stack>
-                    ))}
-                </Stack>
-            )}
+                    )
+            }
         </DndProvider>
     );
 };

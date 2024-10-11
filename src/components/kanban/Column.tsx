@@ -55,7 +55,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggi
                 justifyContent={'space-between'}
             >
                 <Typography level='title-lg'>{title}</Typography>
-                <Typography level='title-lg'>{tasks.length}</Typography>
+                <Typography level='title-lg'>{tasks ? tasks.length : 0}</Typography>
             </Stack>
             <Button
                 fullWidth
@@ -66,19 +66,25 @@ const Column: React.FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggi
             >
                 <Add />
             </Button>
-            {tasks.map((task, index) => (
-                <Box key={`column-box-${index}`}>
-                    <Task
-                        key={`task-${index}`}
-                        task={task}
-                        index={index}
-                        fromColumnId={id}
-                        setIsDraggingBoard={setIsDraggingBoard}
-                        moveTask={moveTask}
-                    />
-                </Box>
-            ))}
-            <CreateTaskModal open={isModalOpen} onClose={handleCloseModal} />
+            {
+                tasks &&
+                tasks.map((task, index) => (
+                    <Box key={`column-box-${index}`}>
+                        <Task
+                            key={`task-${index}`}
+                            task={task}
+                            index={index}
+                            fromColumnId={id}
+                            setIsDraggingBoard={setIsDraggingBoard}
+                            moveTask={moveTask}
+                        />
+                    </Box>
+                ))}
+            <CreateTaskModal
+                id={id}
+                open={isModalOpen}
+                onClose={handleCloseModal}
+            />
         </Sheet>
     );
 };

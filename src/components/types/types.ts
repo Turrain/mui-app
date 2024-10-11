@@ -80,13 +80,13 @@ interface ChatProps {
 };
 
 interface Task {
-    id: number;
+    id?: number;
     name: string;
     company: string;
     phone: string;
     comment?: string;
     task: string;
-    datetime: Date;
+    datetime: Date | string;
 }
 
 interface Column {
