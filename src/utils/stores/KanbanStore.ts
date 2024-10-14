@@ -8,7 +8,9 @@ interface BoardState {
     addColumn: (newColumn: any) => void;
     moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void;
     addTask: (columnId: number, task: Task) => void;
+    updateTask: (task: Task, taskId: number) => void;
     removeTask: (columnId: number, taskId: number) => void;
+    getTaskById: (taskId: number) => Task | undefined;
 }
 
 const useKanbanStore = create<BoardState>((set, get) => ({
@@ -70,6 +72,14 @@ const useKanbanStore = create<BoardState>((set, get) => ({
             console.error('Ошибка при добавлении:', error);
         }
     },
+    updateTask: (task, taskId) => {
+        http.put(`/api/kanban_cards/${taskId}`, { ...task }, {
+            headers: { 'Content-Type': 'application/json' },
+        })
+            .catch(error => {
+                console.error('Ошибка при обновлении данных:', error);
+            });
+    },
     removeTask: (columnId, cardId) =>
         set((state) => {
             const column = state.columns.find((col) => col.id === columnId);
@@ -78,6 +88,14 @@ const useKanbanStore = create<BoardState>((set, get) => ({
             }
             return { columns: [...state.columns] };
         }),
+    getTaskById: (taskId) => {
+        let existedTask;
+        for (let index = 0; index < get().columns.length; index++) {
+            existedTask = get().columns[index].tasks.find(task => task.id === taskId);
+            if (existedTask) break;
+        }
+        return existedTask;
+    }
 }));
 
 export default useKanbanStore;

@@ -1,6 +1,5 @@
 import { Box, Button, Input, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useState, useEffect, useContext } from "react";
-import http from '../../utils/api/http-client';
 import { storesContext } from "../../utils/stores";
 import { formatISO } from "date-fns";
 
@@ -11,12 +10,6 @@ interface CreateTaskModalProps {
 }
 
 const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ id, open, onClose }) => {
-    // const [taskName, setTaskName] = React.useState('');
-    // const [taskCompany, setTaskCompany] = React.useState('');
-    // const [taskPhone, setTaskPhone] = React.useState('');
-    // const [taskComment, setTaskComment] = React.useState('');
-    // const [taskTask, setTaskTask] = React.useState('');
-    // const [taskDateTime, setTaskDateTime] = React.useState('');
     const [formData, setFormData] = React.useState({
         taskName: '',
         taskCompany: '',
@@ -30,7 +23,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ id, open, onClose }) 
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
-        })
+        });
     }
 
     const { useKanbanStore } = useContext(storesContext);
@@ -66,7 +59,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ id, open, onClose }) 
             comment: formData.taskComment,
             task: formData.taskTask,
             datetime: formatISO(formData.taskDateTime, { representation: 'complete' }),
-        })
+        });
+        onClose();
     }
 
     return (
@@ -159,6 +153,5 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ id, open, onClose }) 
         </Modal>
     );
 }
-
 
 export default CreateTaskModal;

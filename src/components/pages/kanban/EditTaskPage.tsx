@@ -1,20 +1,30 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Input, Typography } from '@mui/joy';
 import Header from '../../Header';
 import Sidebar from '../../Sidebar';
 import MyMessages from '../../MyMessages';
+import { storesContext } from '../../../utils/stores';
 
 const EditTaskPage: React.FC = () => {
-    const { taskId } = useParams<{ taskId: string }>(); // Получаем ID колонки из параметров
-    const [taskContent, setTaskContent] = React.useState('');
+    const { taskId } = useParams<{ taskId: string }>();
     const navigate = useNavigate();
 
+    const { useKanbanStore } = useContext(storesContext);
+    const { getTaskById, updateTask } = useKanbanStore();
+
+    const [formData, setFormData] = React.useState(getTaskById(Number(taskId)));
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+            ...formData!,
+            [e.target.name]: e.target.value
+        });
+    }
+
     const handleUpdateTask = () => {
-        // Логика для создания задачи, например отправка запроса на сервер
-        console.log(`Creating task in column ${taskId}: ${taskContent}`);
-        // После создания задачи можно перенаправить назад, например
-        // history.push(`/kanban`); // Или перенаправление к родительской странице
+        updateTask(formData!, Number(taskId));
+        navigate(-1);
     };
 
     return (
@@ -79,45 +89,52 @@ const EditTaskPage: React.FC = () => {
                         <Typography level='h3' pb={2}>Информация</Typography>
                         <Input
                             placeholder="Name"
+                            name="name"
                             variant="outlined"
                             fullWidth
-                            value={taskContent}
-                            onChange={(e) => setTaskContent(e.target.value)}
+                            value={formData?.name}
+                            onChange={handleInputChange}
                         />
                         <Input
                             placeholder="Company"
+                            name="company"
                             variant="outlined"
                             fullWidth
-                            value={taskContent}
-                            onChange={(e) => setTaskContent(e.target.value)}
+                            value={formData?.company}
+                            onChange={handleInputChange}
                         />
                         <Input
                             placeholder="Phone"
+                            name="phone"
                             variant="outlined"
                             fullWidth
-                            value={taskContent}
-                            onChange={(e) => setTaskContent(e.target.value)}
+                            value={formData?.phone}
+                            onChange={handleInputChange}
                         />
                         <Input
                             placeholder="Comment"
+                            name="comment"
                             variant="outlined"
                             fullWidth
-                            value={taskContent}
-                            onChange={(e) => setTaskContent(e.target.value)}
+                            value={formData?.comment}
+                            onChange={handleInputChange}
                         />
                         <Input
                             placeholder="Task"
+                            name="task"
                             variant="outlined"
                             fullWidth
-                            value={taskContent}
-                            onChange={(e) => setTaskContent(e.target.value)}
+                            value={formData?.task}
+                            onChange={handleInputChange}
                         />
                         <Input
                             placeholder="Datetime"
+                            name="datetime"
                             variant="outlined"
                             fullWidth
-                            value={taskContent}
-                            onChange={(e) => setTaskContent(e.target.value)}
+                            type="datetime-local"
+                            value={formData?.datetime.toString()}
+                            onChange={handleInputChange}
                         />
                     </Box>
                 </Box>

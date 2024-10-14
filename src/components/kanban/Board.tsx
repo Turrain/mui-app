@@ -7,11 +7,13 @@ import { Button, IconButton, Sheet, Stack } from '@mui/joy';
 import useKanbanStore from '../../utils/stores/KanbanStore';
 import TableColumn from './TableColumn';
 import { Add, Create } from '@mui/icons-material';
+import CreateColumnModal from './modals/CreateColumnModal';
 
 
 const Board: React.FC = () => {
-    const { columns, fetchColumns, addColumn } = useKanbanStore();
+    const { columns, fetchColumns } = useKanbanStore();
 
+    const [openCreateColumnModal, setOpenCreateColumnModal] = useState<boolean>(false);
     const [isDraggingBoard, setIsDraggingBoard] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
@@ -20,14 +22,7 @@ const Board: React.FC = () => {
 
     useEffect(() => {
         fetchColumns();
-        console.log(columns);
     }, []);
-
-    const handleCreateColumn = () => {
-        addColumn({
-            title: 'test',
-        })
-    }
 
     const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         setIsDraggingBoard(true);
@@ -112,7 +107,7 @@ const Board: React.FC = () => {
                                     }}
                                 >
                                     <IconButton
-                                        onClick={handleCreateColumn}
+                                        onClick={() => setOpenCreateColumnModal(true)}
                                         sx={{
                                             display: 'flex',
                                             height: '100%',
@@ -152,6 +147,10 @@ const Board: React.FC = () => {
                         </Stack>
                     )
             }
+            <CreateColumnModal
+                open={openCreateColumnModal}
+                onClose={() => setOpenCreateColumnModal(false)}
+            />
         </DndProvider>
     );
 };
