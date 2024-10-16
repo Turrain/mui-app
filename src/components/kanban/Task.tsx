@@ -97,9 +97,11 @@ const Task: React.FC<TaskProps> = ({ task, index, fromColumnId, moveTask, setIsD
                     >
                         <Edit />
                     </IconButton>
-                    <IconButton>
-                        <LocalPhone />
-                    </IconButton>
+                    <a href={`tel:${task.phone}`}>
+                        <IconButton>
+                            <LocalPhone />
+                        </IconButton>
+                    </a>
                 </Stack>
             </Card>
         </div>
