@@ -1,6 +1,6 @@
 import Header from '../Header';
 import Sidebar from '../Sidebar';
-import { Typography, Box } from '@mui/joy';
+import { Typography, Box, Alert } from '@mui/joy';
 import Board from '../kanban/Board';
 
 export default function CRMPage() {

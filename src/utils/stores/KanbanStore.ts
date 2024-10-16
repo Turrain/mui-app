@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import http from '../api/http-client';
-import auth from '../api/auth.service';
+import { useToastStore } from './ToastStore';
 
 interface BoardState {
     columns: Column[];
     fetchColumns: () => void;
     addColumn: (newColumn: any) => void;
+    updateColumn: (columnId: number, title: string) => void;
+    deleteColumn: (columnId: number) => void;
     moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void;
     addTask: (columnId: number, task: Task) => void;
     updateTask: (task: Task, taskId: number) => void;
@@ -24,14 +26,46 @@ const useKanbanStore = create<BoardState>((set, get) => ({
         set({ columns: data });
     },
     addColumn: (newColumn) => {
+        const show = useToastStore.getState().show;
         http.post('/api/kanban_columns', newColumn, {
             headers: { 'Content-Type': 'application/json' },
         })
             .then(response => response.data)
-            .then(() => get().fetchColumns())
+            .then(() => {
+                get().fetchColumns();
+                show('Создано', 'success');
+            })
             .catch(error => {
                 console.error('Ошибка при добавлении:', error);
             })
+    },
+    updateColumn: (columnId, title) => {
+        const show = useToastStore.getState().show;
+        http.put(`/api/kanban_columns/${columnId}`, {
+            title: title,
+        }, {
+            headers: { 'Content-Type': 'application/json' },
+        })
+        .then(() => {
+            get().fetchColumns();
+            show('Изменено', 'success');
+        })
+        .catch(error => {
+            console.error('Ошибка при удалении:', error);
+            show('Ошибка при редактировании', 'danger');
+        });
+    },
+    deleteColumn: (columnId) => {
+        const show = useToastStore.getState().show;
+        http.delete_(`/api/kanban_columns/${columnId}`)
+        .then(() => {
+            get().fetchColumns();
+            show('Удалено', 'success');
+        })
+        .catch(error => {
+            console.error('Ошибка при удалении:', error);
+            show('Ошибка при удалении', 'danger');
+        });
     },
     moveTask: (fromColumnId, toColumnId, dragIndex, hoverIndex) =>
         set((state) => {

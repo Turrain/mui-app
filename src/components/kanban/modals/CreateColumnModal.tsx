@@ -43,6 +43,7 @@ const CreateColumnModal: React.FC<CreateColumnModalProps> = ({ open, onClose }) 
         addColumn({
             title: columnName,
         });
+        setColumnName('');
         onClose();
     }
 
