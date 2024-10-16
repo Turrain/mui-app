@@ -6,7 +6,7 @@ import { TouchBackend } from 'react-dnd-touch-backend';
 import { Button, IconButton, Sheet, Stack } from '@mui/joy';
 import useKanbanStore from '../../utils/stores/KanbanStore';
 import TableColumn from './TableColumn';
-import { Add, Create } from '@mui/icons-material';
+import { Add } from '@mui/icons-material';
 import CreateColumnModal from './modals/CreateColumnModal';
 
 
@@ -93,7 +93,7 @@ const Board: React.FC = () => {
                                         id={column.id}
                                         title={column.title}
                                         tasks={column.tasks}
-                                        tagColor={column.tagColor}
+                                        tagColor={column.tag_color}
                                         setIsDraggingBoard={setIsDraggingBoard}
                                     />
                                 ))}
@@ -140,7 +140,7 @@ const Board: React.FC = () => {
                                         id={column.id}
                                         title={column.title}
                                         tasks={column.tasks}
-                                        tagColor={column.tagColor}
+                                        tagColor={column.tag_color}
                                     />
                                 </Stack>
                             ))}

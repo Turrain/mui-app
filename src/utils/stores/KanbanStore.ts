@@ -110,6 +110,9 @@ const useKanbanStore = create<BoardState>((set, get) => ({
         http.put(`/api/kanban_cards/${taskId}`, { ...task }, {
             headers: { 'Content-Type': 'application/json' },
         })
+            .then(() => {
+                get().fetchColumns();
+            })
             .catch(error => {
                 console.error('Ошибка при обновлении данных:', error);
             });

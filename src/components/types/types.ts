@@ -87,13 +87,14 @@ interface Task {
     comment?: string;
     task: string;
     datetime: Date | string;
+    column_id?: number;
 }
 
 interface Column {
     id: number;
     title: string;
     tasks: Task[];
-    tagColor: string;
+    tag_color: string;
 }
 
 interface TaskChipCustomize {

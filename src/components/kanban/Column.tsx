@@ -1,5 +1,5 @@
-import React, { FC, useState } from 'react';
-import { Button, Typography, Box, Sheet, Stack, IconButton, Modal, ModalDialog, ModalClose, ButtonGroup, Input } from '@mui/joy';
+import { FC, useState } from 'react';
+import { Button, Typography, Box, Sheet, Stack, IconButton, Modal, ModalDialog, ButtonGroup, Input } from '@mui/joy';
 import Task from './Task';
 import { useDrop } from 'react-dnd';
 import CreateTaskModal from '../modals/CreateTaskModal';
@@ -14,7 +14,7 @@ interface ColumnProps {
     setIsDraggingBoard: (isDragging: boolean) => void;
 }
 
-const Column: React.FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoard }) => {
+const Column: FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoard }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -45,6 +45,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggi
         <Sheet
             key={`column-${id}`}
             ref={drop}
+            invertedColors
             sx={{
                 minWidth: '300px',
                 padding: '16px',
@@ -59,6 +60,11 @@ const Column: React.FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggi
                 justifyContent={'space-between'}
                 alignItems={'center'}
                 gap={2}
+                sx={{
+                    backgroundColor: tagColor,
+                    borderRadius: '6px',
+                    padding: '8px'
+                }}
             >
                 {
                     !isEditingTitle
@@ -79,12 +85,14 @@ const Column: React.FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggi
                                 <IconButton
                                     onClick={() => setIsEditingTitle(true)}
                                     color='primary'
+                                    variant='soft'
                                 >
                                     <Edit />
                                 </IconButton>
                                 <IconButton
                                     onClick={() => setIsAlertModalOpen(true)}
                                     color='danger'
+                                    variant='soft'
                                 >
                                     <Delete />
                                 </IconButton>
@@ -102,13 +110,12 @@ const Column: React.FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggi
                                 onChange={e => setChangedTitle(e.target.value)}
                                 fullWidth
                                 endDecorator={
-                                    <ButtonGroup
-                                        size='sm'
-                                        sx={{
-                                            gap: '10px',
-                                        }}
+                                    <Stack
+                                        flexDirection={'row'}
+                                        gap={1}
                                     >
                                         <IconButton
+                                            variant='outlined'
                                             color='success'
                                             onClick={() => {
                                                 updateColumn(id, changedTitle);
@@ -118,12 +125,13 @@ const Column: React.FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggi
                                             <Check />
                                         </IconButton>
                                         <IconButton
+                                            variant='outlined'
                                             color='danger'
                                             onClick={() => setIsEditingTitle(false)}
                                         >
                                             <Close />
                                         </IconButton>
-                                    </ButtonGroup>
+                                    </Stack>
                                 }
                             />
                         </Stack>
@@ -204,7 +212,10 @@ const AlertModal: FC<{
                     <Button
                         fullWidth
                         color='success'
-                        onClick={() => handleDelete(id)}
+                        onClick={() => {
+                            handleDelete(id);
+                            onClose();
+                        }}
                     >
                         Удалить
                     </Button>

@@ -8,7 +8,8 @@ interface CreateColumnModalProps {
 }
 
 const CreateColumnModal: React.FC<CreateColumnModalProps> = ({ open, onClose }) => {
-    const [columnName, setColumnName] = React.useState('');
+    const [columnName, setColumnName] = useState('');
+    const [columnColor, setColumnColor] = useState('#ffffff');
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setColumnName(e.target.value);
@@ -42,6 +43,7 @@ const CreateColumnModal: React.FC<CreateColumnModalProps> = ({ open, onClose }) 
     const handleCreateTask = async () => {
         addColumn({
             title: columnName,
+            tag_color: columnColor,
         });
         setColumnName('');
         onClose();
@@ -50,7 +52,11 @@ const CreateColumnModal: React.FC<CreateColumnModalProps> = ({ open, onClose }) 
     return (
         <Modal
             open={open}
-            onClose={() => onClose()}
+            onClose={() => {
+                setColumnName('');
+                setColumnColor('#ffffff');
+                onClose();
+            }}
             sx={{
                 display: 'flex', minHeight: '100dvh', flex: 1
             }}
@@ -68,7 +74,9 @@ const CreateColumnModal: React.FC<CreateColumnModalProps> = ({ open, onClose }) 
                         gap={1}
                         width={'100%'}
                     >
-                        <Typography level="h3">Create Column</Typography>
+                        <Typography level="h3">
+                            Create Column
+                        </Typography>
                         <Input
                             placeholder="Title"
                             name="title"
@@ -76,6 +84,15 @@ const CreateColumnModal: React.FC<CreateColumnModalProps> = ({ open, onClose }) 
                             fullWidth
                             value={columnName}
                             onChange={handleInputChange}
+                        />
+                        <Input
+                            placeholder="Цвет"
+                            name="columnName"
+                            type="color"
+                            variant="outlined"
+                            fullWidth
+                            value={columnColor}
+                            onChange={(e) => { setColumnColor(e.target.value) }}
                         />
                         <Button
                             onClick={handleCreateTask}
