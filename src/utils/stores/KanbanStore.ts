@@ -5,6 +5,8 @@ import { useToastStore } from './ToastStore';
 interface BoardState {
     columns: Column[];
     fetchColumns: () => void;
+    fetchTasksById: (columnId: number, page: number, limit: number) => Promise<any>;
+    fetchTaskById: (taskId: number) => Promise<Task[]>;
     addColumn: (newColumn: any) => void;
     updateColumn: (columnId: number, title: string) => void;
     deleteColumn: (columnId: number) => void;
@@ -19,11 +21,24 @@ const useKanbanStore = create<BoardState>((set, get) => ({
     columns: [],
     fetchColumns: async () => {
         const response = await http.get('/api/kanban_columns');
-        const data = response.data.map((column: any) => ({
+    
+        const columns = await Promise.all(response.data.map(async (column: any) => ({
             ...column,
-            tasks: column.tasks || []
-        }));
-        set({ columns: data });
+            tasks: await get().fetchTasksById(column.id, 1, 10) || []
+        })));
+
+        set({ columns: columns });
+    },
+    fetchTasksById: async (columnId, page = 1, limit = 10) => {
+        const offset = (page - 1) * limit;
+        const response = await http.get(`/api/kanban_cards/${columnId}`, {
+            limit, offset
+        });
+        return response.data;
+    },
+    fetchTaskById: async (taskId) => {
+        const response = await http.get(`/api/kanban_card/${taskId}`);
+        return response.data;
     },
     addColumn: (newColumn) => {
         const show = useToastStore.getState().show;

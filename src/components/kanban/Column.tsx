@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Button, Typography, Box, Sheet, Stack, IconButton, Modal, ModalDialog, ButtonGroup, Input } from '@mui/joy';
 import Task from './Task';
 import { useDrop } from 'react-dnd';
@@ -19,8 +19,43 @@ const Column: FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoar
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [changedTitle, setChangedTitle] = useState(title);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [displayedTasks, setDisplayedTasks] = useState<Task[]>(tasks.slice(0, 10));
+    const [allTasksLoaded, setAllTasksLoaded] = useState(false);
 
-    const { moveTask, deleteColumn, updateColumn } = useKanbanStore();
+    const { columns, moveTask, deleteColumn, updateColumn, fetchTasksById } = useKanbanStore();
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            async (entries) => {
+                if (entries[0].isIntersecting && !allTasksLoaded) {
+                        const newPage = currentPage + 1;
+                        setCurrentPage(newPage);
+                        const newTasks = await fetchTasksById(id, newPage, 10);
+                        
+                        if (newTasks.length < 10 && displayedTasks.length < 10) setAllTasksLoaded(true);
+                        else
+                        setDisplayedTasks((prev) => [...prev, ...newTasks]);
+                        console.log('prev: ', displayedTasks);
+                        
+                        console.log('tasks: ', newTasks);
+                }
+            },
+            { threshold: 1.0 }
+        );
+
+        const target = document.querySelector(`#column-${id} .load-more-trigger`);
+        // console.log('target: ', target);
+        
+        if (target) observer.observe(target);
+
+        // console.log('page: ', currentPage);
+        
+
+        return () => {
+            if (target) observer.unobserve(target);
+        };
+    }, [currentPage, id, allTasksLoaded]);
 
     const [, drop] = useDrop({
         accept: 'TASK',
@@ -43,7 +78,7 @@ const Column: FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoar
 
     return (
         <Sheet
-            key={`column-${id}`}
+            id={`column-${id}`}
             ref={drop}
             invertedColors
             sx={{
@@ -77,7 +112,7 @@ const Column: FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoar
                                 justifyContent={'space-between'}
                             >
                                 <Typography level='title-lg'>{title}</Typography>
-                                <Typography level='title-lg'>{tasks ? tasks.length : 0}</Typography>
+                                <Typography level='title-lg'>{displayedTasks ? displayedTasks.length : 0}</Typography>
                             </Stack>
                             <ButtonGroup
                                 size='sm'
@@ -147,8 +182,8 @@ const Column: FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoar
                 <Add />
             </Button>
             {
-                tasks &&
-                tasks.map((task, index) => (
+                displayedTasks &&
+                displayedTasks.map((task, index) => (
                     <Box key={`column-box-${index}`}>
                         <Task
                             key={`task-${index}`}
@@ -160,6 +195,14 @@ const Column: FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoar
                         />
                     </Box>
                 ))}
+            <Box
+                className='load-more-trigger'
+                style={{
+                    height: '1px',
+                }}
+            >
+                123
+            </Box>
             <CreateTaskModal
                 id={id}
                 open={isModalOpen}

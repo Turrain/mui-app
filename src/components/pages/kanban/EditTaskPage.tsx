@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Input, Select, Option, styled, Typography } from '@mui/joy';
 import Header from '../../Header';
@@ -75,10 +75,15 @@ const EditTaskPage: React.FC = () => {
     const navigate = useNavigate();
 
     const { useKanbanStore } = useContext(storesContext);
-    const { getTaskById, updateTask, columns } = useKanbanStore();
+    const { fetchTaskById, updateTask, columns } = useKanbanStore();
 
-    const [formData, setFormData] = React.useState(getTaskById(Number(taskId)));
-
+    const [formData, setFormData] = useState<Task>();
+    
+    useEffect(() => {
+        fetchTaskById(Number(taskId)).then(res => setFormData(res[0]));
+    }, [fetchTaskById]);
+    console.log(formData!);
+    
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData!,
@@ -273,7 +278,7 @@ const EditTaskPage: React.FC = () => {
                             variant="outlined"
                             fullWidth
                             type="datetime-local"
-                            value={formData?.datetime.toString()}
+                            value={formData?.datetime?.toString()}
                             onChange={handleInputChange}
                         />
                     </Box>

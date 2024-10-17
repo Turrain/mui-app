@@ -84,6 +84,9 @@ const Task: React.FC<TaskProps> = ({ task, index, fromColumnId, moveTask, setIsD
                         <Typography>
                             {task.company}
                         </Typography>
+                        <Typography>
+                            {task.comment}
+                        </Typography>
                     </Stack>
                 </CardContent>
                 <Stack

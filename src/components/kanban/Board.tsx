@@ -11,7 +11,7 @@ import CreateColumnModal from './modals/CreateColumnModal';
 
 
 const Board: React.FC = () => {
-    const { columns, fetchColumns } = useKanbanStore();
+    const { columns, fetchColumns, fetchTasksById } = useKanbanStore();
 
     const [openCreateColumnModal, setOpenCreateColumnModal] = useState<boolean>(false);
     const [isDraggingBoard, setIsDraggingBoard] = useState(false);
@@ -22,6 +22,7 @@ const Board: React.FC = () => {
 
     useEffect(() => {
         fetchColumns();
+        columns.forEach(column => fetchTasksById(column.id, 1, 10));
     }, []);
 
     const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
