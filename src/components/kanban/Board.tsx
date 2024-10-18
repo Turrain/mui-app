@@ -9,7 +9,6 @@ import TableColumn from './TableColumn';
 import { Add } from '@mui/icons-material';
 import CreateColumnModal from './modals/CreateColumnModal';
 
-
 const Board: React.FC = () => {
     const { columns, fetchColumns, fetchTasksById } = useKanbanStore();
 
@@ -22,7 +21,6 @@ const Board: React.FC = () => {
 
     useEffect(() => {
         fetchColumns();
-        columns.forEach(column => fetchTasksById(column.id, 1, 10));
     }, []);
 
     const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -71,55 +69,53 @@ const Board: React.FC = () => {
             {
                 viewMode === 'kanban'
                     ? (
-                        <>
-                            <Stack
-                                ref={scrollContainerRef}
-                                onMouseDown={onMouseDown}
-                                onMouseMove={onMouseMove}
-                                onMouseUp={onMouseUp}
+                        <Stack
+                            ref={scrollContainerRef}
+                            onMouseDown={onMouseDown}
+                            onMouseMove={onMouseMove}
+                            onMouseUp={onMouseUp}
+                            sx={{
+                                width: '100%',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                flexWrap: 'nowrap',
+                                gap: 2,
+                                overflowX: 'auto',
+                                cursor: isDraggingBoard ? 'grabbing' : 'grab',
+                                userSelect: isDraggingBoard ? 'none' : 'auto',
+                            }}
+                        >
+                            {columns.map((column, index) => (
+                                <Column
+                                    key={`board-column-${index}`}
+                                    id={column.id}
+                                    title={column.title}
+                                    tasks={column.tasks}
+                                    tagColor={column.tag_color}
+                                    setIsDraggingBoard={setIsDraggingBoard}
+                                />
+                            ))}
+                            <Sheet
                                 sx={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    flexWrap: 'nowrap',
-                                    gap: 2,
-                                    overflowX: 'auto',
-                                    cursor: isDraggingBoard ? 'grabbing' : 'grab',
-                                    userSelect: isDraggingBoard ? 'none' : 'auto',
+                                    minWidth: '300px',
+                                    padding: '16px',
+                                    borderRadius: '4px',
+                                    minHeight: '250px',
+                                    my: 2,
                                 }}
                             >
-                                {columns.map((column, index) => (
-                                    <Column
-                                        key={`board-column-${index}`}
-                                        id={column.id}
-                                        title={column.title}
-                                        tasks={column.tasks}
-                                        tagColor={column.tag_color}
-                                        setIsDraggingBoard={setIsDraggingBoard}
-                                    />
-                                ))}
-                                <Sheet
+                                <IconButton
+                                    onClick={() => setOpenCreateColumnModal(true)}
                                     sx={{
-                                        minWidth: '300px',
-                                        padding: '16px',
-                                        borderRadius: '4px',
-                                        minHeight: '250px',
-                                        my: 2,
+                                        display: 'flex',
+                                        height: '100%',
+                                        width: '100%',
                                     }}
                                 >
-                                    <IconButton
-                                        onClick={() => setOpenCreateColumnModal(true)}
-                                        sx={{
-                                            display: 'flex',
-                                            height: '100%',
-                                            width: '100%',
-                                        }}
-                                    >
-                                        <Add />
-                                    </IconButton>
-                                </Sheet>
-                            </Stack>
-                        </>
+                                    <Add />
+                                </IconButton>
+                            </Sheet>
+                        </Stack>
                     ) : (
                         <Stack
                             sx={{

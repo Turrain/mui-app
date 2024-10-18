@@ -47,7 +47,7 @@ export default function App() {
                     </Route>
                 </Routes>
             </storesContext.Provider>
-            <CallButton />
+            {/* <CallButton /> */}
         </CssVarsProvider>
     );
 }

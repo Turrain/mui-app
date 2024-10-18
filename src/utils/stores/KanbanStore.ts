@@ -8,7 +8,7 @@ interface BoardState {
     fetchTasksById: (columnId: number, page: number, limit: number) => Promise<any>;
     fetchTaskById: (taskId: number) => Promise<Task[]>;
     addColumn: (newColumn: any) => void;
-    updateColumn: (columnId: number, title: string) => void;
+    updateColumn: (columnId: number, title: string, color?: string) => void;
     deleteColumn: (columnId: number) => void;
     moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void;
     addTask: (columnId: number, task: Task) => void;
@@ -54,10 +54,11 @@ const useKanbanStore = create<BoardState>((set, get) => ({
                 console.error('Ошибка при добавлении:', error);
             })
     },
-    updateColumn: (columnId, title) => {
+    updateColumn: (columnId, title, color) => {
         const show = useToastStore.getState().show;
         http.put(`/api/kanban_columns/${columnId}`, {
             title: title,
+            tag_color: color || '#ffffff',
         }, {
             headers: { 'Content-Type': 'application/json' },
         })

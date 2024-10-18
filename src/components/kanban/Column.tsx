@@ -19,38 +19,30 @@ const Column: FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoar
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [changedTitle, setChangedTitle] = useState(title);
+    const [changegColor, setChangedColor] = useState(tagColor);
     const [currentPage, setCurrentPage] = useState(1);
     const [displayedTasks, setDisplayedTasks] = useState<Task[]>(tasks.slice(0, 10));
     const [allTasksLoaded, setAllTasksLoaded] = useState(false);
 
-    const { columns, moveTask, deleteColumn, updateColumn, fetchTasksById } = useKanbanStore();
+    const { moveTask, deleteColumn, updateColumn, fetchTasksById } = useKanbanStore();
 
     useEffect(() => {
         const observer = new IntersectionObserver(
             async (entries) => {
                 if (entries[0].isIntersecting && !allTasksLoaded) {
-                        const newPage = currentPage + 1;
-                        setCurrentPage(newPage);
-                        const newTasks = await fetchTasksById(id, newPage, 10);
-                        
-                        if (newTasks.length < 10 && displayedTasks.length < 10) setAllTasksLoaded(true);
-                        else
+                    const newPage = currentPage + 1;
+                    setCurrentPage(newPage);
+                    const newTasks = await fetchTasksById(id, newPage, 10);
+                    if (newTasks.length < 10 && displayedTasks.length < 10) setAllTasksLoaded(true);
+                    else
                         setDisplayedTasks((prev) => [...prev, ...newTasks]);
-                        console.log('prev: ', displayedTasks);
-                        
-                        console.log('tasks: ', newTasks);
                 }
             },
             { threshold: 1.0 }
         );
 
         const target = document.querySelector(`#column-${id} .load-more-trigger`);
-        // console.log('target: ', target);
-        
         if (target) observer.observe(target);
-
-        // console.log('page: ', currentPage);
-        
 
         return () => {
             if (target) observer.unobserve(target);
@@ -139,36 +131,42 @@ const Column: FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoar
                             width={'100%'}
                             flexDirection={'row'}
                             justifyContent={'space-between'}
+                            gap={2}
                         >
                             <Input
                                 value={changedTitle}
                                 onChange={e => setChangedTitle(e.target.value)}
                                 fullWidth
-                                endDecorator={
-                                    <Stack
-                                        flexDirection={'row'}
-                                        gap={1}
-                                    >
-                                        <IconButton
-                                            variant='outlined'
-                                            color='success'
-                                            onClick={() => {
-                                                updateColumn(id, changedTitle);
-                                                setIsEditingTitle(false);
-                                            }}
-                                        >
-                                            <Check />
-                                        </IconButton>
-                                        <IconButton
-                                            variant='outlined'
-                                            color='danger'
-                                            onClick={() => setIsEditingTitle(false)}
-                                        >
-                                            <Close />
-                                        </IconButton>
-                                    </Stack>
-                                }
                             />
+                            <Input
+                                value={changegColor}
+                                onChange={e => setChangedColor(e.target.value)}
+                                type='color'
+                            />
+                            <ButtonGroup>
+
+                                <IconButton
+                                    variant='soft'
+                                    color='success'
+                                    onClick={() => {
+                                        updateColumn(id, changedTitle, changegColor);
+                                        setIsEditingTitle(false);
+                                    }}
+                                >
+                                    <Check />
+                                </IconButton>
+                                <IconButton
+                                    variant='soft'
+                                    color='danger'
+                                    onClick={() => {
+                                        setIsEditingTitle(false);
+                                        setChangedColor(tagColor);
+                                        setChangedTitle(title);
+                                    }}
+                                >
+                                    <Close />
+                                </IconButton>
+                            </ButtonGroup>
                         </Stack>
                 }
             </Stack>
@@ -200,9 +198,7 @@ const Column: FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoar
                 style={{
                     height: '1px',
                 }}
-            >
-                123
-            </Box>
+            />
             <CreateTaskModal
                 id={id}
                 open={isModalOpen}

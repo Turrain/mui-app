@@ -78,12 +78,11 @@ const EditTaskPage: React.FC = () => {
     const { fetchTaskById, updateTask, columns } = useKanbanStore();
 
     const [formData, setFormData] = useState<Task>();
-    
+
     useEffect(() => {
         fetchTaskById(Number(taskId)).then(res => setFormData(res[0]));
     }, [fetchTaskById]);
-    console.log(formData!);
-    
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData!,
@@ -102,6 +101,15 @@ const EditTaskPage: React.FC = () => {
             column_id: value!,
         })
     }
+
+    const time = (
+        new Date(formData?.datetime!).getFullYear() + '-' +
+        (new Date(formData?.datetime!).getMonth() + 1) + '-' +
+        new Date(formData?.datetime!).getDate() + 'T' + 0 +
+        new Date(formData?.datetime!).getHours() + ':' + 0 +
+        new Date(formData?.datetime!).getMinutes()
+    );
+
 
     return (
         <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
@@ -267,7 +275,18 @@ const EditTaskPage: React.FC = () => {
                                 <Option
                                     key={index}
                                     value={column.id}
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                    }}
                                 >
+                                    <Box
+                                        sx={{
+                                            backgroundColor: column.tag_color,
+                                            width: '16px',
+                                            height: '16px',
+                                        }}
+                                    />
                                     {column.title}
                                 </Option>
                             ))}
@@ -278,7 +297,7 @@ const EditTaskPage: React.FC = () => {
                             variant="outlined"
                             fullWidth
                             type="datetime-local"
-                            value={formData?.datetime?.toString()}
+                            value={time}
                             onChange={handleInputChange}
                         />
                     </Box>

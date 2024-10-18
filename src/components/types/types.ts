@@ -86,7 +86,7 @@ interface Task {
     phone: string;
     comment?: string;
     task: string;
-    datetime: Date | string;
+    datetime: Date;
     column_id?: number;
 }
 
