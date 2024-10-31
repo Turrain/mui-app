@@ -9,6 +9,7 @@ interface BoardState {
     fetchTaskById: (taskId: number) => Promise<Task[]>;
     addColumn: (newColumn: any) => void;
     updateColumn: (columnId: number, title: string, color?: string) => void;
+    moveColumn: (fromIndex: number, toindex: number) => void;
     deleteColumn: (columnId: number) => void;
     moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void;
     addTask: (columnId: number, task: Task) => void;
@@ -82,6 +83,18 @@ const useKanbanStore = create<BoardState>((set, get) => ({
             console.error('Ошибка при удалении:', error);
             show('Ошибка при удалении', 'danger');
         });
+    },
+    moveColumn: (fromIndex, toindex) => {
+        set((state) => {
+            const columns = [...state.columns];
+            const [movedColumn] = columns.splice(fromIndex, 1);
+            columns.splice(toindex, 0, movedColumn);
+
+            console.log('moved', columns);
+            
+
+            return { columns };
+        })
     },
     moveTask: (fromColumnId, toColumnId, dragIndex, hoverIndex) =>
         set((state) => {

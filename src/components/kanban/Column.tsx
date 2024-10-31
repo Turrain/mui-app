@@ -5,60 +5,55 @@ import { useDrop } from 'react-dnd';
 import CreateTaskModal from '../modals/CreateTaskModal';
 import { Add, Check, Close, Delete, Edit } from '@mui/icons-material';
 import useKanbanStore from '../../utils/stores/KanbanStore';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface ColumnProps {
-    id: number;
-    title: string;
-    tagColor: string;
-    tasks: Task[];
-    setIsDraggingBoard: (isDragging: boolean) => void;
+    column: Column;
 }
 
-const Column: FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoard }) => {
+const Column: FC<ColumnProps> = ({ column }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
-    const [changedTitle, setChangedTitle] = useState(title);
-    const [changegColor, setChangedColor] = useState(tagColor);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [displayedTasks, setDisplayedTasks] = useState<Task[]>(tasks.slice(0, 10));
-    const [allTasksLoaded, setAllTasksLoaded] = useState(false);
+    const [changedTitle, setChangedTitle] = useState(column.title);
+    const [changegColor, setChangedColor] = useState(column.tag_color);
+    // const [currentPage, setCurrentPage] = useState(1);
+    // const [displayedTasks, setDisplayedTasks] = useState<Task[]>(tasks.slice(0, 10));
+    // const [allTasksLoaded, setAllTasksLoaded] = useState(false);
 
-    const { moveTask, deleteColumn, updateColumn, fetchTasksById } = useKanbanStore();
+    // const { moveTask, deleteColumn, updateColumn, fetchTasksById } = useKanbanStore();
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            async (entries) => {
-                if (entries[0].isIntersecting && !allTasksLoaded) {
-                    const newPage = currentPage + 1;
-                    setCurrentPage(newPage);
-                    const newTasks = await fetchTasksById(id, newPage, 10);
-                    if (newTasks.length < 10 && displayedTasks.length < 10) setAllTasksLoaded(true);
-                    else
-                        setDisplayedTasks((prev) => [...prev, ...newTasks]);
-                }
-            },
-            { threshold: 1.0 }
-        );
-
-        const target = document.querySelector(`#column-${id} .load-more-trigger`);
-        if (target) observer.observe(target);
-
-        return () => {
-            if (target) observer.unobserve(target);
-        };
-    }, [currentPage, id, allTasksLoaded]);
-
-    const [, drop] = useDrop({
-        accept: 'TASK',
-        hover: (item: { fromColumnId: number, index: number }) => {
-            if (item.fromColumnId !== id) {
-                moveTask(item.fromColumnId, id, item.index, tasks.length);
-                item.fromColumnId = id;
-                item.index = tasks.length - 1;
-            }
+    const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
+        id: column.id,
+        data: {
+            type: 'Column',
+            column,
         }
     });
+
+    // useEffect(() => {
+    //     const observer = new IntersectionObserver(
+    //         async (entries) => {
+    //             if (entries[0].isIntersecting && !allTasksLoaded) {
+    //                 const newPage = currentPage + 1;
+    //                 setCurrentPage(newPage);
+    //                 const newTasks = await fetchTasksById(id, newPage, 10);
+    //                 if (newTasks.length < 10 && displayedTasks.length < 10) setAllTasksLoaded(true);
+    //                 else
+    //                     setDisplayedTasks((prev) => [...prev, ...newTasks]);
+    //             }
+    //         },
+    //         { threshold: 1.0 }
+    //     );
+
+    //     const target = document.querySelector(`#column-${id} .load-more-trigger`);
+    //     if (target) observer.observe(target);
+
+    //     return () => {
+    //         if (target) observer.unobserve(target);
+    //     };
+    // }, [currentPage, id, allTasksLoaded]);
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -68,149 +63,85 @@ const Column: FC<ColumnProps> = ({ id, title, tagColor, tasks, setIsDraggingBoar
         setIsModalOpen(false);
     }
 
+    if (isDragging) {
+        return (
+            <Sheet
+                ref={setNodeRef}
+                invertedColors
+                sx={{
+                    minWidth: '300px',
+                    padding: '8px',
+                    borderRadius: '8px',
+                    borderColor: 'red',
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    minHeight: '250px',
+                    height: '75dvh',
+                    my: 2,
+                    transition: transition,
+                    transform: CSS.Transform.toString(transform),
+                }}
+            ></Sheet>
+        )
+    }
+
     return (
         <Sheet
-            id={`column-${id}`}
-            ref={drop}
+            ref={setNodeRef}
             invertedColors
             sx={{
                 minWidth: '300px',
-                padding: '16px',
-                borderRadius: '4px',
+                padding: '8px',
+                borderRadius: '8px',
                 minHeight: '250px',
-                height: 'fit-content',
+                height: '75dvh',
                 my: 2,
+                transition: transition,
+                transform: CSS.Transform.toString(transform),
             }}
         >
             <Stack
-                flexDirection={'row'}
-                justifyContent={'space-between'}
-                alignItems={'center'}
-                gap={2}
+                {...attributes}
+                {...listeners}
                 sx={{
-                    backgroundColor: tagColor,
-                    borderRadius: '6px',
-                    padding: '8px'
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    backgroundColor: column.tag_color,
+                    padding: 1,
+                    borderRadius: '8px',
+                    cursor: 'grab',
+                    userSelect: 'none',
                 }}
             >
-                {
-                    !isEditingTitle
-                        ?
-                        <>
-                            <Stack
-                                display={'flex'}
-                                width={'100%'}
-                                flexDirection={'row'}
-                                justifyContent={'space-between'}
-                            >
-                                <Typography level='title-lg'>{title}</Typography>
-                                <Typography level='title-lg'>{displayedTasks ? displayedTasks.length : 0}</Typography>
-                            </Stack>
-                            <ButtonGroup
-                                size='sm'
-                            >
-                                <IconButton
-                                    onClick={() => setIsEditingTitle(true)}
-                                    color='primary'
-                                    variant='soft'
-                                >
-                                    <Edit />
-                                </IconButton>
-                                <IconButton
-                                    onClick={() => setIsAlertModalOpen(true)}
-                                    color='danger'
-                                    variant='soft'
-                                >
-                                    <Delete />
-                                </IconButton>
-                            </ButtonGroup>
-                        </>
-                        :
-                        <Stack
-                            display={'flex'}
-                            width={'100%'}
-                            flexDirection={'row'}
-                            justifyContent={'space-between'}
-                            gap={2}
-                        >
-                            <Input
-                                value={changedTitle}
-                                onChange={e => setChangedTitle(e.target.value)}
-                                fullWidth
-                            />
-                            <Input
-                                value={changegColor}
-                                onChange={e => setChangedColor(e.target.value)}
-                                type='color'
-                            />
-                            <ButtonGroup>
-
-                                <IconButton
-                                    variant='soft'
-                                    color='success'
-                                    onClick={() => {
-                                        updateColumn(id, changedTitle, changegColor);
-                                        setIsEditingTitle(false);
-                                    }}
-                                >
-                                    <Check />
-                                </IconButton>
-                                <IconButton
-                                    variant='soft'
-                                    color='danger'
-                                    onClick={() => {
-                                        setIsEditingTitle(false);
-                                        setChangedColor(tagColor);
-                                        setChangedTitle(title);
-                                    }}
-                                >
-                                    <Close />
-                                </IconButton>
-                            </ButtonGroup>
-                        </Stack>
-                }
+                <Typography
+                    level='title-lg'
+                >
+                    {column.title}
+                </Typography>
+                <Typography
+                    level='title-lg'
+                >
+                    {column.tasks ? column.tasks.length : 0}
+                </Typography>
             </Stack>
-            <Button
-                fullWidth
-                onClick={handleOpenModal}
+            <Stack
                 sx={{
-                    my: 1,
+                    display: 'flex',
+                    flexGrow: 1,
+                    flexDirection: 'column',
+                    gap: 2,
+                    overflowX: 'hidden',
+                    overflowY: 'auto',
+                    py: 2,
                 }}
             >
-                <Add />
-            </Button>
-            {
-                displayedTasks &&
-                displayedTasks.map((task, index) => (
-                    <Box key={`column-box-${index}`}>
-                        <Task
-                            key={`task-${index}`}
-                            task={task}
-                            index={index}
-                            fromColumnId={id}
-                            setIsDraggingBoard={setIsDraggingBoard}
-                            moveTask={moveTask}
-                        />
-                    </Box>
+                {column.tasks.map((task, index) => (
+                    <Task
+                        key={`card-${task.id}`}
+                        task={task}
+                    />
                 ))}
-            <Box
-                className='load-more-trigger'
-                style={{
-                    height: '1px',
-                }}
-            />
-            <CreateTaskModal
-                id={id}
-                open={isModalOpen}
-                onClose={handleCloseModal}
-            />
-            <AlertModal
-                id={id}
-                title={title}
-                isOpen={isAlertModalOpen}
-                onClose={() => setIsAlertModalOpen(false)}
-                handleDelete={deleteColumn}
-            />
+            </Stack>
         </Sheet>
     );
 };

@@ -1,154 +1,141 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Column from './Column';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { TouchBackend } from 'react-dnd-touch-backend';
-import { Button, IconButton, Sheet, Stack } from '@mui/joy';
+import { Box, Button, IconButton, Sheet, Stack } from '@mui/joy';
 import useKanbanStore from '../../utils/stores/KanbanStore';
 import TableColumn from './TableColumn';
 import { Add } from '@mui/icons-material';
 import CreateColumnModal from './modals/CreateColumnModal';
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, MouseSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext } from '@dnd-kit/sortable';
+import { createPortal } from 'react-dom';
 
 const Board: React.FC = () => {
-    const { columns, fetchColumns, fetchTasksById } = useKanbanStore();
+    const { columns, fetchColumns, fetchTasksById, moveColumn } = useKanbanStore();
+
+    const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
     const [openCreateColumnModal, setOpenCreateColumnModal] = useState<boolean>(false);
-    const [isDraggingBoard, setIsDraggingBoard] = useState(false);
-    const [startX, setStartX] = useState(0);
-    const [scrollLeft, setScrollLeft] = useState(0);
+    // const [startX, setStartX] = useState(0);
+    // const [scrollLeft, setScrollLeft] = useState(0);
     const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         fetchColumns();
     }, []);
 
-    const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-        setIsDraggingBoard(true);
-        setStartX(e.pageX - (scrollContainerRef.current?.offsetLeft || 0));
-        setScrollLeft(scrollContainerRef.current?.scrollLeft || 0);
-    };
+    const columnId = useMemo(() => columns.map((column) => column.id), [columns]);
 
-    const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isDraggingBoard) return;
-        e.preventDefault();
-        const x = e.pageX - (scrollContainerRef.current?.offsetLeft || 0);
-        const walk = (x - startX) * 2;
-        if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollLeft = scrollLeft - walk;
-        }
-    };
+    const sensors = useSensors(
+        useSensor(
+            MouseSensor,
+            {
+                activationConstraint: {
+                    distance: 3,
+                },
+            },
+        ),
+        useSensor(
+            TouchSensor,
+            {
+                activationConstraint: {
+                    distance: 3,
+                    // delay: 250,
+                    // tolerance: 5,
+                },
+            },
+        ),
+    );
 
-    const onMouseUp = () => {
-        setIsDraggingBoard(false);
-    };
+    // const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    //     setIsDraggingBoard(true);
+    //     setStartX(e.pageX - (scrollContainerRef.current?.offsetLeft || 0));
+    //     setScrollLeft(scrollContainerRef.current?.scrollLeft || 0);
+    // };
 
-    useEffect(() => {
-        const handleMouseUp = () => {
-            setIsDraggingBoard(false);
-        };
+    // const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    //     if (!isDraggingBoard) return;
+    //     e.preventDefault();
+    //     const x = e.pageX - (scrollContainerRef.current?.offsetLeft || 0);
+    //     const walk = (x - startX) * 2;
+    //     if (scrollContainerRef.current) {
+    //         scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+    //     }
+    // };
 
-        window.addEventListener('mouseup', handleMouseUp);
-
-        return () => {
-            window.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, []);
+    // const onMouseUp = () => {
+    //     setIsDraggingBoard(false);
+    // };
 
     const toggleViewMode = () => {
         setViewMode((prevMode) => (prevMode === 'kanban' ? 'table' : 'kanban'));
     };
 
-    const backend = window.matchMedia('(pointer: coarse)').matches ? TouchBackend : HTML5Backend;
+    function OnDragStart(event: DragStartEvent) {
+        if (event.active.data.current?.type === 'Column') {
+            setActiveColumn(event.active.data.current.column);
+            return;
+        }
+    }
+
+    function OnDragEnd(event: DragEndEvent) {
+        const { active, over } = event;
+        if (!over) return;
+
+        const activeColumnId = active.id;
+        const overColumnId = over.id;
+
+        if (activeColumnId === overColumnId) return;
+
+        const oldIndex = columns.findIndex(column => column.id === active.id);
+        const newIndex = columns.findIndex(column => column.id === over.id);
+        moveColumn(oldIndex, newIndex);
+    }
 
     return (
-        <DndProvider backend={backend}>
+        <>
             <Button onClick={toggleViewMode}>
                 Switch to {viewMode === 'kanban' ? 'Table View' : 'Kanban View'}
             </Button>
-            {
-                viewMode === 'kanban'
-                    ? (
-                        <Stack
-                            ref={scrollContainerRef}
-                            onMouseDown={onMouseDown}
-                            onMouseMove={onMouseMove}
-                            onMouseUp={onMouseUp}
-                            sx={{
-                                width: '100%',
-                                display: 'flex',
-                                flexDirection: 'row',
-                                flexWrap: 'nowrap',
-                                gap: 2,
-                                overflowX: 'auto',
-                                cursor: isDraggingBoard ? 'grabbing' : 'grab',
-                                userSelect: isDraggingBoard ? 'none' : 'auto',
-                            }}
-                        >
-                            {columns.map((column, index) => (
+            <Stack
+                sx={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    overflowX: 'auto',
+                    overflowY: 'hidden',
+                    flexWrap: 'nowrap',
+                    gap: 2,
+                }}
+            >
+                <DndContext
+                    sensors={sensors}
+                    onDragStart={OnDragStart}
+                    onDragEnd={OnDragEnd}
+                >
+                    <SortableContext
+                        items={columnId}
+                    >
+                        {columns.map((column, index) => (
+                            <Column
+                                key={`column-${column.id}`}
+                                column={column}
+                            />
+                        ))}
+                    </SortableContext>
+                    {createPortal(
+                        <DragOverlay>
+                            {activeColumn && (
                                 <Column
-                                    key={`board-column-${index}`}
-                                    id={column.id}
-                                    title={column.title}
-                                    tasks={column.tasks}
-                                    tagColor={column.tag_color}
-                                    setIsDraggingBoard={setIsDraggingBoard}
+                                    column={activeColumn}
                                 />
-                            ))}
-                            <Sheet
-                                sx={{
-                                    minWidth: '300px',
-                                    padding: '16px',
-                                    borderRadius: '4px',
-                                    minHeight: '250px',
-                                    my: 2,
-                                }}
-                            >
-                                <IconButton
-                                    onClick={() => setOpenCreateColumnModal(true)}
-                                    sx={{
-                                        display: 'flex',
-                                        height: '100%',
-                                        width: '100%',
-                                    }}
-                                >
-                                    <Add />
-                                </IconButton>
-                            </Sheet>
-                        </Stack>
-                    ) : (
-                        <Stack
-                            sx={{
-                                display: 'flex',
-                                gap: '20px',
-                                my: 2,
-                            }}
-                        >
-                            {columns.map((column, index) => (
-                                <Stack
-                                    key={`table-${index}`}
-                                    sx={{
-                                        padding: '16px',
-                                        borderRadius: '4px',
-                                    }}
-                                >
-                                    <TableColumn
-                                        key={`kanban-table-${index}`}
-                                        id={column.id}
-                                        title={column.title}
-                                        tasks={column.tasks}
-                                        tagColor={column.tag_color}
-                                    />
-                                </Stack>
-                            ))}
-                        </Stack>
-                    )
-            }
-            <CreateColumnModal
-                open={openCreateColumnModal}
-                onClose={() => setOpenCreateColumnModal(false)}
-            />
-        </DndProvider>
+                            )}
+                        </DragOverlay>,
+                        document.body
+                    )}
+                </DndContext>
+            </Stack>
+        </>
     );
 };
 
