@@ -5,14 +5,16 @@ import useKanbanStore from '../../utils/stores/KanbanStore';
 import TableColumn from './TableColumn';
 import { Add } from '@mui/icons-material';
 import CreateColumnModal from './modals/CreateColumnModal';
-import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, MouseSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, MouseSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext } from '@dnd-kit/sortable';
 import { createPortal } from 'react-dom';
+import Task from './Task';
 
 const Board: React.FC = () => {
-    const { columns, fetchColumns, fetchTasksById, moveColumn } = useKanbanStore();
+    const { columns, fetchColumns, fetchTasksById, moveColumn, moveTask } = useKanbanStore();
 
     const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+    const [activeCard, setActiveCard] = useState<Task | null>(null);
 
     const [openCreateColumnModal, setOpenCreateColumnModal] = useState<boolean>(false);
     // const [startX, setStartX] = useState(0);
@@ -72,23 +74,66 @@ const Board: React.FC = () => {
 
     function OnDragStart(event: DragStartEvent) {
         if (event.active.data.current?.type === 'Column') {
+            console.log(1);
+
             setActiveColumn(event.active.data.current.column);
+            return;
+        }
+
+        if (event.active.data.current?.type === 'Card') {
+            console.log(2);
+
+            setActiveCard(event.active.data.current.card);
             return;
         }
     }
 
     function OnDragEnd(event: DragEndEvent) {
+        setActiveColumn(null);
+        setActiveCard(null);
+
         const { active, over } = event;
         if (!over) return;
 
-        const activeColumnId = active.id;
-        const overColumnId = over.id;
+        const activeId = active.id;
+        const overId = over.id;
 
-        if (activeColumnId === overColumnId) return;
+        if (activeId === overId) return;
 
-        const oldIndex = columns.findIndex(column => column.id === active.id);
-        const newIndex = columns.findIndex(column => column.id === over.id);
-        moveColumn(oldIndex, newIndex);
+        if (activeColumn) {
+            const oldIndex = columns.findIndex(column => column.id === active.id);
+            const newIndex = columns.findIndex(column => column.id === over.id);
+            console.log({ oldIndex, newIndex });
+
+            moveColumn(oldIndex, newIndex);
+        }
+    }
+
+    function OnDragOver(event: DragOverEvent) {
+        const { active, over } = event;
+        if (!over) return;
+
+        const activeId = active.id;
+        const overId = over.id;
+
+        if (activeId === overId) return;
+
+        const isActiveCard = active.data.current?.type === 'Card';
+        const isOverCard = over.data.current?.type === 'Card';
+
+        if (isActiveCard && isOverCard) {
+            const activeColumnId = active.data.current?.task.column_id;
+            const overColumnId = over.data.current?.task.column_id;
+            console.log({ activeColumnId, overColumnId });
+
+
+            const oldIndex = columns.find(column => column.id === activeColumnId)?.tasks.findIndex(task => task.id === activeId);
+            const newIndex = columns.find(column => column.id === overColumnId)?.tasks.findIndex(task => task.id === overId);
+
+            if (oldIndex !== undefined && newIndex !== undefined) {
+                moveTask(activeColumnId, overColumnId, oldIndex, newIndex);
+            }
+        }
     }
 
     return (
@@ -112,6 +157,7 @@ const Board: React.FC = () => {
                     sensors={sensors}
                     onDragStart={OnDragStart}
                     onDragEnd={OnDragEnd}
+                    onDragOver={OnDragOver}
                 >
                     <SortableContext
                         items={columnId}
@@ -120,6 +166,7 @@ const Board: React.FC = () => {
                             <Column
                                 key={`column-${column.id}`}
                                 column={column}
+                                tasks={column.tasks}
                             />
                         ))}
                     </SortableContext>
@@ -128,6 +175,12 @@ const Board: React.FC = () => {
                             {activeColumn && (
                                 <Column
                                     column={activeColumn}
+                                    tasks={activeColumn.tasks}
+                                />
+                            )}
+                            {activeCard && (
+                                <Task
+                                    task={activeCard}
                                 />
                             )}
                         </DragOverlay>,

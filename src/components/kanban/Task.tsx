@@ -1,6 +1,8 @@
 import React from 'react';
 import { Card, CardContent, IconButton, Stack, Typography } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface TaskProps {
     task: Task;
@@ -8,6 +10,14 @@ interface TaskProps {
 
 const Task: React.FC<TaskProps> = ({ task }) => {
     const navigate = useNavigate();
+
+    const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
+        id: task.id,
+        data: {
+            type: 'Card',
+            task,
+        }
+    });
 
     // const [, drop] = useDrop({
     //     accept: 'TASK',
@@ -49,8 +59,39 @@ const Task: React.FC<TaskProps> = ({ task }) => {
         navigate(`/edit/${task.id}`);
     }
 
+    if (isDragging) {
+        return (
+            <Card
+                ref={setNodeRef}
+                {...attributes}
+                {...listeners}
+                sx={{
+                    mx: 1,
+                    minHeight: '100px',
+                    transition: transition,
+                    transform: CSS.Transform.toString(transform),
+                    borderColor: 'red',
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                }}
+            ></Card>
+        )
+    }
+
     return (
-        <Card>
+        <Card
+            ref={setNodeRef}
+            {...attributes}
+            {...listeners}
+            sx={{
+                mx: 1,
+                minHeight: '100px',
+                transition: transition,
+                transform: CSS.Transform.toString(transform),
+                cursor: 'grab',
+                userSelect: 'none',
+            }}
+        >
             {task.phone}
         </Card>
     );

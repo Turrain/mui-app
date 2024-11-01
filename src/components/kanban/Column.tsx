@@ -1,18 +1,19 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { Button, Typography, Box, Sheet, Stack, IconButton, Modal, ModalDialog, ButtonGroup, Input } from '@mui/joy';
 import Task from './Task';
 import { useDrop } from 'react-dnd';
 import CreateTaskModal from '../modals/CreateTaskModal';
 import { Add, Check, Close, Delete, Edit } from '@mui/icons-material';
 import useKanbanStore from '../../utils/stores/KanbanStore';
-import { useSortable } from '@dnd-kit/sortable';
+import { useSortable, SortableContext } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 interface ColumnProps {
     column: Column;
+    tasks: Task[];
 }
 
-const Column: FC<ColumnProps> = ({ column }) => {
+const Column: FC<ColumnProps> = ({ column, tasks }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -31,6 +32,8 @@ const Column: FC<ColumnProps> = ({ column }) => {
             column,
         }
     });
+
+    const cardId = useMemo(() => tasks.map((task) => task.id), [tasks]);
 
     // useEffect(() => {
     //     const observer = new IntersectionObserver(
@@ -121,25 +124,30 @@ const Column: FC<ColumnProps> = ({ column }) => {
                 <Typography
                     level='title-lg'
                 >
-                    {column.tasks ? column.tasks.length : 0}
+                    {tasks ? tasks.length : 0}
                 </Typography>
             </Stack>
             <Stack
                 sx={{
                     display: 'flex',
-                    flexGrow: 1,
                     flexDirection: 'column',
                     gap: 2,
                     overflowX: 'hidden',
                     overflowY: 'auto',
-                    py: 2,
+                    marginTop: 2,
+                    height: '65dvh'
                 }}
             >
-                {column.tasks.map((task, index) => (
-                    <Task
-                        key={`card-${task.id}`}
-                        task={task}
-                    />
+                {tasks.map((task, index) => (
+                    <SortableContext
+                        key={`sorted-card-${task.id}`}
+                        items={cardId}
+                    >
+                        <Task
+                            key={`card-${task.id}`}
+                            task={task}
+                        />
+                    </SortableContext>
                 ))}
             </Stack>
         </Sheet>

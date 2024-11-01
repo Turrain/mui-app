@@ -6,23 +6,23 @@ interface BoardState {
     columns: Column[];
     fetchColumns: () => void;
     fetchTasksById: (columnId: number, page: number, limit: number) => Promise<any>;
-    fetchTaskById: (taskId: number) => Promise<Task[]>;
+    fetchTaskById: (taskId: string) => Promise<Task[]>;
     addColumn: (newColumn: any) => void;
     updateColumn: (columnId: number, title: string, color?: string) => void;
     moveColumn: (fromIndex: number, toindex: number) => void;
     deleteColumn: (columnId: number) => void;
     moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void;
     addTask: (columnId: number, task: Task) => void;
-    updateTask: (task: Task, taskId: number) => void;
-    removeTask: (columnId: number, taskId: number) => void;
-    getTaskById: (taskId: number) => Task | undefined;
+    updateTask: (task: Task, taskId: string) => void;
+    removeTask: (columnId: number, taskId: string) => void;
+    getTaskById: (taskId: string) => Task | undefined;
 }
 
 const useKanbanStore = create<BoardState>((set, get) => ({
     columns: [],
     fetchColumns: async () => {
         const response = await http.get('/api/kanban_columns');
-    
+
         const columns = await Promise.all(response.data.map(async (column: any) => ({
             ...column,
             tasks: await get().fetchTasksById(column.id, 1, 10) || []
@@ -63,41 +63,43 @@ const useKanbanStore = create<BoardState>((set, get) => ({
         }, {
             headers: { 'Content-Type': 'application/json' },
         })
-        .then(() => {
-            get().fetchColumns();
-            show('Изменено', 'success');
-        })
-        .catch(error => {
-            console.error('Ошибка при удалении:', error);
-            show('Ошибка при редактировании', 'danger');
-        });
+            .then(() => {
+                get().fetchColumns();
+                show('Изменено', 'success');
+            })
+            .catch(error => {
+                console.error('Ошибка при удалении:', error);
+                show('Ошибка при редактировании', 'danger');
+            });
     },
     deleteColumn: (columnId) => {
         const show = useToastStore.getState().show;
         http.delete_(`/api/kanban_columns/${columnId}`)
-        .then(() => {
-            get().fetchColumns();
-            show('Удалено', 'success');
-        })
-        .catch(error => {
-            console.error('Ошибка при удалении:', error);
-            show('Ошибка при удалении', 'danger');
-        });
+            .then(() => {
+                get().fetchColumns();
+                show('Удалено', 'success');
+            })
+            .catch(error => {
+                console.error('Ошибка при удалении:', error);
+                show('Ошибка при удалении', 'danger');
+            });
     },
-    moveColumn: (fromIndex, toindex) => {
+    moveColumn: (fromIndex, toIndex) => {
         set((state) => {
             const columns = [...state.columns];
             const [movedColumn] = columns.splice(fromIndex, 1);
-            columns.splice(toindex, 0, movedColumn);
-
-            console.log('moved', columns);
-            
+            columns.splice(toIndex, 0, movedColumn);
 
             return { columns };
         })
     },
     moveTask: (fromColumnId, toColumnId, dragIndex, hoverIndex) =>
         set((state) => {
+            // const tasks = [...state.columns.find((col) => col.id === fromColumnId)?.tasks || []];
+            // const [movedTask] = tasks.splice(dragIndex, 1);
+            // tasks.splice(hoverIndex, 0, movedTask);
+
+
             const fromColumn = state.columns.find((column) => column.id === fromColumnId);
             const toColumn = state.columns.find((column) => column.id === toColumnId);
 
@@ -108,13 +110,15 @@ const useKanbanStore = create<BoardState>((set, get) => ({
             } else {
                 const [movedTask] = fromColumn.tasks.splice(dragIndex, 1);
                 toColumn.tasks.splice(hoverIndex, 0, movedTask);
+                console.log(3);
+                
 
-                http.put(`/api/kanban_cards/${movedTask.id}`, { ...movedTask, column_id: toColumnId }, {
-                    headers: { 'Content-Type': 'application/json' },
-                })
-                    .catch(error => {
-                        console.error('Ошибка при обновлении данных:', error);
-                    });
+            //     http.put(`/api/kanban_cards/${movedTask.id}`, { ...movedTask, column_id: toColumnId }, {
+            //         headers: { 'Content-Type': 'application/json' },
+            //     })
+            //         .catch(error => {
+            //             console.error('Ошибка при обновлении данных:', error);
+            //         });
             }
 
             return { columns: [...state.columns] };
