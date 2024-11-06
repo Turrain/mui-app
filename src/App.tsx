@@ -20,8 +20,16 @@ import GoogleAuthRedirect from "./components/pages/auth/GoogleAuthRedirect";
 import SchedulerPage from "./components/pages/SchedulerPage";
 import { useCalendarStore } from "./utils/stores/CalendarStore";
 import useKanbanStore from "./utils/stores/KanbanStore";
+import { useEffect } from "react";
 
 export default function App() {
+    const { socket, connectWebSocket, disconnectWebSocket } = useKanbanStore();
+
+    useEffect(() => {
+        if (!socket) connectWebSocket();
+        else disconnectWebSocket();
+    }, []);
+
     return (
         <CssVarsProvider disableTransitionOnChange>
             <storesContext.Provider value={{ useCompanyStore, usePhoneListStore, useSoundfileStore, useUserStore, useCalendarStore, useKanbanStore }}>

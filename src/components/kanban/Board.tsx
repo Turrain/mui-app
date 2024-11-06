@@ -23,7 +23,6 @@ const Board: React.FC = () => {
 
     useEffect(() => {
         fetchColumns();
-        fetchCards();
     }, []);
 
     const columnId = useMemo(() => columns.map((column) => column.id), [columns]);

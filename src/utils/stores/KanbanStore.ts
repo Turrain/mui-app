@@ -30,6 +30,7 @@ const useKanbanStore = create<BoardState>((set, get) => ({
         socket.onopen = () => {
             console.log("Socket connected");
             socket.send(JSON.stringify({ action: "get_columns" }));
+            set({ socket });
         }
 
         socket.onmessage = (event) => {
@@ -55,10 +56,12 @@ const useKanbanStore = create<BoardState>((set, get) => ({
                     }));
                     break;
                 case "get_cards":
+                    console.log(2);
+                    
                     set((state) => ({
                         columns: state.columns.map((column) =>
                             column.id === data.kanban_column_id
-                                ? { ...column, tasks: data.cards }
+                                ? { ...column, tasks: data.kanban_cards }
                                 : column
                         ),
                     }));
@@ -98,7 +101,7 @@ const useKanbanStore = create<BoardState>((set, get) => ({
             set({ socket: null });
         };
 
-        set({ socket });
+        // set({ socket });
     },
     disconnectWebSocket: () => {
         const socket = get().socket;

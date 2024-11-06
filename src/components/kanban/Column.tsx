@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Typography, Box, Sheet, Stack, IconButton, Modal, ModalDialog, ButtonGroup, Input } from '@mui/joy';
 import Task from './Task';
 import CreateTaskModal from '../modals/CreateTaskModal';
@@ -6,6 +6,7 @@ import { Add, Check, Close, Delete, Edit } from '@mui/icons-material';
 import useKanbanStore from '../../utils/stores/KanbanStore';
 import { useSortable, SortableContext } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { FixedSizeList } from 'react-window';
 
 interface ColumnProps {
     column: Column;
@@ -131,15 +132,15 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: 2,
-                    overflowX: 'hidden',
-                    // overflowY: 'auto',
                     marginTop: 2,
                     height: '65dvh'
                 }}
             >
-                {tasks &&
-                    tasks.map((task, index) => (
+                <VirtualizedList
+                    items={tasks}
+                    itemHeight={125}
+                    height={550}
+                    children={(task, index) => (
                         <SortableContext
                             key={`sorted-card-${task.id}`}
                             items={cardId}
@@ -149,7 +150,8 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
                                 task={task}
                             />
                         </SortableContext>
-                    ))}
+                    )}
+                />
                 <Box
                     className='load-more-trigger'
                     style={{
@@ -158,6 +160,79 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
                 />
             </Stack>
         </Sheet>
+    );
+};
+
+interface VirtualizedListProps<T> {
+    items: T[];
+    itemHeight: number;
+    height: number;
+    children: (item: T, index: number) => ReactNode;
+}
+
+const VirtualizedList = <T,>({ items, itemHeight, height, children }: VirtualizedListProps<T>) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [scrollTop, setScrollTop] = useState(0);
+
+    const handleScroll = useCallback(() => {
+        setScrollTop(containerRef.current?.scrollTop!);
+    }, []);
+
+    const totalHeight = items.length * itemHeight;
+    const startIndex = Math.floor(scrollTop / itemHeight);
+    const endIndex = Math.min(
+        items.length - 1,
+        Math.floor((scrollTop + height) / itemHeight)
+    );
+
+    const visibleItems = items.slice(startIndex, endIndex + 1);
+    const offsetY = startIndex * itemHeight;
+
+    useEffect(() => {
+        const currentContainer = containerRef.current;
+        currentContainer?.addEventListener('scroll', handleScroll);
+
+        return () => {
+            currentContainer?.removeEventListener('scroll', handleScroll);
+        };
+    }, [handleScroll]);
+
+    return (
+        <div
+            ref={containerRef}
+            style={{
+                height: height || '400px',
+                // width: '280px',
+                overflowX: 'hidden',
+                overflowY: 'auto',
+                display: 'flex',
+            }}
+        >
+            <div
+                style={{
+                    height: totalHeight,
+                    position: 'relative'
+                }}
+            >
+                <div
+                    style={{
+                        transform: `translateY(${offsetY}px)`
+                    }}
+                >
+                    {visibleItems.map((item, index) => (
+                        <div
+                            key={index}
+                            style={{
+                                height: itemHeight || '100px',
+                                display: 'flex',
+                            }}
+                        >
+                            {children(item, startIndex + index)}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
     );
 };
 

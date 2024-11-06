@@ -33,8 +33,8 @@ const Task: React.FC<TaskProps> = ({ task }) => {
                 invertedColors
                 variant='outlined'
                 sx={{
-                    mx: 1,
-                    minHeight: '100px',
+                    height: '120px',
+                    width: '275px',
                     borderColor: 'red',
                     borderWidth: 1,
                     borderStyle: 'solid',
@@ -42,7 +42,7 @@ const Task: React.FC<TaskProps> = ({ task }) => {
                     transition: transition,
                     transform: CSS.Transform.toString(transform),
                 }}
-            ></Sheet>
+            />
         )
     }
 
@@ -54,12 +54,10 @@ const Task: React.FC<TaskProps> = ({ task }) => {
             invertedColors
             variant='outlined'
             sx={{
-                mx: 1,
-                // minHeight: '100px',
+                height: '108px',
+                width: '275px',
                 borderRadius: '8px',
                 padding: '8px',
-                // overflowX: 'hidden',
-                // overflowY: 'auto',
                 cursor: 'grab',
                 userSelect: 'none',
                 transition: transition,
@@ -68,16 +66,31 @@ const Task: React.FC<TaskProps> = ({ task }) => {
         >
             <Typography
                 level='title-sm'
+                sx={{
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                }}
             >
                 Компания: {task.company}
             </Typography>
             <Typography
                 level='body-sm'
+                sx={{
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                }}
             >
                 Телефон: {task.phone}
             </Typography>
             <Typography
                 level='body-sm'
+                sx={{
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                }}
             >
                 Описание: {task.comment}
             </Typography>
