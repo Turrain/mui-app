@@ -1,7 +1,6 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { Button, Typography, Box, Sheet, Stack, IconButton, Modal, ModalDialog, ButtonGroup, Input } from '@mui/joy';
 import Task from './Task';
-import { useDrop } from 'react-dnd';
 import CreateTaskModal from '../modals/CreateTaskModal';
 import { Add, Check, Close, Delete, Edit } from '@mui/icons-material';
 import useKanbanStore from '../../utils/stores/KanbanStore';
@@ -19,11 +18,11 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [changedTitle, setChangedTitle] = useState(column.title);
     const [changegColor, setChangedColor] = useState(column.tag_color);
-    // const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
     // const [displayedTasks, setDisplayedTasks] = useState<Task[]>(tasks.slice(0, 10));
-    // const [allTasksLoaded, setAllTasksLoaded] = useState(false);
+    const [allTasksLoaded, setAllTasksLoaded] = useState(false);
 
-    // const { moveTask, deleteColumn, updateColumn, fetchTasksById } = useKanbanStore();
+    // const { moveTask, deleteColumn, updateColumn } = useKanbanStore();
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
         id: column.id,
@@ -41,7 +40,7 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
     //             if (entries[0].isIntersecting && !allTasksLoaded) {
     //                 const newPage = currentPage + 1;
     //                 setCurrentPage(newPage);
-    //                 const newTasks = await fetchTasksById(id, newPage, 10);
+    //                 const newTasks = await fetchTasksById(column.id, newPage, 10);
     //                 if (newTasks.length < 10 && displayedTasks.length < 10) setAllTasksLoaded(true);
     //                 else
     //                     setDisplayedTasks((prev) => [...prev, ...newTasks]);
@@ -50,13 +49,13 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
     //         { threshold: 1.0 }
     //     );
 
-    //     const target = document.querySelector(`#column-${id} .load-more-trigger`);
+    //     const target = document.querySelector(`#col-${column.id} .load-more-trigger`);
     //     if (target) observer.observe(target);
 
     //     return () => {
     //         if (target) observer.unobserve(target);
     //     };
-    // }, [currentPage, id, allTasksLoaded]);
+    // }, [currentPage, column.id, allTasksLoaded]);
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -90,6 +89,7 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
 
     return (
         <Sheet
+            id={`col-${column.id}`}
             ref={setNodeRef}
             invertedColors
             sx={{
@@ -133,22 +133,29 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
                     flexDirection: 'column',
                     gap: 2,
                     overflowX: 'hidden',
-                    overflowY: 'auto',
+                    // overflowY: 'auto',
                     marginTop: 2,
                     height: '65dvh'
                 }}
             >
-                {tasks.map((task, index) => (
-                    <SortableContext
-                        key={`sorted-card-${task.id}`}
-                        items={cardId}
-                    >
-                        <Task
-                            key={`card-${task.id}`}
-                            task={task}
-                        />
-                    </SortableContext>
-                ))}
+                {tasks &&
+                    tasks.map((task, index) => (
+                        <SortableContext
+                            key={`sorted-card-${task.id}`}
+                            items={cardId}
+                        >
+                            <Task
+                                key={`card-${task.id}`}
+                                task={task}
+                            />
+                        </SortableContext>
+                    ))}
+                <Box
+                    className='load-more-trigger'
+                    style={{
+                        height: '1px',
+                    }}
+                />
             </Stack>
         </Sheet>
     );

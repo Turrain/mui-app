@@ -1,8 +1,9 @@
 import React from 'react';
-import { Card, CardContent, IconButton, Stack, Typography } from '@mui/joy';
+import { Box, Card, CardContent, IconButton, Sheet, Stack, Typography } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Edit, Phone } from '@mui/icons-material';
 
 interface TaskProps {
     task: Task;
@@ -19,81 +20,88 @@ const Task: React.FC<TaskProps> = ({ task }) => {
         }
     });
 
-    // const [, drop] = useDrop({
-    //     accept: 'TASK',
-    //     hover(item: { index: number, fromColumnId: number }, monitor) {
-    //         if (!ref.current) return;
-
-    //         const dragIndex = item.index;
-    //         const hoverIndex = index;
-    //         const sourceColumn = item.fromColumnId === fromColumnId;
-
-    //         if (dragIndex === hoverIndex) return;
-
-    //         if (window.matchMedia('(pointer: coarse)').matches) {
-    //             const hoverBoundingRect = ref.current.getBoundingClientRect();
-    //             const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-    //             const clientOffset = monitor.getClientOffset();
-    //             const hoverClientY = (clientOffset as DOMRect).y - hoverBoundingRect.top;
-
-    //             if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-    //                 return;
-    //             }
-    //             if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-    //                 return;
-    //             }
-    //         }
-
-    //         if (sourceColumn && item.index !== index) {
-    //             moveTask(item.fromColumnId, fromColumnId, dragIndex, hoverIndex);
-    //             item.index = index;
-    //         } else if (!sourceColumn) {
-    //             moveTask(item.fromColumnId, fromColumnId, dragIndex, hoverIndex);
-    //             item.index = index;
-    //             item.fromColumnId = fromColumnId;
-    //         }
-    //     }
-    // });
-
     const handleOpenEditTask = () => {
         navigate(`/edit/${task.id}`);
     }
 
     if (isDragging) {
         return (
-            <Card
+            <Sheet
                 ref={setNodeRef}
                 {...attributes}
                 {...listeners}
+                invertedColors
+                variant='outlined'
                 sx={{
                     mx: 1,
                     minHeight: '100px',
-                    transition: transition,
-                    transform: CSS.Transform.toString(transform),
                     borderColor: 'red',
                     borderWidth: 1,
                     borderStyle: 'solid',
+                    borderRadius: '8px',
+                    transition: transition,
+                    transform: CSS.Transform.toString(transform),
                 }}
-            ></Card>
+            ></Sheet>
         )
     }
 
     return (
-        <Card
+        <Sheet
             ref={setNodeRef}
             {...attributes}
             {...listeners}
+            invertedColors
+            variant='outlined'
             sx={{
                 mx: 1,
-                minHeight: '100px',
-                transition: transition,
-                transform: CSS.Transform.toString(transform),
+                // minHeight: '100px',
+                borderRadius: '8px',
+                padding: '8px',
+                // overflowX: 'hidden',
+                // overflowY: 'auto',
                 cursor: 'grab',
                 userSelect: 'none',
+                transition: transition,
+                transform: CSS.Transform.toString(transform),
             }}
         >
-            {task.phone}
-        </Card>
+            <Typography
+                level='title-sm'
+            >
+                Компания: {task.company}
+            </Typography>
+            <Typography
+                level='body-sm'
+            >
+                Телефон: {task.phone}
+            </Typography>
+            <Typography
+                level='body-sm'
+            >
+                Описание: {task.comment}
+            </Typography>
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                }}
+            >
+                <a href={`tel:${task.phone}`}>
+                    <IconButton
+                        size='sm'
+                    >
+                        <Phone />
+                    </IconButton>
+                </a>
+                <IconButton
+                    size='sm'
+                    onClick={handleOpenEditTask}
+                >
+                    <Edit />
+                </IconButton>
+            </Box>
+        </Sheet>
     );
 };
 

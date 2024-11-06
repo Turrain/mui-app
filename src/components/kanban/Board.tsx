@@ -6,12 +6,12 @@ import TableColumn from './TableColumn';
 import { Add } from '@mui/icons-material';
 import CreateColumnModal from './modals/CreateColumnModal';
 import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, MouseSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { SortableContext } from '@dnd-kit/sortable';
+import { arrayMove, SortableContext } from '@dnd-kit/sortable';
 import { createPortal } from 'react-dom';
 import Task from './Task';
 
 const Board: React.FC = () => {
-    const { columns, fetchColumns, fetchTasksById, moveColumn, moveTask } = useKanbanStore();
+    const { columns, fetchColumns, fetchCards, moveColumn, updateColumns } = useKanbanStore();
 
     const [activeColumn, setActiveColumn] = useState<Column | null>(null);
     const [activeCard, setActiveCard] = useState<Task | null>(null);
@@ -23,6 +23,7 @@ const Board: React.FC = () => {
 
     useEffect(() => {
         fetchColumns();
+        fetchCards();
     }, []);
 
     const columnId = useMemo(() => columns.map((column) => column.id), [columns]);
@@ -47,26 +48,6 @@ const Board: React.FC = () => {
             },
         ),
     );
-
-    // const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    //     setIsDraggingBoard(true);
-    //     setStartX(e.pageX - (scrollContainerRef.current?.offsetLeft || 0));
-    //     setScrollLeft(scrollContainerRef.current?.scrollLeft || 0);
-    // };
-
-    // const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    //     if (!isDraggingBoard) return;
-    //     e.preventDefault();
-    //     const x = e.pageX - (scrollContainerRef.current?.offsetLeft || 0);
-    //     const walk = (x - startX) * 2;
-    //     if (scrollContainerRef.current) {
-    //         scrollContainerRef.current.scrollLeft = scrollLeft - walk;
-    //     }
-    // };
-
-    // const onMouseUp = () => {
-    //     setIsDraggingBoard(false);
-    // };
 
     const toggleViewMode = () => {
         setViewMode((prevMode) => (prevMode === 'kanban' ? 'table' : 'kanban'));
@@ -121,18 +102,33 @@ const Board: React.FC = () => {
         const isActiveCard = active.data.current?.type === 'Card';
         const isOverCard = over.data.current?.type === 'Card';
 
+        if (!isActiveCard) return;
+
         if (isActiveCard && isOverCard) {
-            const activeColumnId = active.data.current?.task.column_id;
-            const overColumnId = over.data.current?.task.column_id;
-            console.log({ activeColumnId, overColumnId });
+            const activeColumnIndex = columns.findIndex((column) =>
+                column.tasks.some((task) => task.id === active.id)
+            );
+            const overColumnIndex = columns.findIndex((column) =>
+                column.tasks.some((task) => task.id === over.id)
+            );
 
+            if (activeColumnIndex !== overColumnIndex) {
+                const activeColumn = columns[activeColumnIndex];
+                const cardIndex = activeColumn.tasks.findIndex((task) => task.id === active.id);
 
-            const oldIndex = columns.find(column => column.id === activeColumnId)?.tasks.findIndex(task => task.id === activeId);
-            const newIndex = columns.find(column => column.id === overColumnId)?.tasks.findIndex(task => task.id === overId);
+                const [movedCard] = activeColumn.tasks.splice(cardIndex, 1);
+                movedCard.column_id = columns[overColumnIndex].id;
 
-            if (oldIndex !== undefined && newIndex !== undefined) {
-                moveTask(activeColumnId, overColumnId, oldIndex, newIndex);
+                columns[overColumnIndex].tasks.push(movedCard);
+            } else {
+                const cards = columns[activeColumnIndex].tasks;
+                const oldIndex = cards.findIndex((card) => card.id === active.id);
+                const newIndex = cards.findIndex((card) => card.id === over.id);
+
+                columns[activeColumnIndex].tasks = arrayMove(cards, oldIndex, newIndex);
             }
+
+            updateColumns([...columns]);
         }
     }
 
@@ -187,6 +183,25 @@ const Board: React.FC = () => {
                         document.body
                     )}
                 </DndContext>
+                <Sheet
+                    invertedColors
+                    sx={{
+                        minWidth: '300px',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        maxHeight: '250px',
+                        my: 2,
+                    }}
+                >
+                    <IconButton
+                        sx={{
+                            width: '100%',
+                            height: '100%',
+                        }}
+                    >
+                        <Add />
+                    </IconButton>
+                </Sheet>
             </Stack>
         </>
     );

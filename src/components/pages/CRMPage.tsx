@@ -2,8 +2,16 @@ import Header from '../Header';
 import Sidebar from '../Sidebar';
 import { Typography, Box, Alert } from '@mui/joy';
 import Board from '../kanban/Board';
+import { storesContext } from '../../utils/stores';
+import { useContext } from 'react';
 
 export default function CRMPage() {
+    const { useKanbanStore} = useContext(storesContext);
+    const { socket, connectWebSocket } = useKanbanStore();
+
+    if (!socket) {
+        connectWebSocket();
+    }
 
     return (
         <Box sx={{ display: 'flex', minHeight: '100dvh' }}>

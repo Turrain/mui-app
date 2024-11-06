@@ -80,7 +80,7 @@ const EditTaskPage: React.FC = () => {
     const [formData, setFormData] = useState<Task>();
 
     useEffect(() => {
-        fetchTaskById(Number(taskId)).then(res => setFormData(res[0]));
+        fetchTaskById(taskId!).then(res => setFormData(res[0]));
     }, [fetchTaskById]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +91,7 @@ const EditTaskPage: React.FC = () => {
     }
 
     const handleUpdateTask = () => {
-        updateTask(formData!, Number(taskId));
+        updateTask(formData!, taskId!);
         navigate(-1);
     };
 
@@ -105,8 +105,8 @@ const EditTaskPage: React.FC = () => {
     const time = (
         new Date(formData?.datetime!).getFullYear() + '-' +
         (new Date(formData?.datetime!).getMonth() + 1) + '-' +
-        new Date(formData?.datetime!).getDate() + 'T' + 0 +
-        new Date(formData?.datetime!).getHours() + ':' + 0 +
+        new Date(formData?.datetime!).getDate().toString().padStart(2, '0') + 'T' +
+        new Date(formData?.datetime!).getHours().toString().padStart(2, '0') + ':' +
         new Date(formData?.datetime!).getMinutes()
     );
 
@@ -201,7 +201,7 @@ const EditTaskPage: React.FC = () => {
                                     variant: "outlined",
                                     fullWidth: true,
                                     value: formData?.company,
-                                    onChange: handleInputChange
+                                    onChange: handleInputChange,
                                 }
                             }}
                             sx={{
@@ -220,7 +220,7 @@ const EditTaskPage: React.FC = () => {
                                     variant: "outlined",
                                     fullWidth: true,
                                     value: formData?.phone,
-                                    onChange: handleInputChange
+                                    onChange: handleInputChange,
                                 }
                             }}
                             sx={{
@@ -239,7 +239,7 @@ const EditTaskPage: React.FC = () => {
                                     variant: "outlined",
                                     fullWidth: true,
                                     value: formData?.comment,
-                                    onChange: handleInputChange
+                                    onChange: handleInputChange,
                                 }
                             }}
                             sx={{
@@ -258,7 +258,7 @@ const EditTaskPage: React.FC = () => {
                                     variant: "outlined",
                                     fullWidth: true,
                                     value: formData?.task,
-                                    onChange: handleInputChange
+                                    onChange: handleInputChange,
                                 }
                             }}
                             sx={{
@@ -270,6 +270,15 @@ const EditTaskPage: React.FC = () => {
                             value={formData?.column_id}
                             onChange={handleColumnChange}
                             variant='outlined'
+                            // startDecorator={
+                            //     <Box
+                            //         sx={{
+                            //             // backgroundColor: columns[formData?.column_id!].tag_color || '#fff',
+                            //             width: '16px',
+                            //             height: '16px',
+                            //         }}
+                            //     />
+                            // }
                         >
                             {columns.map((column, index) => (
                                 <Option

@@ -4,14 +4,17 @@ import { useToastStore } from './ToastStore';
 
 interface BoardState {
     columns: Column[];
+    socket: WebSocket | null;
+    connectWebSocket: () => void;
+    disconnectWebSocket: () => void;
     fetchColumns: () => void;
-    fetchTasksById: (columnId: number, page: number, limit: number) => Promise<any>;
-    fetchTaskById: (taskId: string) => Promise<Task[]>;
+    fetchCards: () => void;
     addColumn: (newColumn: any) => void;
     updateColumn: (columnId: number, title: string, color?: string) => void;
+    updateColumns: (newColumns: Column[]) => void;
     moveColumn: (fromIndex: number, toindex: number) => void;
     deleteColumn: (columnId: number) => void;
-    moveTask: (fromColumnId: number, toColumnId: number, dragIndex: number, hoverIndex: number) => void;
+    moveTask: (taskId: string, sourceColumnId: number, destinationColumnId: number) => void;
     addTask: (columnId: number, task: Task) => void;
     updateTask: (task: Task, taskId: string) => void;
     removeTask: (columnId: number, taskId: string) => void;
@@ -20,69 +23,129 @@ interface BoardState {
 
 const useKanbanStore = create<BoardState>((set, get) => ({
     columns: [],
-    fetchColumns: async () => {
-        const response = await http.get('/api/kanban_columns');
+    socket: null,
+    connectWebSocket: () => {
+        const socket = new WebSocket("ws://localhost:8001/ws/kanban");
 
-        const columns = await Promise.all(response.data.map(async (column: any) => ({
-            ...column,
-            tasks: await get().fetchTasksById(column.id, 1, 10) || []
-        })));
+        socket.onopen = () => {
+            console.log("Socket connected");
+            socket.send(JSON.stringify({ action: "get_columns" }));
+        }
 
-        set({ columns: columns });
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            switch (data.action) {
+                case "get_columns":
+                    set({ columns: data.columns });
+                    break;
+                case "create_column":
+                    set((state) => ({ columns: [...state.columns, data.column] }));
+                    break;
+                case "update_column":
+                    set((state) => ({
+                        columns: state.columns.map((column) =>
+                            column.id === data.column.id ? data.column : column
+                        ),
+                    }));
+                    break;
+                case "delete_column":
+                    set((state) => ({
+                        columns: state.columns.filter((column) => column.id !== data.kanban_column_id),
+                    }));
+                    break;
+                case "get_cards":
+                    set((state) => ({
+                        columns: state.columns.map((column) =>
+                            column.id === data.kanban_column_id
+                                ? { ...column, tasks: data.cards }
+                                : column
+                        ),
+                    }));
+                    break;
+                case "create_card":
+                    set((state) => {
+                        const column = state.columns.find((column) => column.id === data.kanban_card.column_id);
+                        if (column) {
+                            column.tasks.push(data.kanban_card);
+                        }
+                        return { columns: [...state.columns] }
+                    });
+                    break;
+                case "update_card":
+                    set((state) => ({
+                        columns: state.columns.map((column) => ({
+                            ...column,
+                            tasks: column.tasks.map((task) => task.id === data.kanban_card.id ? data.kanban_card : task)
+                        })),
+                    }));
+                    break;
+                case "delete_card":
+                    set((state) => ({
+                        columns: state.columns.map((column) => ({
+                            ...column,
+                            tasks: column.tasks.filter((task) => task.id !== data.kanban_card_id)
+                        })),
+                    }));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        socket.onclose = () => {
+            console.log("WebSocket disconnected");
+            set({ socket: null });
+        };
+
+        set({ socket });
     },
-    fetchTasksById: async (columnId, page = 1, limit = 10) => {
-        const offset = (page - 1) * limit;
-        const response = await http.get(`/api/kanban_cards/${columnId}`, {
-            limit, offset
-        });
-        return response.data;
+    disconnectWebSocket: () => {
+        const socket = get().socket;
+        if (socket) {
+            socket.close();
+            set({ socket: null });
+        }
     },
-    fetchTaskById: async (taskId) => {
-        const response = await http.get(`/api/kanban_card/${taskId}`);
-        return response.data;
+    fetchColumns: () => {
+        const socket = get().socket;
+        if (socket) {
+            socket.send(JSON.stringify({ action: "get_columns" }));
+        }
+    },
+    fetchCards: () => {
+        const socket = get().socket;
+        if (socket) {
+            socket.send(JSON.stringify({ action: "get_cards" }));
+        }
     },
     addColumn: (newColumn) => {
-        const show = useToastStore.getState().show;
-        http.post('/api/kanban_columns', newColumn, {
-            headers: { 'Content-Type': 'application/json' },
-        })
-            .then(response => response.data)
-            .then(() => {
-                get().fetchColumns();
-                show('Создано', 'success');
-            })
-            .catch(error => {
-                console.error('Ошибка при добавлении:', error);
-            })
+        const socket = get().socket;
+        if (socket) {
+            socket.send(JSON.stringify({ action: "create_column", column: newColumn }));
+        }
     },
     updateColumn: (columnId, title, color) => {
-        const show = useToastStore.getState().show;
-        http.put(`/api/kanban_columns/${columnId}`, {
-            title: title,
-            tag_color: color || '#ffffff',
-        }, {
-            headers: { 'Content-Type': 'application/json' },
-        })
-            .then(() => {
-                get().fetchColumns();
-                show('Изменено', 'success');
-            })
-            .catch(error => {
-                console.error('Ошибка при удалении:', error);
-                show('Ошибка при редактировании', 'danger');
-            });
+        const socket = get().socket;
+        if (socket) {
+            socket.send(JSON.stringify({
+                action: "update_column",
+                kanban_column_id: columnId,
+                kanban_column: {
+                    title,
+                    tag_color: color || '#fff'
+                }
+            }));
+        }
+    },
+    updateColumns: (newColumns) => {
+        set({ columns: newColumns });
     },
     deleteColumn: (columnId) => {
-        const show = useToastStore.getState().show;
-        http.delete_(`/api/kanban_columns/${columnId}`)
-            .then(() => {
-                get().fetchColumns();
-                show('Удалено', 'success');
-            })
-            .catch(error => {
-                console.error('Ошибка при удалении:', error);
-                show('Ошибка при удалении', 'danger');
-            });
+        const socket = get().socket;
+        if (socket) {
+            socket.send(JSON.stringify({ action: "delete_column", kanban_column_id: columnId }));
+        }
     },
     moveColumn: (fromIndex, toIndex) => {
         set((state) => {
@@ -93,71 +156,53 @@ const useKanbanStore = create<BoardState>((set, get) => ({
             return { columns };
         })
     },
-    moveTask: (fromColumnId, toColumnId, dragIndex, hoverIndex) =>
+    moveTask: (taskId, sourceColumnId, destinationColumnId) =>
         set((state) => {
-            // const tasks = [...state.columns.find((col) => col.id === fromColumnId)?.tasks || []];
-            // const [movedTask] = tasks.splice(dragIndex, 1);
-            // tasks.splice(hoverIndex, 0, movedTask);
+            const sourceColumn = state.columns.find((column) => column.id === sourceColumnId);
+            const destinationColumn = state.columns.find((column) => column.id === destinationColumnId);
 
+            if (!sourceColumn || !destinationColumn) return state;
 
-            const fromColumn = state.columns.find((column) => column.id === fromColumnId);
-            const toColumn = state.columns.find((column) => column.id === toColumnId);
+            const taskIndex = sourceColumn.tasks.findIndex((task) => task.id === taskId);
+            const [movedTask] = sourceColumn.tasks.splice(taskIndex, 1);
+            movedTask.column_id = destinationColumnId;
+            destinationColumn.tasks.push(movedTask);
 
-            if (!fromColumn || !toColumn) return state;
-
-            if (fromColumnId === toColumnId) {
-                fromColumn.tasks.splice(hoverIndex, 0, fromColumn.tasks.splice(dragIndex, 1)[0]);
-            } else {
-                const [movedTask] = fromColumn.tasks.splice(dragIndex, 1);
-                toColumn.tasks.splice(hoverIndex, 0, movedTask);
-                console.log(3);
-                
-
-            //     http.put(`/api/kanban_cards/${movedTask.id}`, { ...movedTask, column_id: toColumnId }, {
-            //         headers: { 'Content-Type': 'application/json' },
-            //     })
-            //         .catch(error => {
-            //             console.error('Ошибка при обновлении данных:', error);
-            //         });
-            }
-
-            return { columns: [...state.columns] };
+            return {
+                columns: [...state.columns],
+            };
         }),
     addTask: async (columnId, task) => {
-        try {
-            const response = await http.post('/api/kanban_cards', { ...task, column_id: columnId }, {
-                headers: { 'Content-Type': 'application/json' },
-            });
-            set((state) => {
-                const column = state.columns.find((col) => col.id === columnId);
-                if (column) {
-                    column.tasks.push(response.data);
+        const socket = get().socket;
+        if (socket) {
+            socket.send(JSON.stringify({
+                action: "create_card",
+                kanban_card: {
+                    ...task,
+                    column_id: columnId
                 }
-                return { columns: [...state.columns] };
-            });
-        } catch (error) {
-            console.error('Ошибка при добавлении:', error);
+            }));
         }
     },
     updateTask: (task, taskId) => {
-        http.put(`/api/kanban_cards/${taskId}`, { ...task }, {
-            headers: { 'Content-Type': 'application/json' },
-        })
-            .then(() => {
-                get().fetchColumns();
-            })
-            .catch(error => {
-                console.error('Ошибка при обновлении данных:', error);
-            });
+        const socket = get().socket;
+        if (socket) {
+            socket.send(JSON.stringify({
+                action: "update_card",
+                kanban_card_id: taskId,
+                kanban_card: task
+            }));
+        }
     },
-    removeTask: (columnId, cardId) =>
-        set((state) => {
-            const column = state.columns.find((col) => col.id === columnId);
-            if (column) {
-                column.tasks = column.tasks.filter((card) => card.id !== cardId);
-            }
-            return { columns: [...state.columns] };
-        }),
+    removeTask: (cardId) => {
+        const socket = get().socket;
+        if (socket) {
+            socket.send(JSON.stringify({
+                action: "delete_card",
+                kanban_card_id: cardId,
+            }));
+        }
+    },
     getTaskById: (taskId) => {
         let existedTask;
         for (let index = 0; index < get().columns.length; index++) {
