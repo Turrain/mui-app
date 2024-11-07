@@ -84,7 +84,7 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
                     transition: transition,
                     transform: CSS.Transform.toString(transform),
                 }}
-            ></Sheet>
+            />
         )
     }
 
@@ -139,7 +139,7 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
                 <VirtualizedList
                     items={tasks}
                     itemHeight={125}
-                    height={550}
+                    height={1000}
                     children={(task, index) => (
                         <SortableContext
                             key={`sorted-card-${task.id}`}
@@ -151,12 +151,6 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
                             />
                         </SortableContext>
                     )}
-                />
-                <Box
-                    className='load-more-trigger'
-                    style={{
-                        height: '1px',
-                    }}
                 />
             </Stack>
         </Sheet>
@@ -202,7 +196,6 @@ const VirtualizedList = <T,>({ items, itemHeight, height, children }: Virtualize
             ref={containerRef}
             style={{
                 height: height || '400px',
-                // width: '280px',
                 overflowX: 'hidden',
                 overflowY: 'auto',
                 display: 'flex',
@@ -216,7 +209,10 @@ const VirtualizedList = <T,>({ items, itemHeight, height, children }: Virtualize
             >
                 <div
                     style={{
-                        transform: `translateY(${offsetY}px)`
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '25px',
+                        transform: `translateY(${offsetY}px)`,
                     }}
                 >
                     {visibleItems.map((item, index) => (

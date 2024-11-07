@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Card, CardContent, IconButton, Sheet, Stack, Typography } from '@mui/joy';
+import { Avatar, Box, Card, CardContent, IconButton, Sheet, Stack, Typography } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -33,7 +33,6 @@ const Task: React.FC<TaskProps> = ({ task }) => {
                 invertedColors
                 variant='outlined'
                 sx={{
-                    height: '120px',
                     width: '275px',
                     borderColor: 'red',
                     borderWidth: 1,
@@ -54,7 +53,9 @@ const Task: React.FC<TaskProps> = ({ task }) => {
             invertedColors
             variant='outlined'
             sx={{
-                height: '108px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
                 width: '275px',
                 borderRadius: '8px',
                 padding: '8px',
@@ -64,56 +65,68 @@ const Task: React.FC<TaskProps> = ({ task }) => {
                 transform: CSS.Transform.toString(transform),
             }}
         >
-            <Typography
-                level='title-sm'
-                sx={{
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                }}
-            >
-                Компания: {task.company}
-            </Typography>
-            <Typography
-                level='body-sm'
-                sx={{
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                }}
-            >
-                Телефон: {task.phone}
-            </Typography>
-            <Typography
-                level='body-sm'
-                sx={{
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                }}
-            >
-                Описание: {task.comment}
-            </Typography>
-            <Box
+            <Box>
+                <Typography
+                    level='title-sm'
+                    sx={{
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                    }}
+                >
+                    Компания: {task.company}
+                </Typography>
+                <Typography
+                    level='body-sm'
+                    sx={{
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                    }}
+                >
+                    Телефон: {task.phone}
+                </Typography>
+                <Typography
+                    level='body-sm'
+                    sx={{
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                    }}
+                >
+                    Описание: {task.comment}
+                </Typography>
+            </Box>
+            <Stack
                 sx={{
                     display: 'flex',
-                    justifyContent: 'flex-end',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                 }}
             >
-                <a href={`tel:${task.phone}`}>
+                <Avatar />
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'end',
+                    }}
+                >
+                    <a href={`tel:${task.phone}`}>
+                        <IconButton
+                            size='sm'
+                        >
+                            <Phone />
+                        </IconButton>
+                    </a>
                     <IconButton
                         size='sm'
+                        onClick={handleOpenEditTask}
                     >
-                        <Phone />
+                        <Edit />
                     </IconButton>
-                </a>
-                <IconButton
-                    size='sm'
-                    onClick={handleOpenEditTask}
-                >
-                    <Edit />
-                </IconButton>
-            </Box>
+                </Box>
+            </Stack>
         </Sheet>
     );
 };

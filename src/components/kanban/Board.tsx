@@ -22,7 +22,7 @@ const Board: React.FC = () => {
     const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
 
     useEffect(() => {
-        fetchColumns();
+        // fetchColumns();
     }, []);
 
     const columnId = useMemo(() => columns.map((column) => column.id), [columns]);
@@ -54,15 +54,11 @@ const Board: React.FC = () => {
 
     function OnDragStart(event: DragStartEvent) {
         if (event.active.data.current?.type === 'Column') {
-            console.log(1);
-
             setActiveColumn(event.active.data.current.column);
             return;
         }
 
         if (event.active.data.current?.type === 'Card') {
-            console.log(2);
-
             setActiveCard(event.active.data.current.card);
             return;
         }

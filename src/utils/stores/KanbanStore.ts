@@ -22,14 +22,58 @@ interface BoardState {
 }
 
 const useKanbanStore = create<BoardState>((set, get) => ({
-    columns: [],
+    columns: [
+        {
+            id: 1,
+            title: 'cringe',
+            tag_color: '#8b5',
+            tasks: [
+                {
+                    id: '123',
+                    name: 'test',
+                    company: '',
+                    phone: '46347',
+                    comment: '',
+                    task: '',
+                    datetime: new Date(),
+                    column_id: 1
+                },
+                {
+                    id: '1234',
+                    name: 'test2',
+                    company: '',
+                    phone: '5678',
+                    comment: '',
+                    task: '',
+                    datetime: new Date(),
+                    column_id: 1
+                },
+                {
+                    id: '12345',
+                    name: 'test3',
+                    company: '',
+                    phone: '8783786',
+                    comment: '',
+                    task: '',
+                    datetime: new Date(),
+                    column_id: 1
+                },
+            ]
+        },
+        {
+            id: 2,
+            title: 'cringe2',
+            tag_color: '#b72',
+            tasks: [],
+        }
+    ],
     socket: null,
     connectWebSocket: () => {
         const socket = new WebSocket("ws://localhost:8001/ws/kanban");
 
         socket.onopen = () => {
             console.log("Socket connected");
-            socket.send(JSON.stringify({ action: "get_columns" }));
+            // socket.send(JSON.stringify({ action: "get_columns" }));
             set({ socket });
         }
 
