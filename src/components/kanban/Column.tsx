@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Typography, Box, Sheet, Stack, IconButton, Modal, ModalDialog, ButtonGroup, Input } from '@mui/joy';
 import Task from './Task';
 import CreateTaskModal from '../modals/CreateTaskModal';
@@ -6,7 +6,9 @@ import { Add, Check, Close, Delete, Edit } from '@mui/icons-material';
 import useKanbanStore from '../../utils/stores/KanbanStore';
 import { useSortable, SortableContext } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { FixedSizeList } from 'react-window';
+import CardWrapper from './TaskWrapper';
+
+// import VirtualizedList from '../VirtualizedList';
 
 interface ColumnProps {
     column: Column;
@@ -20,7 +22,6 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
     const [changedTitle, setChangedTitle] = useState(column.title);
     const [changegColor, setChangedColor] = useState(column.tag_color);
     const [currentPage, setCurrentPage] = useState(1);
-    // const [displayedTasks, setDisplayedTasks] = useState<Task[]>(tasks.slice(0, 10));
     const [allTasksLoaded, setAllTasksLoaded] = useState(false);
 
     // const { moveTask, deleteColumn, updateColumn } = useKanbanStore();
@@ -35,29 +36,6 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
 
     const cardId = useMemo(() => tasks.map((task) => task.id), [tasks]);
 
-    // useEffect(() => {
-    //     const observer = new IntersectionObserver(
-    //         async (entries) => {
-    //             if (entries[0].isIntersecting && !allTasksLoaded) {
-    //                 const newPage = currentPage + 1;
-    //                 setCurrentPage(newPage);
-    //                 const newTasks = await fetchTasksById(column.id, newPage, 10);
-    //                 if (newTasks.length < 10 && displayedTasks.length < 10) setAllTasksLoaded(true);
-    //                 else
-    //                     setDisplayedTasks((prev) => [...prev, ...newTasks]);
-    //             }
-    //         },
-    //         { threshold: 1.0 }
-    //     );
-
-    //     const target = document.querySelector(`#col-${column.id} .load-more-trigger`);
-    //     if (target) observer.observe(target);
-
-    //     return () => {
-    //         if (target) observer.unobserve(target);
-    //     };
-    // }, [currentPage, column.id, allTasksLoaded]);
-
     const handleOpenModal = () => {
         setIsModalOpen(true);
     }
@@ -65,6 +43,15 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
     const handleCloseModal = () => {
         setIsModalOpen(false);
     }
+
+    const renderTask = useCallback((task: Task, index: number) => {
+        return (
+            <CardWrapper
+                key={`card-${task.id}`}
+                task={task}
+            />
+        )
+    }, []);
 
     if (isDragging) {
         return (
@@ -136,22 +123,17 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
                     height: '65dvh'
                 }}
             >
-                <VirtualizedList
-                    items={tasks}
-                    itemHeight={125}
-                    height={1000}
-                    children={(task, index) => (
-                        <SortableContext
-                            key={`sorted-card-${task.id}`}
-                            items={cardId}
-                        >
-                            <Task
-                                key={`card-${task.id}`}
-                                task={task}
-                            />
-                        </SortableContext>
-                    )}
-                />
+                <SortableContext
+                    items={cardId}
+                >
+                    <VirtualizedList
+                        items={tasks}
+                        itemHeight={125}
+                        height={1000}
+                    >
+                        {renderTask}
+                    </VirtualizedList>
+                </SortableContext>
             </Stack>
         </Sheet>
     );

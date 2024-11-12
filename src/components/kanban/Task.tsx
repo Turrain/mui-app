@@ -1,55 +1,60 @@
 import React from 'react';
-import { Avatar, Box, Card, CardContent, IconButton, Sheet, Stack, Typography } from '@mui/joy';
+import { Avatar, Box, IconButton, Sheet, Stack, Typography } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { Edit, Phone } from '@mui/icons-material';
+import { DraggableAttributes } from '@dnd-kit/core';
+import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
 
 interface TaskProps {
     task: Task;
+    dndAttributes: DraggableAttributes,
+    dndListeners: SyntheticListenerMap | undefined,
 }
 
-const Task: React.FC<TaskProps> = ({ task }) => {
+const Task = React.memo<TaskProps>(({ task, dndAttributes, dndListeners }) => {
     const navigate = useNavigate();
 
-    const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
-        id: task.id,
-        data: {
-            type: 'Card',
-            task,
-        }
-    });
+    // const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
+    //     id: task.id,
+    //     data: {
+    //         type: 'Card',
+    //         card: task,
+    //     }
+    // });
+
+    // const style = useMemo(() => ({
+    //     transition: transition,
+    //     transform: CSS.Transform.toString(transform),
+    // }), [transition, transform]);
 
     const handleOpenEditTask = () => {
         navigate(`/edit/${task.id}`);
     }
 
-    if (isDragging) {
-        return (
-            <Sheet
-                ref={setNodeRef}
-                {...attributes}
-                {...listeners}
-                invertedColors
-                variant='outlined'
-                sx={{
-                    width: '275px',
-                    borderColor: 'red',
-                    borderWidth: 1,
-                    borderStyle: 'solid',
-                    borderRadius: '8px',
-                    transition: transition,
-                    transform: CSS.Transform.toString(transform),
-                }}
-            />
-        )
-    }
+    // if (isDragging) {
+    //     return (
+    //         <Sheet
+    //             ref={setNodeRef}
+    //             invertedColors
+    //             variant='outlined'
+    //             sx={{
+    //                 width: '275px',
+    //                 borderColor: 'red',
+    //                 borderWidth: 1,
+    //                 borderStyle: 'solid',
+    //                 borderRadius: '8px',
+    //                 willChange: 'transform',
+    //                 backfaceVisibility: 'hidden',
+    //                 ...style,
+    //             }}
+    //         />
+    //     )
+    // }
 
     return (
         <Sheet
-            ref={setNodeRef}
-            {...attributes}
-            {...listeners}
+            {...dndAttributes}
+            {...dndListeners}
             invertedColors
             variant='outlined'
             sx={{
@@ -61,8 +66,8 @@ const Task: React.FC<TaskProps> = ({ task }) => {
                 padding: '8px',
                 cursor: 'grab',
                 userSelect: 'none',
-                transition: transition,
-                transform: CSS.Transform.toString(transform),
+                // willChange: 'transform',
+                // backfaceVisibility: 'hidden',
             }}
         >
             <Box>
@@ -105,7 +110,9 @@ const Task: React.FC<TaskProps> = ({ task }) => {
                     alignItems: 'center',
                 }}
             >
-                <Avatar />
+                <Avatar
+                    size='sm'
+                />
                 <Box
                     sx={{
                         display: 'flex',
@@ -129,6 +136,6 @@ const Task: React.FC<TaskProps> = ({ task }) => {
             </Stack>
         </Sheet>
     );
-};
+});
 
 export default Task;

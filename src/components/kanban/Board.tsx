@@ -1,14 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Column from './Column';
 import { Box, Button, IconButton, Sheet, Stack } from '@mui/joy';
 import useKanbanStore from '../../utils/stores/KanbanStore';
 import TableColumn from './TableColumn';
 import { Add } from '@mui/icons-material';
 import CreateColumnModal from './modals/CreateColumnModal';
-import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, MouseSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, MeasuringFrequency, MeasuringStrategy, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext } from '@dnd-kit/sortable';
 import { createPortal } from 'react-dom';
 import Task from './Task';
+import CardWrapper from './TaskWrapper';
 
 const Board: React.FC = () => {
     const { columns, fetchColumns, fetchCards, moveColumn, updateColumns } = useKanbanStore();
@@ -41,8 +42,6 @@ const Board: React.FC = () => {
             {
                 activationConstraint: {
                     distance: 3,
-                    // delay: 250,
-                    // tolerance: 5,
                 },
             },
         ),
@@ -79,13 +78,11 @@ const Board: React.FC = () => {
         if (activeColumn) {
             const oldIndex = columns.findIndex(column => column.id === active.id);
             const newIndex = columns.findIndex(column => column.id === over.id);
-            console.log({ oldIndex, newIndex });
-
             moveColumn(oldIndex, newIndex);
         }
     }
 
-    function OnDragOver(event: DragOverEvent) {
+    const OnDragOver = useCallback((event: DragOverEvent) => {
         const { active, over } = event;
         if (!over) return;
 
@@ -99,33 +96,65 @@ const Board: React.FC = () => {
 
         if (!isActiveCard) return;
 
+        const newColumns = [...columns];
+
         if (isActiveCard && isOverCard) {
-            const activeColumnIndex = columns.findIndex((column) =>
+            const activeColumnIndex = newColumns.findIndex((column) =>
                 column.tasks.some((task) => task.id === active.id)
             );
-            const overColumnIndex = columns.findIndex((column) =>
+            const overColumnIndex = newColumns.findIndex((column) =>
                 column.tasks.some((task) => task.id === over.id)
             );
 
             if (activeColumnIndex !== overColumnIndex) {
-                const activeColumn = columns[activeColumnIndex];
-                const cardIndex = activeColumn.tasks.findIndex((task) => task.id === active.id);
+                const activeColumn = newColumns[activeColumnIndex];
+                const cardIndex = activeColumn.tasks.findIndex(
+                    (task) => task.id === activeId
+                );
 
                 const [movedCard] = activeColumn.tasks.splice(cardIndex, 1);
-                movedCard.column_id = columns[overColumnIndex].id;
+                movedCard.column_id = newColumns[overColumnIndex].id;
 
-                columns[overColumnIndex].tasks.push(movedCard);
+                const overCardIndex = newColumns[overColumnIndex].tasks.findIndex(
+                    (task) => task.id === overId
+                );
+
+                newColumns[overColumnIndex].tasks.splice(overCardIndex, 0, movedCard);
             } else {
-                const cards = columns[activeColumnIndex].tasks;
+                const cards = newColumns[activeColumnIndex].tasks;
                 const oldIndex = cards.findIndex((card) => card.id === active.id);
                 const newIndex = cards.findIndex((card) => card.id === over.id);
 
-                columns[activeColumnIndex].tasks = arrayMove(cards, oldIndex, newIndex);
+                newColumns[activeColumnIndex].tasks = arrayMove(cards, oldIndex, newIndex);
             }
 
-            updateColumns([...columns]);
         }
-    }
+
+        const isOverColumn = over.data.current?.type === 'Column';
+
+        if (isActiveCard && isOverColumn) {
+            const activeColumnIndex = newColumns.findIndex((column) =>
+                column.tasks.some((task) => task.id === active.id)
+            );
+            const overColumnIndex = newColumns.findIndex((column) =>
+                column.id === overId
+            );
+
+            if (activeColumnIndex !== overColumnIndex) {
+                const activeColumn = newColumns[activeColumnIndex];
+                const overColumn = newColumns[overColumnIndex];
+                const cardIndex = activeColumn.tasks.findIndex(
+                    (task) => task.id === activeId
+                );
+
+                const [movedCard] = activeColumn.tasks.splice(cardIndex, 1);
+                movedCard.column_id = overColumn.id;
+
+                newColumns[overColumnIndex].tasks.push(movedCard);
+            }
+        }
+        updateColumns(newColumns);
+    }, [columns, updateColumns]);
 
     return (
         <>
@@ -143,12 +172,21 @@ const Board: React.FC = () => {
                     flexWrap: 'nowrap',
                     gap: 2,
                 }}
+                onScroll={e => {
+                    if (activeColumn || activeCard) e.preventDefault();
+                }}
             >
                 <DndContext
                     sensors={sensors}
                     onDragStart={OnDragStart}
                     onDragEnd={OnDragEnd}
                     onDragOver={OnDragOver}
+                    measuring={{
+                        droppable: {
+                            strategy: MeasuringStrategy.Always,
+                            frequency: MeasuringFrequency.Optimized,
+                        }
+                    }}
                 >
                     <SortableContext
                         items={columnId}
@@ -170,7 +208,7 @@ const Board: React.FC = () => {
                                 />
                             )}
                             {activeCard && (
-                                <Task
+                                <CardWrapper
                                     task={activeCard}
                                 />
                             )}
