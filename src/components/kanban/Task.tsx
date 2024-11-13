@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Box, IconButton, Sheet, Stack, Typography } from '@mui/joy';
+import { Avatar, AvatarGroup, Box, IconButton, Sheet, Stack, Typography } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
 import { Edit, Phone } from '@mui/icons-material';
 import { DraggableAttributes } from '@dnd-kit/core';
@@ -31,6 +31,9 @@ const Task = React.memo<TaskProps>(({ task, dndAttributes, dndListeners }) => {
         navigate(`/edit/${task.id}`);
     }
 
+    console.log(task);
+    
+
     // if (isDragging) {
     //     return (
     //         <Sheet
@@ -53,8 +56,6 @@ const Task = React.memo<TaskProps>(({ task, dndAttributes, dndListeners }) => {
 
     return (
         <Sheet
-            {...dndAttributes}
-            {...dndListeners}
             invertedColors
             variant='outlined'
             sx={{
@@ -62,15 +63,21 @@ const Task = React.memo<TaskProps>(({ task, dndAttributes, dndListeners }) => {
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 width: '275px',
+                gap: 2,
                 borderRadius: '8px',
                 padding: '8px',
-                cursor: 'grab',
                 userSelect: 'none',
                 // willChange: 'transform',
                 // backfaceVisibility: 'hidden',
             }}
         >
-            <Box>
+            <Box
+                {...dndAttributes}
+                {...dndListeners}
+                sx={{
+                    cursor: 'grab',
+                }}
+            >
                 <Typography
                     level='title-sm'
                     sx={{
@@ -110,9 +117,16 @@ const Task = React.memo<TaskProps>(({ task, dndAttributes, dndListeners }) => {
                     alignItems: 'center',
                 }}
             >
-                <Avatar
-                    size='sm'
-                />
+                <AvatarGroup>
+                    <Avatar
+                        size='sm'
+                    />
+                    <Avatar
+                        size='sm'
+                    >
+                        +1
+                    </Avatar>
+                </AvatarGroup>
                 <Box
                     sx={{
                         display: 'flex',

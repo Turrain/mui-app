@@ -29,7 +29,7 @@ interface Soundfile {
 }
 
 interface UserCreate {
-    // id: number;
+    id?: number;
     email: string;
     password: string;
     is_active: boolean;
@@ -88,6 +88,7 @@ interface Task {
     task: string;
     datetime: Date;
     column_id?: number;
+    user_id?: number[];
 }
 
 interface Column {

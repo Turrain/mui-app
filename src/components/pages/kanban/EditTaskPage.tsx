@@ -75,13 +75,13 @@ const EditTaskPage: React.FC = () => {
     const navigate = useNavigate();
 
     const { useKanbanStore } = useContext(storesContext);
-    const { fetchTaskById, updateTask, columns } = useKanbanStore();
+    const { getTaskById, updateTask, columns } = useKanbanStore();
 
     const [formData, setFormData] = useState<Task>();
 
     useEffect(() => {
-        fetchTaskById(taskId!).then(res => setFormData(res[0]));
-    }, [fetchTaskById]);
+        setFormData(getTaskById(taskId!));
+    }, [taskId]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
