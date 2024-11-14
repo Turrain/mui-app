@@ -94,6 +94,15 @@ const useKanbanStore = create<BoardState>((set, get) => ({
                         ),
                     }));
                     break;
+                case "reorder_columns":
+                    set((state) => {
+                        const newColumns = data.columns.map((column: Column) => {
+                            const oldColumn = state.columns.find((oldColumn) => oldColumn.id === column.id);
+                            return { ...oldColumn, ...column };
+                        });
+                        return { columns: newColumns };
+                    });
+                    break;
                 case "delete_column":
                     set((state) => ({
                         columns: state.columns.filter((column) => column.id !== data.kanban_column_id),
@@ -101,7 +110,7 @@ const useKanbanStore = create<BoardState>((set, get) => ({
                     break;
                 case "get_cards":
                     console.log(2);
-                    
+
                     set((state) => ({
                         columns: state.columns.map((column) =>
                             column.id === data.kanban_column_id
@@ -195,13 +204,18 @@ const useKanbanStore = create<BoardState>((set, get) => ({
         }
     },
     moveColumn: (fromIndex, toIndex) => {
-        set((state) => {
-            const columns = [...state.columns];
-            const [movedColumn] = columns.splice(fromIndex, 1);
-            columns.splice(toIndex, 0, movedColumn);
+        const socket = get().socket;
+        const columns = [...get().columns];
+        const [movedColumn] = columns.splice(fromIndex, 1);
+        columns.splice(toIndex, 0, movedColumn);
 
-            return { columns };
-        })
+        // if (socket) {
+        //     socket.send(JSON.stringify({
+        //         action: "reorder_columns",
+        //         kanban_columns: columns
+        //     }));
+        // }
+        return set({ columns });
     },
     moveTask: (taskId, sourceColumnId, destinationColumnId) =>
         set((state) => {

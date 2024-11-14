@@ -31,7 +31,7 @@ const Task = React.memo<TaskProps>(({ task, dndAttributes, dndListeners }) => {
         navigate(`/edit/${task.id}`);
     }
 
-    console.log(task);
+    // console.log(task);
     
 
     // if (isDragging) {

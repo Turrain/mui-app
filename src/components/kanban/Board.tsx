@@ -231,11 +231,16 @@ const Board: React.FC = () => {
                             width: '100%',
                             height: '100%',
                         }}
+                        onClick={() => setOpenCreateColumnModal(true)}
                     >
                         <Add />
                     </IconButton>
                 </Sheet>
             </Stack>
+            <CreateColumnModal
+                open={openCreateColumnModal}
+                onClose={() => setOpenCreateColumnModal(false)}
+            />
         </>
     );
 };

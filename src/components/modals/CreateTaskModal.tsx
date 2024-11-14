@@ -58,7 +58,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ id, open, onClose }) 
             phone: formData.taskPhone,
             comment: formData.taskComment,
             task: formData.taskTask,
-            datetime: formatISO(formData.taskDateTime, { representation: 'complete' }),
+            datetime: new Date(formData.taskDateTime),
+            // datetime: formatISO(formData.taskDateTime, { representation: 'complete' }),
         });
         setFormData({
             taskName: '',

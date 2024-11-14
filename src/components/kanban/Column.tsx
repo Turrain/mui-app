@@ -1,14 +1,11 @@
-import React, { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Typography, Box, Sheet, Stack, IconButton, Modal, ModalDialog, ButtonGroup, Input } from '@mui/joy';
-import Task from './Task';
+import { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Button, Typography, Sheet, Stack, IconButton, Modal, ModalDialog, Input } from '@mui/joy';
 import CreateTaskModal from '../modals/CreateTaskModal';
 import { Add, Check, Close, Delete, Edit } from '@mui/icons-material';
 import useKanbanStore from '../../utils/stores/KanbanStore';
 import { useSortable, SortableContext } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import CardWrapper from './TaskWrapper';
-
-// import VirtualizedList from '../VirtualizedList';
 
 interface ColumnProps {
     column: Column;
@@ -24,7 +21,7 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [allTasksLoaded, setAllTasksLoaded] = useState(false);
 
-    // const { moveTask, deleteColumn, updateColumn } = useKanbanStore();
+    const { moveTask, deleteColumn, updateColumn } = useKanbanStore();
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
         id: column.id,
@@ -34,7 +31,7 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
         }
     });
 
-    const cardId = useMemo(() => tasks.map((task) => task.id), [tasks]);
+    const cardId = useMemo(() => tasks.map((task) => task.id!), [tasks]);
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -118,9 +115,52 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
             <Stack
                 sx={{
                     display: 'flex',
+                    flexDirection: 'row',
+                    width: '100%',
+                    justifyContent: 'space-between',
+                    gap: 2,
+                    marginTop: 1,
+                }}
+            >
+                <IconButton
+                    variant='solid'
+                    color='primary'
+                    size='sm'
+                    sx={{
+                        width: '100%',
+                    }}
+                    onClick={handleOpenModal}
+                >
+                    <Add />
+                </IconButton>
+                <IconButton
+                    variant='solid'
+                    color='success'
+                    size='sm'
+                    sx={{
+                        width: '100%',
+                    }}
+                >
+                    <Edit />
+                </IconButton>
+                <IconButton
+                    variant='solid'
+                    color='danger'
+                    size='sm'
+                    sx={{
+                        width: '100%',
+                    }}
+                    onClick={() => setIsAlertModalOpen(true)}
+                >
+                    <Delete />
+                </IconButton>
+            </Stack>
+            <Stack
+                sx={{
+                    display: 'flex',
                     flexDirection: 'column',
                     marginTop: 2,
-                    height: '65dvh'
+                    height: '60dvh'
                 }}
             >
                 <SortableContext
@@ -135,6 +175,18 @@ const Column: FC<ColumnProps> = ({ column, tasks }) => {
                     </VirtualizedList>
                 </SortableContext>
             </Stack>
+            <CreateTaskModal
+                id={column.id}
+                open={isModalOpen}
+                onClose={handleCloseModal}
+            />
+            <AlertModal
+                id={column.id}
+                isOpen={isAlertModalOpen}
+                onClose={() => setIsAlertModalOpen(false)}
+                title={column.title}
+                handleDelete={deleteColumn}
+            />
         </Sheet>
     );
 };

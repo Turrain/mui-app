@@ -80,7 +80,7 @@ interface ChatProps {
 };
 
 interface Task {
-    id: string;
+    id?: string;
     name: string;
     company: string;
     phone: string;
