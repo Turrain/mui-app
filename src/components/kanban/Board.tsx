@@ -80,6 +80,8 @@ const Board: React.FC = () => {
             const newIndex = columns.findIndex(column => column.id === over.id);
             moveColumn(oldIndex, newIndex);
         }
+        console.log(columns);
+        
     }
 
     const OnDragOver = useCallback((event: DragOverEvent) => {
