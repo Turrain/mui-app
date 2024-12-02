@@ -311,11 +311,23 @@ const OrderTable = (() => {
     </React.Fragment>
   );
 
-  const handlePhoneCall = async (event: React.MouseEvent<unknown>, companyId: number, sound_path: string) => {
+  const handlePhoneCall = async (
+    event: React.MouseEvent<unknown>,
+    companyId: number,
+    sound_path: string,
+    reaction: Reaction,
+  ) => {
     event.stopPropagation();
     try {
-      console.log(companyId);
-      const response = await http.post('/api/create-callfile', { companyId: companyId, filepath: sound_path }, {
+      // console.log(companyId);
+      // console.log(sound_path);
+      // console.log(reaction);
+      
+      const response = await http.post('/api/create-callfile', {
+        companyId: companyId,
+        filepath: sound_path,
+        reaction: reaction,
+      }, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -588,7 +600,9 @@ const OrderTable = (() => {
                         component="button"
                         onClick={(event) => handlePhoneCall(
                           event, row.id,
-                          soundfileStore.getSoundfileById(row.sound_file_id)?.file_path.replace(".wav", "")!)}
+                          soundfileStore.getSoundfileById(row.sound_file_id)?.file_path.replace(".wav", "")!,
+                          row.reaction
+                        )}
                       >
                         Автозвонок
                       </Link>
